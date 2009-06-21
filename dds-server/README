@@ -1,0 +1,13 @@
+To simplify the importing, I made a symlink of the django project to the 
+site-package directory.
+
+i.e.
+ln -s <dds django directory> <python site-package>
+
+or
+
+add .../backend/trunk to your PYTHONPATH
+
+-Alex
+
+
