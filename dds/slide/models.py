@@ -56,15 +56,19 @@ class Slide(models.Model):
 register_signals(Slide, pre_save=signalhandlers.slide_pre_save,
                         post_save=signalhandlers.j_post_save,
                         pre_delete=signalhandlers.j_pre_delete)
-# signals.pre_save.connect(slide_pre_save, Slide)
-# signals.post_save.connect(j_post_save, Slide)
-# signals.pre_delete.connect(j_pre_delete, Slide)
+
+
+class Location(models.Model):
+    name = models.CharField(max_length=500)
+
+    def __unicode__(self):
+        return '%s' % self.name
 
 
 class Client(models.Model):
     """Represents a Jabber client."""
     client_id = models.EmailField(max_length=128, primary_key=True)
-    location = models.CharField(max_length=512, default='unknown')
+    location = models.ForeignKey(Location, null=True)
     groups = models.ManyToManyField(Group, related_name='clients')
 
     def all_slides(self):
@@ -75,7 +79,7 @@ class Client(models.Model):
         return slide_list
 
     def __unicode__(self):
-        return self.client_id + '@' + self.location
+        return '%s@%s' % (self.client_id, self.location)
 
 
 class Asset(models.Model):
@@ -108,9 +112,7 @@ class Asset(models.Model):
         return ({'id' : self.id, 'url' : self.url() },)
 
 # Signals for Asset
-# signals.pre_save.connect(timestamp_pre_save, Asset)
-# signals.post_save.connect(asset_post_save, Asset)
-# signals.pre_delete.connect(j_pre_delete, Asset)
-
+register_signals(Asset, post_save=signalhandlers.asset_post_save,
+                        pre_delete=signalhandlers.j_pre_delete)
 
 

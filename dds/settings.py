@@ -23,7 +23,7 @@ DATABASE_PORT = ''             # Set to empty string for default. Not used with 
 
 if DEBUG:
     DATABASE_ENGINE = 'sqlite3'
-    DATABASE_NAME = 'temp.sqlite3'
+    DATABASE_NAME = ROOT('temp.sqlite3')
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -78,6 +78,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
+    ROOT('templates'),
 )
 
 INSTALLED_APPS = (

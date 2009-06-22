@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% for c in clients %}
+  <table>
+    <tr><td>Client Jabber ID</td><td>{{ c.client_id }}</td></tr>
+    <tr><td>Location</td><td>{{ c.location }}</td></tr>
+  </table>
+
+    <div>Member of:
+    <ul>
+        {% for g in c.groups.all %}
+        <li>{{ g }}</li>
+        {% endfor %}
+    </ul>
+    </div>
+
+{% endfor %}
+
+{% endblock %}

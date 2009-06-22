@@ -1,9 +1,26 @@
 from django.core import serializers
-from models import Slide, Asset
 from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render_to_response
+from models import Slide, Asset, Client
 
 def index(request):
     return HttpResponse('not implemented yet')
+
+def slide(request, slide_id):
+    try:
+        slide = Slide.objects.get(pk=slide_id)
+    except Slide.DoesNotExist:
+        return HttpResponseRedirect('error.html')
+
+    return render_to_response('slide/slide-index.html', { 'slide' : slide })
+
+def clients(request, location=None):
+    if not location:
+        clients = Client.objects.all()
+    else:
+        clients = Client.objects.filter(location=location)
+
+    return render_to_response('slide/clients.html', { 'clients' : clients })
 
 #Things needed for view
 #add, edit, delete

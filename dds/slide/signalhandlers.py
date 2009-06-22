@@ -7,27 +7,28 @@ def j_post_save(sender, instance, created, **kwargs):
     client = settings.JABBER_CLIENT
 
     if created:
-        format = 'add%s'
+        method_name = 'add%s' % sender.__name__
     else:
-        format = 'update%s'
+        method_name = 'update%s' % sender.__name__
  
     for c in instance.all_clients():
         client.send_parsed_model('%s/%s' % (c.pk, settings.J_CLIENT_RESOURCE),
-                                 instance.parse(), format % sender.__name__)
+                                 instance.parse(), method_name)
 
 def j_pre_delete(sender, instance, **kwargs):
-    """ before deleting from the database, notify the Clients """
+    """Notify the Clients before deleting from the database."""
     client = settings.JABBER_CLIENT
 
+    method_name = 'remove%s' % sender.__name__
+
     for c in instance.all_clients():
-        request = generate_request((instance.pk,), 'remove' + sender.__name__)
+        request = generate_request((instance.pk,), method_name)
         client.send_request('%s/%s', (c.pk, settings.J_CLIENT_RESOURCE),
                             request)
 
-
 def slide_pre_save(sender, instance, **kwargs):
-    """ Sends the Clients a remove signal over jabber if the group for
-    the slide has changed. """
+    """Sends the Clients a remove signal over jabber if the group for the
+    slide has changed."""
     try:
         slide = sender.objects.get(pk=instance.pk)
     except:

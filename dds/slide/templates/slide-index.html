@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Slide {{ slide.pk }}{% endblock %}
+
+{% block content %}
+
+<div>
+<table>
+<tr><td>Title</td><td>{{ slide.title }}</td></tr>
+<tr><td>User</td><td>{{ slide.user.get_full_name }}</td></tr>
+<tr><td>Group</td><td>{{ slide.group }}</td></tr>
+<tr><td>Priority</td><td>{{ slide.priority }}</td></tr>
+<tr><td>Duration</td><td>{{ slide.duration }}</td></tr>
+<tr><td>Expiration Date</td><td>{{ slide.expires_at }}</td></tr>
+<tr><td>Mode</td><td>{{ slide.get_mode_display }}</td></tr>
+<tr><td>Transition</td><td>{{ slide.get_transition_display }}</td></tr>
+<tr><td>Last Update</td><td>{{ slide.last_update }}</td></tr>
+</div>
+
+{% endblock %}
+
+

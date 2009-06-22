@@ -1,4 +1,4 @@
-from models import Slide, Asset, Client
+from models import Slide, Asset, Client, Location
 from django.contrib import admin
 
 class AssetAdmin(admin.ModelAdmin):
@@ -15,6 +15,8 @@ class SlideAdmin(admin.ModelAdmin):
 class ClientAdmin(admin.ModelAdmin):
     list_display = ('client_id', 'location')
 
+
 admin.site.register(Slide, SlideAdmin)
 admin.site.register(Asset, AssetAdmin)
 admin.site.register(Client, ClientAdmin)
+admin.site.register(Location)
