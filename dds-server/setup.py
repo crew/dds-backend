@@ -2,6 +2,7 @@
 
 from distutils.core import setup
 
+# FIXME version number, etc.
 setup(
     name = 'dds-server',
     description = 'Digital Display Jabber Server',
@@ -12,7 +13,5 @@ setup(
     scripts = ['scripts/dds-server'],
     packages = ['dds', 'dds.slide'],
     package_dir = {'' : 'lib'},
-    data_files = [('config', ['cfg/dds-server.conf']),],
+    data_files = [('/etc', ['cfg/dds-server.conf']),],
 )
-      
-    
