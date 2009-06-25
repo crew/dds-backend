@@ -3,7 +3,7 @@ from django.conf import settings
 from dds.utils import generate_request
 
 def j_post_save(sender, instance, created, **kwargs):
-    """ sends the instance to Clients that are allowed """
+    """Send the instance to Clients that are allowed."""
     client = settings.JABBER_CLIENT
 
     if created:
@@ -46,4 +46,3 @@ def asset_post_save(sender, instance, created, **kwargs):
 
     for slide in instance.all_slides():
         j_post_save(slide.__class__, slide, False, **kwargs)
-

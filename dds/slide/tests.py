@@ -12,83 +12,67 @@ class SlideTestCase(unittest.TestCase):
         self.assertEquals(set(first), set(second), msg=msg)
 
     @staticmethod
-    def create_asset():
-        temp = mkstemp()
-        asset = Asset.objects.create(file=temp[1])
-        os.close(temp[0])
+    def create_asset(pk):
+        asset, _ = Asset.objects.get_or_create(pk=pk)
         return asset
 
-    def prepare_user_group(self):
-        cls = self.__class__
-        cls.u1 = User.objects.create_user('alice', 'alice@example.com')
-        cls.u2 = User.objects.create_user('bob', 'bob@example.com')
-        cls.u3 = User.objects.create_user('eve', 'eve@example.com')
-        cls.g1 = Group.objects.create(name='Alpha')
-        cls.g2 = Group.objects.create(name='Beta')
-        cls.g3 = Group.objects.create(name='Gamma')
+    @staticmethod
+    def create_user(name, email):
+        user, _ = User.objects.get_or_create(username=name, email=email)
+        return user
+
+    @staticmethod
+    def create_group(name):
+        group, _ = Group.objects.get_or_create(name=name)
+        return group
     
     @staticmethod
     def create_slide(title, priority, user, group, duration):
-        return Slide.objects.create(title=title, priority=priority, user=user,
-                                    group=group, duration=duration)
-
-    def rebind(self):
-        cls = self.__class__
-        self.u1 = cls.u1
-        self.u2 = cls.u2
-        self.u3 = cls.u3
-        self.g1 = cls.g1
-        self.g2 = cls.g2
-        self.g3 = cls.g3
-
-        self.s1 = cls.s1
-        self.s2 = cls.s2
-        self.s3 = cls.s3
-
-        self.a1 = cls.a1
-        self.a2 = cls.a2
-        self.a3 = cls.a3
-        self.a4 = cls.a4
-
-        self.c1 = cls.c1
-        self.c2 = cls.c2
+        slide, _ = Slide.objects.get_or_create(title=title, priority=priority,
+                                               user=user, group=group,
+                                               duration=duration)
+        return slide
 
     def setUp(self):
-        cls = self.__class__
-        if cls.setup_called:
-            self.rebind()
-            return
-        self.prepare_user_group()
+        self.u1 = self.create_user('alice', 'alice@example.com')
+        self.u2 = self.create_user('bob', 'bob@example.com')
+        self.u3 = self.create_user('eve', 'eve@example.com')
+        self.g1 = self.create_group('Alpha')
+        self.g2 = self.create_group('Beta')
+        self.g3 = self.create_group('Gamma')
 
-        cls.s1 = self.create_slide('a', 1, self.u1, self.g1, 1)
-        cls.s2 = self.create_slide('b', 2, self.u2, self.g2, 1)
-        cls.s3 = self.create_slide('c', 3, self.u3, self.g3, 1)
+        self.s1 = self.create_slide('a', 1, self.u1, self.g1, 1)
+        self.s2 = self.create_slide('b', 2, self.u2, self.g2, 1)
+        self.s3 = self.create_slide('c', 3, self.u3, self.g3, 1)
 
-        cls.a1 = self.create_asset()
-        cls.a2 = self.create_asset()
-        cls.a3 = self.create_asset()
-        cls.a4 = self.create_asset()
+        self.a1 = self.create_asset(100)
+        self.a2 = self.create_asset(200)
+        self.a3 = self.create_asset(300)
+        self.a4 = self.create_asset(400)
         
-        cls.a1.slides.add(self.s1, self.s2)
-        cls.a2.slides.add(self.s1, self.s2)
-        cls.a3.slides.add(self.s1)
-        cls.a4.slides.add(self.s1)
+        self.a1.slides.add(self.s1, self.s2)
+        self.a2.slides.add(self.s1, self.s2)
+        self.a3.slides.add(self.s1)
+        self.a4.slides.add(self.s1)
 
-        cls.a1.save()
-        cls.a2.save()
-        cls.a3.save()
-        cls.a4.save()
-    
-        cls.c1 = Client.objects.create(client_id='dds@ccs', location='here')
-        cls.c2 = Client.objects.create(client_id='xxx@ccs', location='there')
+        self.a1.save()
+        self.a2.save()
+        self.a3.save()
+        self.a4.save()
+   
+        self.l1, _ = Location.objects.get_or_create(name='here')
+        self.l2, _ = Location.objects.get_or_create(name='there')
+
+        self.c1, _ = Client.objects.get_or_create(client_id='dds@ccs', 
+                                                  location=self.l1)
+        self.c2, _ = Client.objects.get_or_create(client_id='xxx@ccs',
+                                                  location=self.l2)
         
-        cls.c1.groups.add(cls.g3, cls.g1)
-        cls.c1.save()
+        self.c1.groups.add(self.g3, self.g1)
+        self.c1.save()
 
-        cls.c2.groups.add(cls.g1, cls.g2, cls.g3)
-        cls.c2.save()
-        self.rebind()
-        cls.setup_called = True
+        self.c2.groups.add(self.g1, self.g2, self.g3)
+        self.c2.save()
 
     def testslideFindAssets(self):
         self.assertSetEquals(self.s1.all_assets(),

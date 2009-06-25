@@ -10,7 +10,9 @@
 
 import xmpp
 import xmlrpclib
+import os
 from os import path
+
 
 def module(file_path):
     """Returns the module name.
@@ -20,7 +22,8 @@ def module(file_path):
     dir = path.dirname(file_path)
     dir_abs = path.abspath(dir)
     dir_norm = path.normpath(dir_abs)
-    return dir_norm.replace('\\', '/').split('/')[-1]
+    return dir_norm.split(os.sep)[-1]
+
 
 def root(file_path):
     """Returns a 'lambda' that produces paths based on the given file_path.
@@ -35,6 +38,7 @@ def root(file_path):
     join = path.join
     return (lambda *base: normpath(join(dir, *base)).replace('\\', '/'))
 
+
 def generate_request(variables, methodname=None, methodresponse=None,
                      encoding='utf-8', allow_none=False):
     """Create an xml format of the varibles and the methodname if given."""
@@ -45,34 +49,37 @@ def generate_request(variables, methodname=None, methodresponse=None,
 
 class JabberClientWrapper(object):
     """A wrapper for xmpp.Client"""
-    client = None
+    _client = None
 
     def __init__(self, username='', password='', resource='', server='',
-                 port=5222, proxy=None, ssl=None, use_srv=None, debug=[]):
-        if self.__class__.client:
-            self.client = self.__class__.client
+                 port=5222, proxy=None, ssl=None, use_srv=True, debug=[]):
+        if self.__class__._client:
+            self.client = self.__class__._client
             self.refresh()
             return
 
-        self.__class__.client = xmpp.Client(server, port, debug)
-        self.client = self.__class__.client
-        self.client.connect((server, port), proxy, ssl, use_srv)
-        self.client.auth(username, password, resource)
+        self.__class__._client = xmpp.Client(server, port, debug)
+        self.client = self.__class__._client
+        self.client.connect(proxy=proxy, secure=ssl, use_srv=use_srv)
+        if self.client.isConnected():
+            self.client.auth(username, password, resource)
+            self.client.sendInitPresence(requestRoster=1)
 
-    def refresh():
-        self.client.reconnectAndReauth()
+    def refresh(self):
+        if not self.client.isConnected():
+            self.client.reconnectAndReauth()
 
     def send_model(self, jid, model, function):
         """Sends a django model with the function name."""
         m = model.__class__.objects.values().get(pk=model.pk)
-        request = generate_request((m,), function)
-        self.client.send_request(jid, request)
-    
+        request = generate_request((m, ), function)
+        self.send_request(jid, request)
+
     def send_parsed_model(self, jid, parsed_model, function):
         """Send a django model, but parse it with the given function, the
         parser should return a tuple."""
-        request = generateRequest(parsed_model, function)
-        self.client.send_request(jid, request)
+        request = generate_request(parsed_model, function)
+        self.send_request(jid, request)
 
     def send_request(self, jid, request, typ = 'set'):
         """Send the given request over Jabber. The request must be an xml

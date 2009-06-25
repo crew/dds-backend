@@ -3,8 +3,10 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from models import Slide, Asset, Client
 
+
 def index(request):
     return HttpResponse('not implemented yet')
+
 
 def slide(request, slide_id):
     try:
@@ -13,6 +15,7 @@ def slide(request, slide_id):
         return HttpResponseRedirect('error.html')
 
     return render_to_response('slide/slide-index.html', { 'slide' : slide })
+
 
 def clients(request, location=None):
     if not location:
@@ -42,7 +45,7 @@ def manage_assets(request, slide_id, asset_id):
                 return HttpResponse(data, mimetype="application/xml")
             except Slide.DoesNotExist:
                 return HttpResponse(status=404)
-    if request.method == 'POST':
+    elif request.method == 'POST':
         if asset_id:
             return HttpResponse(status=501)
         else:
@@ -52,7 +55,7 @@ def manage_assets(request, slide_id, asset_id):
             asset.file.save(file.name, file)
             asset.slides.add(slide)
             return HttpResponse(status=201)
-    if request.method == 'DELETE':
+    elif request.method == 'DELETE':
         if asset_id:
             status = 404
             try:
@@ -60,9 +63,7 @@ def manage_assets(request, slide_id, asset_id):
                 asset = Slide.objects.get(pk=asset_id)
                 slide.assets.remove(asset)
                 status = 200
-            except Slide.DoesNotExist:
-                pass
-            except Asset.DoesNotExist:
+            except (Slide.DoesNotExist, Asset.DoesNotExist):
                 pass
         else:
             status = 501

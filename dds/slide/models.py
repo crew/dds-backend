@@ -1,7 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import User, Group
-from utils import register_signals
+from django.conf import settings
+from utils import register_signals, temp_upload_to
 import signalhandlers
+import shutil
+import os
+from os import path
+from datetime import datetime
 
 class Slide(models.Model):
     MODE_CHOICES = (
@@ -68,7 +73,7 @@ class Location(models.Model):
 class Client(models.Model):
     """Represents a Jabber client."""
     client_id = models.EmailField(max_length=128, primary_key=True)
-    location = models.ForeignKey(Location, null=True)
+    location = models.ForeignKey(Location, null=True, related_name='clients')
     groups = models.ManyToManyField(Group, related_name='clients')
 
     def all_slides(self):
@@ -83,8 +88,10 @@ class Client(models.Model):
 
 
 class Asset(models.Model):
+    UPLOAD_PATH = 'assets'
+
     last_update = models.DateTimeField(auto_now=True)
-    file = models.FileField(upload_to='dds/%Y%m%d%H%M%S')
+    file = models.FileField(upload_to=temp_upload_to)
     content_type = models.CharField(max_length=255, blank=True)
     slides = models.ManyToManyField('Slide', related_name='assets')
 
@@ -103,7 +110,7 @@ class Asset(models.Model):
         return '%s%s' % (settings.MEDIA_URL, self.file.name)
 
     def __unicode__(self):
-        return '%d: %s' % (self.id, str(self.file))
+        return '%s' % (self.file)
 
     def parse(self):
         """Returns a tuple of a hash of its id and url.
@@ -111,8 +118,52 @@ class Asset(models.Model):
         """
         return ({'id' : self.id, 'url' : self.url() },)
 
+    def upload_dir(self):
+        return '%s/%s/%d' % (settings.MEDIA_ROOT, self.__class__.UPLOAD_PATH,
+                             self.pk)
+
+    def _acquire_pk(self):
+        """Pre-allocate the primary key by creating an empty object and saving
+        it, but only if needed.
+        >>> a = Asset()
+        >>> not a.pk
+        True
+        >>> not a._acquire_pk()
+        False
+        """
+        if not self.pk:
+            temp = self.__class__()
+            temp.save(scaffold=True)
+            self.pk = temp.pk
+        return self.pk
+
+    def save(self, force_insert=False, force_update=False, scaffold=False):
+        """Adds a scaffold option. When scaffold is True, the file field
+        is not renamed."""
+        if not scaffold:
+            self._acquire_pk()
+
+            if self.file.name:
+                if not self.file.closed:
+                    self.file.close()
+
+                # Create the new directory.
+                file_new_dir = self.upload_dir()
+                if not path.isdir(file_new_dir):
+                    os.makedirs(file_new_dir, 0755)
+
+                # Find the new path
+                file_new_path = path.join(file_new_dir,
+                                          path.basename(self.file.path))
+
+                # Move the 
+                shutil.move(self.file.path, file_new_path)
+                self.file = file_new_path
+        
+        super(self.__class__, self).save(force_insert=force_insert,
+                                         force_update=force_update)
+
+
 # Signals for Asset
 register_signals(Asset, post_save=signalhandlers.asset_post_save,
                         pre_delete=signalhandlers.j_pre_delete)
-
-
