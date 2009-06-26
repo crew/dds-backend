@@ -2,21 +2,33 @@
 
 {% block title %}Slide {{ slide.pk }}{% endblock %}
 
+{% block styles %}
+<style type="text/css">
+.slide {
+    border: 1px solid black;
+}
+
+ul {
+    list-style-type: none;
+}
+</style>
+{% endblock %}
+
 {% block content %}
 
-<div>
-<table>
-<tr><td>Title</td><td>{{ slide.title }}</td></tr>
-<tr><td>User</td><td>{{ slide.user.get_full_name }}</td></tr>
-<tr><td>Group</td><td>{{ slide.group }}</td></tr>
-<tr><td>Priority</td><td>{{ slide.priority }}</td></tr>
-<tr><td>Duration</td><td>{{ slide.duration }}</td></tr>
-<tr><td>Expiration Date</td><td>{{ slide.expires_at }}</td></tr>
-<tr><td>Mode</td><td>{{ slide.get_mode_display }}</td></tr>
-<tr><td>Transition</td><td>{{ slide.get_transition_display }}</td></tr>
-<tr><td>Last Update</td><td>{{ slide.last_update }}</td></tr>
+<div class="slide">
+<ul>
+<input type="hidden" name="id" value="{{ slide.pk }}" />
+<li>Title: <span class="title">{{ slide.title }}</span></li>
+<li>User: {{ slide.user.get_full_name }}</li>
+<li>Group: {{ slide.group }}</li>
+<li>Priority: {{ slide.priority }}</li>
+<li>Duration: {{ slide.duration }} seconds</li>
+<li>Expires: {{ slide.expires_at|date:"P - N j, Y" }}</li>
+<li>Mode: {{ slide.get_mode_display }}</li>
+<li>Transition: {{ slide.get_transition_display }}</li>
+<span>Last Update: {{ slide.last_update|date:"P - N j, Y" }}</span>
+</ul>
 </div>
 
 {% endblock %}
-
-

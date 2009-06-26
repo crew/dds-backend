@@ -8,6 +8,7 @@ import os
 from os import path
 from datetime import datetime
 
+
 class Slide(models.Model):
     MODE_CHOICES = (
         (0, 'layout'),
@@ -156,10 +157,13 @@ class Asset(models.Model):
                 file_new_path = path.join(file_new_dir,
                                           path.basename(self.file.path))
 
-                # Move the 
+                # Move the file, then delete the temporary directory.
                 shutil.move(self.file.path, file_new_path)
+                temp_dir = path.dirname(self.file.path)
+                if len(os.listdir(temp_dir)) == 0:
+                    os.rmdir(temp_dir)
                 self.file = file_new_path
-        
+
         super(self.__class__, self).save(force_insert=force_insert,
                                          force_update=force_update)
 
