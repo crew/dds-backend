@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+<script type="text/javascript">
+
+function remove_asset_input(e) {
+    e.preventDefault();
+    var parent = $(this).parent();
+    parent.slideUp(300, function() {
+        parent.remove();
+    });
+};
+
+/* asset_button_append : (number -> string), (number -> ?) -> (Event -> )
+Takes in two functions, and returns a function that takes one argument.
+The return value of the first function is appended to the next element.
+The second function is called at the very end.
+ */
+function asset_button_append(text, next) {
+    return function(e) {
+        e.preventDefault();
+        var asset_list = $(this).next();
+        var id = asset_list.children().size() + 1;
+
+        asset_list.append(text(id));
+        next(id);
+    }
+}
+
+$(document).ready(function() {
+    $("a.add_asset_button").click(asset_button_append(
+        function(id) {
+            return '<li><input type="file" name="asset' + id + '" />' +
+                   '<a href="" class="remove_asset" id="asset_button' +
+                   id + '">remove</a></li>';
+        },
+        function(id) {
+            // bind the remove button
+            $("#asset_button" + id).click(remove_asset_input);
+        }));
+
+    // for the inputs loaded from the start.
+    $("a.remove_asset").click(remove_asset_input);
+
+    $("a.link_asset_button").click(asset_button_append(
+        function(id) {
+            return '<li><select name="link' + id + '">' + 
+                   '<option>1</option></select>' +
+                   '<a href="" class="remove_asset" id="asset_link_button' +
+                   id + '"/>remove</a></li>';
+        },
+        function(id) {
+            $("#asset_link_button" + id).click(remove_asset_input);
+        }));
+
+    $("input.text").change(function() {
+        //blah blah
+    });
+
+});
+</script>
+
+{% endblock %}
+
+{% block content %}
+
+<form method="post" action="." enctype="multipart/form-data">
+<table>
+{{ slide.as_table }}
+</table>
+<input type="text" class="text" />
+<div class="assets">
+    <a href="#" class="add_asset_button">add_asset</a>
+    <ol>
+<!--        <li><input type="file" name="file" />
+            <a href="#" class="remove_asset">remove</a></li> -->
+    </ol>
+</div>
+<div>
+    <a href="" class="link_asset_button">link asset</a>
+    <ol>
+    <!-- A select form of existing assets -->
+    </ol>
+</div>
+<input type="submit" value="post" />
+</form>
+
+{% endblock %}

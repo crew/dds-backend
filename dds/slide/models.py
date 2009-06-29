@@ -93,7 +93,6 @@ class Asset(models.Model):
 
     last_update = models.DateTimeField(auto_now=True)
     file = models.FileField(upload_to=temp_upload_to)
-    content_type = models.CharField(max_length=255, blank=True)
     slides = models.ManyToManyField('Slide', related_name='assets')
 
     def all_slides(self):
@@ -157,6 +156,7 @@ class Asset(models.Model):
                 file_new_path = path.join(file_new_dir,
                                           path.basename(self.file.path))
 
+                # XXX Should we remove the old file or not?
                 # Move the file, then delete the temporary directory.
                 shutil.move(self.file.path, file_new_path)
                 temp_dir = path.dirname(self.file.path)

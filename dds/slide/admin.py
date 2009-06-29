@@ -1,16 +1,18 @@
 from models import Slide, Asset, Client, Location
 from django.contrib import admin
 
+
 class AssetAdmin(admin.ModelAdmin):
     fieldsets = [
-        (None, {'fields' : ['file', 'content_type']}),
+        (None, {'fields' : ['file']}),
     ]
     list_display = ('id', 'file')
 
+
 class SlideAdmin(admin.ModelAdmin):
     exclude = ['last_update']
-        
     list_display = ('title', 'user', 'group', 'expires_at')
+
 
 class ClientAdmin(admin.ModelAdmin):
     list_display = ('client_id', 'location')

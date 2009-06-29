@@ -1,7 +1,10 @@
 from django.core import serializers
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
+
 from models import Slide, Asset, Client
+from forms import SlideForm, AssetForm
 
 
 def index(request):
@@ -20,13 +23,69 @@ def slide(request, slide_id):
 def slide_add(request):
     if request.method == 'GET':
         # TODO either a slide form or just a template.
-        return
+        slide = SlideForm()
+        return render_to_response('slide/slide-form.html',
+                                  { 'slide' : slide })
     elif request.method == 'POST':
         # FIXME check access
-        # TODO 
+        slide_form = SlideForm(data=request.POST)
+        if slide_form.is_valid():
+            slide = slide_form.save()
+            
+            # Add new assets
+            for key, val in request.FILES.items():
+                asset = Asset()
+                form = AssetForm({ 'slides' : [slide.pk] },
+                                 { 'file' : val },
+                                 instance=asset)
+                asset = form.save()
+                # TODO failed validation?
+
+            # Link existing assets
+            for asset_id in parse_slide_post(request.POST):
+                try:
+                    asset = Asset.objects.get(pk=asset_id)
+                    slide.assets.add(asset)
+                except Asset.DoesNotExist:
+                    continue
+            
+            slide.save()
+
+            return HttpResponse('Yay!')
+        else:
+            # TODO error!
+            return
+
         return
-    
+
     return # XXX unimplemented HTTP request, e.g. PUT, DELETE, ...
+
+
+def parse_slide_post(post):
+    """Parse the POST data for existing asset_id's."""
+    for key, val in post.items():
+        if key.startswith('link'):
+            try:
+                yield int(val)
+            except ValueError:
+                continue
+
+
+def asset_add(request):
+    if request.method == 'GET':
+        asset = AssetForm()
+        return render_to_response('slide/asset-form.html',
+                                  { 'asset' : asset })
+    elif request.method == 'POST':
+        asset = Asset()
+        asset_form = AssetForm(request.POST, request.FILES, instance=asset)
+        if asset_form.is_valid():
+            asset = asset_form.save()
+            return HttpResponse('Yeah!')
+        else:
+            return HttpResponse('No')
+
+    return
 
 
 def slide_add_asset(request, slide_id, asset_id):
@@ -42,13 +101,6 @@ def slide_add_asset(request, slide_id, asset_id):
         return HttpResponseRedirect('error.html')
 
     return HttpResponseRedirect('success.html')
-
-
-def asset_add(request):
-    if request.method == 'GET':
-        pass
-    elif request.method == 'POST':
-        pass
 
 
 def clients(request, location=None):

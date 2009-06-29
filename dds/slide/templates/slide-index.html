@@ -29,6 +29,13 @@ ul {
 <li>Transition: {{ slide.get_transition_display }}</li>
 <span>Last Update: {{ slide.last_update|date:"P - N j, Y" }}</span>
 </ul>
+<div class="assets">
+
+{% for a in slide.assets.all %}
+{{ a.file }}
+{{ a.last_update }}
+{% endfor %}
+</div>
 </div>
 
 {% endblock %}
