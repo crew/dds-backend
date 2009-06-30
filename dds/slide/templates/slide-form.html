@@ -37,26 +37,25 @@ $(document).ready(function() {
         function(id) {
             // bind the remove button
             $("#asset_button" + id).click(remove_asset_input);
-        }));
+        })
+    );
 
     // for the inputs loaded from the start.
     $("a.remove_asset").click(remove_asset_input);
 
     $("a.link_asset_button").click(asset_button_append(
         function(id) {
-            return '<li><select name="link' + id + '">' + 
-                   '<option>1</option></select>' +
+            return '<li><select id="link' + id + '" name="link' + id + '">' +
+                       '</select>' +
                    '<a href="" class="remove_asset" id="asset_link_button' +
-                   id + '"/>remove</a></li>';
+                   id + '">remove</a></li>';
         },
         function(id) {
+            $("select#link" + id).load("/asset-options/");
+
             $("#asset_link_button" + id).click(remove_asset_input);
-        }));
-
-    $("input.text").change(function() {
-        //blah blah
-    });
-
+        })
+    );
 });
 </script>
 
@@ -68,7 +67,6 @@ $(document).ready(function() {
 <table>
 {{ slide.as_table }}
 </table>
-<input type="text" class="text" />
 <div class="assets">
     <a href="#" class="add_asset_button">add_asset</a>
     <ol>

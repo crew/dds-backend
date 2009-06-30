@@ -31,10 +31,11 @@ ul {
 </ul>
 <div class="assets">
 
-{% for a in slide.assets.all %}
-{{ a.file }}
-{{ a.last_update }}
-{% endfor %}
+<ul>
+    {% for a in slide.assets.all %}
+    <li><a href="{{ a.url }}">{{ a.file_name }}</a> - {{ a.last_update }}</li>
+    {% endfor %}
+</ul>
 </div>
 </div>
 

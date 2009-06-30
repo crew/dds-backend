@@ -88,6 +88,12 @@ def asset_add(request):
     return
 
 
+def asset_options(request):
+    if request.method == 'GET':
+        return render_to_response('slide/asset-options.html',
+                                  { 'assets' : Asset.objects.all() })
+    return 
+
 def slide_add_asset(request, slide_id, asset_id):
     try:
         slide = Slide.objects.get(pk=slide_id)

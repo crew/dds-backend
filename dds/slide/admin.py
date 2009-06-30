@@ -3,9 +3,9 @@ from django.contrib import admin
 
 
 class AssetAdmin(admin.ModelAdmin):
-    fieldsets = [
-        (None, {'fields' : ['file']}),
-    ]
+#    fieldsets = [
+#        (None, {'fields' : ['file']}),
+#    ]
     list_display = ('id', 'file')
 
 

@@ -51,6 +51,9 @@ MEDIA_ROOT = ROOT('media')
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
 MEDIA_URL = 'http://bigpicture.ccs.neu.edu/media/'
 
+if DEBUG:
+    MEDIA_URL = '/media/'
+
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".

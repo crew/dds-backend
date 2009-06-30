@@ -91,8 +91,10 @@ class Client(models.Model):
 class Asset(models.Model):
     UPLOAD_PATH = 'assets'
 
+    name = models.CharField(max_length=200, blank=True)
+    description = models.CharField(max_length=500, blank=True)
     last_update = models.DateTimeField(auto_now=True)
-    file = models.FileField(upload_to=temp_upload_to)
+    file = models.FileField(max_length=300, upload_to=temp_upload_to)
     slides = models.ManyToManyField('Slide', related_name='assets')
 
     def all_slides(self):
@@ -106,8 +108,12 @@ class Asset(models.Model):
             client_list.update(s.all_clients())
         return client_list
 
+    def file_name(self):
+        return path.basename(self.file.name)
+
     def url(self):
-        return '%s%s' % (settings.MEDIA_URL, self.file.name)
+        return '%s/%s/%d/%s' % (settings.MEDIA_URL, self.UPLOAD_PATH, self.pk,
+                                self.file_name())
 
     def __unicode__(self):
         return '%s' % (self.file)
