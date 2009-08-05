@@ -2,6 +2,8 @@ from django.core import serializers
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
+from django.contrib.auth.decorators import login_required
+from django.template import RequestContext
 
 from models import Slide, Asset, Client
 from forms import SlideForm, AssetForm
@@ -20,12 +22,13 @@ def slide(request, slide_id):
     return render_to_response('slide/slide-index.html', { 'slide' : slide })
 
 
+@login_required
 def slide_add(request):
     if request.method == 'GET':
-        # TODO either a slide form or just a template.
         slide = SlideForm()
         return render_to_response('slide/slide-form.html',
-                                  { 'slide' : slide })
+                                  { 'slide' : slide },
+                                  context_instance=RequestContext(request))
     elif request.method == 'POST':
         # FIXME check access
         slide_form = SlideForm(data=request.POST)
@@ -71,6 +74,7 @@ def parse_slide_post(post):
                 continue
 
 
+@login_required
 def asset_add(request):
     if request.method == 'GET':
         asset = AssetForm()
@@ -94,6 +98,8 @@ def asset_options(request):
                                   { 'assets' : Asset.objects.all() })
     return 
 
+
+@login_required
 def slide_add_asset(request, slide_id, asset_id):
     try:
         slide = Slide.objects.get(pk=slide_id)
@@ -109,6 +115,7 @@ def slide_add_asset(request, slide_id, asset_id):
     return HttpResponseRedirect('success.html')
 
 
+@login_required
 def clients(request, location=None):
     if not location:
         clients = Client.objects.all()
@@ -117,11 +124,8 @@ def clients(request, location=None):
 
     return render_to_response('slide/clients.html', { 'clients' : clients })
 
-#Things needed for view
-#add, edit, delete
-#
 
-
+@login_required
 def manage_assets(request, slide_id, asset_id):
     if request.method == 'GET':
         if asset_id:

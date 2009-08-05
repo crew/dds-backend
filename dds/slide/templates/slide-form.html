@@ -65,6 +65,10 @@ $(document).ready(function() {
 
 <form method="post" action="." enctype="multipart/form-data">
 <table>
+<tr><th>User</th><td>{{ user }}</td></tr>
+<tr><th>Group</th>
+    <td>{% for g in user.groups.all %}{{ g }}{% endfor %}</td>
+</tr>
 {{ slide.as_table }}
 </table>
 <div class="assets">

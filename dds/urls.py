@@ -16,6 +16,9 @@ urlpatterns = patterns('',
     # FIXME Production only, we will do apache later
     (r'^media/(?P<path>.*)$', 'django.views.static.serve',
      {'document_root' : settings.MEDIA_ROOT}),
-    
+
+    (r'^accounts/login/$', 'django.contrib.auth.views.login'),
+    (r'^accounts/logout/$', 'django.contrib.auth.views.logout'),
+
     (r'', include('%s.slide.urls' % settings.MODULE)),
 )

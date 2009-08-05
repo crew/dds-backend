@@ -6,6 +6,7 @@ class SlideForm(ModelForm):
 
     class Meta:
         model = Slide
+        exclude = ('user', 'group')
 
 
 class AssetForm(ModelForm):

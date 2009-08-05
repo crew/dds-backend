@@ -92,12 +92,16 @@ INSTALLED_APPS = (
     '%s.slide' % MODULE,
 )
 
+AUTHENTICATION_BACKENDS = (
+    '%s.ccis.backends.CCISLDAPBackend' % MODULE,
+    'django.contrib.auth.backends.ModelBackend',
+)
+
 ############# Jabber ############
 JABBER_CLIENT = utils.JabberClientWrapper('test', 'test', 'dds-server',
                                           'dds-master.ccs.neu.edu')
 J_CLIENT_RESOURCE = 'dds-client'
 
-#J_SERVER = 'centipede.ccs.neu.edu'
-#J_USER = 'test'
-#J_PASS = 'test'
-#J_RESOURCE = 'dds-server'
+############# LDAP ##############
+LDAPBACKEND_HOST = 'ldap://cluster.ldap.ccs.neu.edu/'
+LDAPBACKEND_DN   = 'uid=%s,ou=people,dc=ccs,dc=neu,dc=edu'
