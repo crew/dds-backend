@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 # ***** BEGIN LICENCE BLOCK *****
 #
 # The Initial Developer of the Original Code is
@@ -22,6 +22,7 @@ flags.DEFINE_string('config_section', 'DEFAULT',
                     'Configuration file section to parse')
 flags.DEFINE_string('log_file', None, 'Log file path')
 flags.DEFINE_boolean('debug', False, 'Enable debugging')
+flags.DEFINE_boolean('daemonize', True, 'Enable Daemon Mode')
 
 FLAGS = flags.FLAGS
 
@@ -30,16 +31,7 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'dds.settings'
 from dds.slide.models import Client
 from dds.utils import generate_request
  
-# TODO put these in a config file
-# /etc/dds-server.conf
-# USERNAME='test'
-# PASSWORD='test'
-# RESOURCE='dds-server-init'
-# SERVER='centipede.ccs.neu.edu'
-# LOGFILE='/tmp/dds_server.log'
-# DEBUG=True
-
-def initialize():
+def daemonize():
     """Daemonizes the calling process."""
     first_child_pid = os.fork()
 
@@ -84,13 +76,13 @@ def initialize():
 
 ################################# HANDLERS ###################################
 
-def presenceHandle(dispatch, pr):
+def presence_handle(dispatch, pr):
     """If a client sends presence, send its initial slides."""
     jid = pr.getAttr('from')
     type = pr.getAttr('type')
-    
+    logging.debug('Got presence handle from %s' % jid) 
     if(type != 'unavailable'):
-        sendInitialSlides(dispatch, jid)
+        send_initial_slides(dispatch, jid)
     else:
         logging.info('%s : has gone offline.' % jid)
 
@@ -99,13 +91,13 @@ def presenceHandle(dispatch, pr):
 def send_initial_slides(dispatch, jid):
     """Sends the initial slides to the Jabber id."""
     logging.info('%s : sending initial slides.' % jid)
-    for slide in getSlidesFor(jid.getStripped()):
-        addSlide(dispatch, jid, slide)
+    for slide in get_slides_for(jid.getStripped()):
+        add_slide(dispatch, jid, slide)
 
 def add_slide(dispatch, jid, slide):
     """Sends a parsed Slide object to the Jabber id."""
     logging.info('%s : sending slide %d.' % (jid, slide.pk))
-    request = generateRequest(slide.parse(), 'addSlide')
+    request = generate_request(slide.parse(), 'addSlide')
 
     iq = xmpp.Iq(to = jid, typ = 'set')
     iq.setQueryNS(xmpp.NS_RPC)
@@ -114,7 +106,7 @@ def add_slide(dispatch, jid, slide):
     dispatch.send(iq)
     logging.info('%s : sent slide %d.' % (jid, slide.pk))
 
-def getSlidesFor(jid):
+def get_slides_for(jid):
     """Return a list of the Slide objects for the Client with the given Jabber
     id."""
     c = get_client(jid)
@@ -168,7 +160,8 @@ def alive(dispatch):
 def main():
     (username, password, resource, server, log, debug) = get_options()
 
-    initialize()
+    if FLAGS.daemonize:
+        daemonize()
 
     logging.basicConfig(level=logging.DEBUG,
                         format='%(asctime)s %(levelname)s %(message)s',
@@ -179,7 +172,6 @@ def main():
         client = xmpp.Client(server=server)
     else:
         client = xmpp.Client(server=server, debug=[])
-    
     try:
         client.connect()
     except:
@@ -192,13 +184,13 @@ def main():
         logging.debug('Authorization failed.')
         exit()
 
-    client.RegisterHandler('presence', presenceHandle)
+    client.RegisterHandler('presence', presence_handle)
     client.sendInitPresence()
 
     logging.info('Connection started')
 
     while alive(client):
-        pass
+      pass
 
 if __name__ == '__main__':
     FLAGS(sys.argv)
