@@ -15,7 +15,7 @@ import gflags as flags
 import xmpp
 import logging
 import os
-from optparse import OptionParser
+import sys
 import ConfigParser
 
 flags.DEFINE_string('config_file', '/etc/dds-server.conf',
@@ -177,7 +177,7 @@ def main():
                         filename=log,
                         filemode='a')
 
-    if options['debug']:
+    if debug:
         client = xmpp.Client(server=server)
     else:
         client = xmpp.Client(server=server, debug=[])

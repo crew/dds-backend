@@ -13,7 +13,8 @@ setup(
     maintainer_email = 'lee@ccs.neu.edu',
     #url = '',
     scripts = ['scripts/dds-server'],
-    packages = ['dds', 'dds.slide', 'gflags'],
+    py_modules = ['gflags'],
+    packages = ['dds', 'dds.slide'],
     package_dir = {'' : 'lib'},
     data_files = [('/etc', ['cfg/dds-server.conf']),],
 )
