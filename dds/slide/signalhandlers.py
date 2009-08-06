@@ -25,7 +25,7 @@ def j_pre_delete(sender, instance, **kwargs):
 
     for c in instance.all_clients():
         request = generate_request((instance.pk,), method_name)
-        client.send_request('%s/%s', (c.pk, settings.J_CLIENT_RESOURCE),
+        client.send_request('%s/%s' % (c.pk, settings.J_CLIENT_RESOURCE),
                             request)
 
 
