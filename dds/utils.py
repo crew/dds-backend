@@ -84,6 +84,7 @@ class JabberClientWrapper(object):
     def send_request(self, jid, request, typ = 'set'):
         """Send the given request over Jabber. The request must be an xml
         node."""
+        self.refresh()
         iq = xmpp.Iq(to = jid, typ = typ)
         iq.setQueryNS(xmpp.NS_RPC)
         iq.setQueryPayload(request)
