@@ -64,6 +64,7 @@ class JabberClientWrapper(object):
         if self.client.isConnected():
             self.client.auth(username, password, resource)
             self.client.sendInitPresence(requestRoster=1)
+        self.client.UnregisterDisconnectHandler(self.client.DisconnectHandler)
 
     def refresh(self):
         if not self.client.isConnected():

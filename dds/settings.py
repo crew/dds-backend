@@ -5,7 +5,8 @@ import utils
 ROOT = utils.root(__file__)
 MODULE = utils.module(__file__)
 
-DEBUG = True
+DEVELOP = True
+DEBUG = True or DEVELOP
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -21,7 +22,7 @@ DATABASE_PASSWORD = ''         # Not used with sqlite3.
 DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
 DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
 
-if DEBUG:
+if DEVELOP:
     DATABASE_ENGINE = 'sqlite3'
     DATABASE_NAME = ROOT('temp.sqlite3')
 
@@ -51,7 +52,7 @@ MEDIA_ROOT = ROOT('media')
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
 MEDIA_URL = 'http://bigpicture.ccs.neu.edu/media/'
 
-if DEBUG:
+if DEVELOP:
     MEDIA_URL = '/media/'
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
