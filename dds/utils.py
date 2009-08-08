@@ -11,6 +11,8 @@
 import xmpp
 import xmlrpclib
 import os
+import threading
+import time
 from os import path
 
 
@@ -50,6 +52,7 @@ def generate_request(variables, methodname=None, methodresponse=None,
 class JabberClientWrapper(object):
     """A wrapper for xmpp.Client"""
     _client = None
+    _pinger = None
 
     def __init__(self, username='', password='', resource='', server='',
                  port=5222, proxy=None, ssl=None, use_srv=True, debug=[]):
@@ -65,10 +68,21 @@ class JabberClientWrapper(object):
             self.client.auth(username, password, resource)
             self.client.sendInitPresence(requestRoster=1)
         self.client.UnregisterDisconnectHandler(self.client.DisconnectHandler)
+        self.__class__._pinger = threading.Thread(target=self.__class__.pinger)
+        self.__class__._pinger.daemon = True
+        self.__class__._pinger.start()
+
+    @classmethod
+    def pinger(cls):
+        while True:
+            cls._client.sendPresence()
+            time.sleep(10)
 
     def refresh(self):
+        print 'hello'
         if not self.client.isConnected():
             self.client.reconnectAndReauth()
+            self.client.sendPresence()
 
     def send_model(self, jid, model, function):
         """Sends a django model with the function name."""
