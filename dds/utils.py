@@ -13,6 +13,10 @@ import xmlrpclib
 import os
 import threading
 import time
+<<<<<<< HEAD:dds/utils.py
+=======
+from os import path
+>>>>>>> ba18d92... Add a keep-alive thread for Jabber:dds/utils.py
 
 
 def module(file_path):
@@ -67,8 +71,18 @@ class JabberClientWrapper(object):
             self.client.auth(username, password, resource)
             self.client.sendInitPresence(requestRoster=1)
         self.client.UnregisterDisconnectHandler(self.client.DisconnectHandler)
+        self.__class__._pinger = threading.Thread(target=self.__class__.pinger)
+        self.__class__._pinger.daemon = True
+        self.__class__._pinger.start()
+
+    @classmethod
+    def pinger(cls):
+        while True:
+            cls._client.sendPresence()
+            time.sleep(10)
 
     def refresh(self):
+        print 'hello'
         if not self.client.isConnected():
             self.client.reconnectAndReauth()
             self.client.sendPresence()

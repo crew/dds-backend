@@ -93,6 +93,10 @@ def send_initial_slides(dispatch, jid):
     logging.info('%s : sending initial slides.' % jid)
     for slide in get_slides_for(jid.getStripped()):
         add_slide(dispatch, jid, slide)
+    else:
+        # The client is unregistered, send it a slide to that effect
+        # TODO: Make this happen
+        pass
 
 def add_slide(dispatch, jid, slide):
     """Sends a parsed Slide object to the Jabber id."""
