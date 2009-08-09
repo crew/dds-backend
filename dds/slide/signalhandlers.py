@@ -38,10 +38,8 @@ def slide_pre_save(sender, instance, **kwargs):
         return
 
     if not instance.group == slide.group:
-        for client in slide.all_clients():
-            j_pre_delete(sender, slide, **kwargs)
-        for client in instance.all_clients():
-            j_post_save(sender, instance, True, **kwargs)
+        j_pre_delete(sender, slide, **kwargs)
+        j_post_save(sender, instance, True, **kwargs)
 
 
 def asset_post_save(sender, instance, created, **kwargs):
