@@ -82,7 +82,6 @@ class JabberClientWrapper(object):
             time.sleep(10)
 
     def refresh(self):
-        print 'hello'
         if not self.client.isConnected():
             self.client.reconnectAndReauth()
             self.client.sendPresence()
