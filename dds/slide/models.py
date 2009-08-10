@@ -96,7 +96,6 @@ class Asset(models.Model):
     last_update = models.DateTimeField(auto_now=True)
     file = models.FileField(max_length=300, upload_to=temp_upload_to,
                             null=True)
-    slides = models.ManyToManyField('Slide', related_name='assets')
 
     def all_slides(self):
         """Returns all Slides that use this Asset."""
