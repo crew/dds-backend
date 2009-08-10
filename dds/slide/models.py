@@ -31,6 +31,7 @@ class Slide(models.Model):
     mode = models.IntegerField(choices=MODE_CHOICES, default=0)
     transition = models.IntegerField(choices=TRANSITION_CHOICES, default=0)
     last_update = models.DateTimeField(auto_now=True)
+    assets = models.ManyToManyField('Asset', related_name='slides', blank=True)
 
     def all_assets(self):
         """Return the list of Assets used by this Slide."""
@@ -96,7 +97,6 @@ class Asset(models.Model):
     last_update = models.DateTimeField(auto_now=True)
     file = models.FileField(max_length=300, upload_to=temp_upload_to,
                             null=True)
-    slides = models.ManyToManyField('Slide', related_name='assets')
 
     def all_slides(self):
         """Returns all Slides that use this Asset."""

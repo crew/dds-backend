@@ -12,6 +12,18 @@ class AssetAdmin(admin.ModelAdmin):
 class SlideAdmin(admin.ModelAdmin):
     exclude = ['last_update']
     list_display = ('title', 'user', 'group', 'expires_at')
+    fieldsets = (
+        (None, {
+            'fields': ('title', 'user', 'group')
+        }),
+        (None, {
+            'fields': ('priority', 'duration', 'expires_at', 'mode',
+                       'transition'),
+        }),
+        ('Assets', {
+            'fields': ('assets',),
+        }),
+    )
 
 
 class ClientAdmin(admin.ModelAdmin):
