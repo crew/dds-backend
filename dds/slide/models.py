@@ -94,7 +94,8 @@ class Asset(models.Model):
     name = models.CharField(max_length=200, blank=True)
     description = models.CharField(max_length=500, blank=True)
     last_update = models.DateTimeField(auto_now=True)
-    file = models.FileField(max_length=300, upload_to=temp_upload_to)
+    file = models.FileField(max_length=300, upload_to=temp_upload_to,
+                            null=True)
     slides = models.ManyToManyField('Slide', related_name='assets')
 
     def all_slides(self):
@@ -128,6 +129,12 @@ class Asset(models.Model):
         return '%s/%s/%d' % (settings.MEDIA_ROOT, self.__class__.UPLOAD_PATH,
                              self.pk)
 
+    def is_temporary(self):
+        if not self.file:
+            return True
+        p = self.file.path
+        return p.startswith('%s/%s/' % (settings.MEDIA_ROOT, 'tmp'))
+
     def _acquire_pk(self):
         """Pre-allocate the primary key by creating an empty object and saving
         it, but only if needed.
@@ -139,36 +146,41 @@ class Asset(models.Model):
         """
         if not self.pk:
             temp = self.__class__()
-            temp.save(scaffold=True)
+            super(temp.__class__, temp).save()
             self.pk = temp.pk
         return self.pk
 
-    def save(self, force_insert=False, force_update=False, scaffold=False):
+    def save(self, force_insert=False, force_update=False):
         """Adds a scaffold option. When scaffold is True, the file field
         is not renamed."""
-        if not scaffold:
-            self._acquire_pk()
+        self._acquire_pk()
 
-            if self.file.name:
-                if not self.file.closed:
-                    self.file.close()
+        # Load the file onto the file system
+        super(self.__class__, self).save(force_insert=force_insert,
+                                         force_update=force_update)
 
-                # Create the new directory.
-                file_new_dir = self.upload_dir()
-                if not path.isdir(file_new_dir):
-                    os.makedirs(file_new_dir, 0755)
+        if not self.file.name:
+            return
 
-                # Find the new path
-                file_new_path = path.join(file_new_dir,
-                                          path.basename(self.file.path))
+        if not self.file.closed:
+            self.file.close()
 
-                # XXX Should we remove the old file or not?
-                # Move the file, then delete the temporary directory.
-                shutil.move(self.file.path, file_new_path)
-                temp_dir = path.dirname(self.file.path)
-                if len(os.listdir(temp_dir)) == 0:
-                    os.rmdir(temp_dir)
-                self.file = file_new_path
+        # Create the new directory.
+        file_new_dir = self.upload_dir()
+        if not path.isdir(file_new_dir):
+            os.makedirs(file_new_dir, 0755)
+
+        # Find the new path
+        file_new_path = path.join(file_new_dir,
+                                  path.basename(self.file.path))
+
+        # XXX Should we remove the old file or not?
+        # Move the file, then delete the temporary directory.
+        shutil.move(self.file.path, file_new_path)
+        temp_dir = path.dirname(self.file.path)
+        if len(os.listdir(temp_dir)) == 0:
+            os.rmdir(temp_dir)
+        self.file = file_new_path
 
         super(self.__class__, self).save(force_insert=force_insert,
                                          force_update=force_update)

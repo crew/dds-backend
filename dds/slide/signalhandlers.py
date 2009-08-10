@@ -43,7 +43,7 @@ def slide_pre_save(sender, instance, **kwargs):
 
 
 def asset_post_save(sender, instance, created, **kwargs):
-    if created:
+    if created or instance.is_temporary():
         return
 
     for slide in instance.all_slides():
