@@ -13,10 +13,6 @@ import xmlrpclib
 import os
 import threading
 import time
-<<<<<<< HEAD:dds/utils.py
-=======
-from os import path
->>>>>>> ba18d92... Add a keep-alive thread for Jabber:dds/utils.py
 
 
 def module(file_path):

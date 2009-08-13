@@ -166,30 +166,17 @@ class Asset(models.Model):
 
         # Create the new directory.
         file_new_dir = self.upload_dir()
-<<<<<<< HEAD:dds/slide/models.py
         if not os.path.isdir(file_new_dir):
             os.makedirs(file_new_dir, 0755)
 
         # Find the new path
         file_new_path = os.path.join(file_new_dir,
                                      os.path.basename(self.file.path))
-=======
-        if not path.isdir(file_new_dir):
-            os.makedirs(file_new_dir, 0755)
-
-        # Find the new path
-        file_new_path = path.join(file_new_dir,
-                                  path.basename(self.file.path))
->>>>>>> bcef16e... Rework Asset's save method:dds/slide/models.py
 
         # XXX Should we remove the old file or not?
         # Move the file, then delete the temporary directory.
         shutil.move(self.file.path, file_new_path)
-<<<<<<< HEAD:dds/slide/models.py
         temp_dir = os.path.dirname(self.file.path)
-=======
-        temp_dir = path.dirname(self.file.path)
->>>>>>> bcef16e... Rework Asset's save method:dds/slide/models.py
         if len(os.listdir(temp_dir)) == 0:
             os.rmdir(temp_dir)
         self.file = file_new_path
