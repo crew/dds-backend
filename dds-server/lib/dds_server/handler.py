@@ -1,0 +1,81 @@
+"""DDS XMPP Server Executable.
+
+***** BEGIN LICENCE BLOCK *****
+
+The Initial Developer of the Original Code is
+The Northeastern University CCIS Volunteer Systems Group
+
+Contributor(s):
+  Alex Lee <lee@ccs.neu.edu>
+
+***** END LICENCE BLOCK *****
+"""
+
+import xmpp
+import logging
+import os
+
+os.environ['DJANGO_SETTINGS_MODULE'] = 'dds.settings'
+
+from dds.slide.models import Client
+from dds.utils import generate_request
+
+
+class DDSHandler(object):
+
+    def presence_handle(self, dispatch, pr):
+        """If a client sends presence, send its initial slides."""
+        jid = pr.getFrom()
+        typ = pr.getType()
+        logging.debug('%s : got presence.' % jid)
+        if(typ != 'unavailable'):
+            self, send_initial_slides(dispatch, jid)
+        else:
+            logging.info('%s : has gone offline.' % jid)
+
+    def iq_handle(self, dispatch, iq):
+        jid = iq.getFrom()
+        iq_type = iq.getType()
+        logging.debug('Got IQ from %s' % jid)
+
+        self.send_initial_slides(dispatch, jid)
+
+    def send_initial_slides(dispatch, jid):
+        """Sends the initial slides to the Jabber id."""
+        logging.info('%s : sending initial slides.' % jid)
+        for slide in self.get_slides_for(jid.getStripped()):
+            self.add_slide(dispatch, jid, slide)
+        else:
+            # The client is unregistered, send it a slide to that effect
+            # TODO: Make this happen
+            pass
+
+    def add_slide(self, dispatch, jid, slide, method_name='addSlide'):
+        """Sends a parsed Slide object to the Jabber id."""
+        logging.info('%s : sending slide %d.' % (jid, slide.pk))
+        request = generate_request(slide.parse(), method_name)
+
+        iq = xmpp.Iq(to=jid, typ='set')
+        iq.setQueryNS(xmpp.NS_RPC)
+        iq.setQueryPayload(request)
+
+        dispatch.send(iq)
+        logging.info('%s : sent slide %d.' % (jid, slide.pk))
+
+    def get_slides_for(self, jid):
+        """Return a list of the Slide objects for the Client with the given
+        Jabber id."""
+        c = get_client(jid)
+        if c is None:
+            return []
+        return c.all_slides()
+
+    def get_client(self, jid):
+        """ Gets the Client from Django, if one exists. """
+        logging.debug('%s : looking for client in the database.' % jid)
+        try:
+            c = Client.objects.get(pk=jid)
+        except:
+            logging.debug('%s : client is not found.' % jid)
+            return None
+        return c
