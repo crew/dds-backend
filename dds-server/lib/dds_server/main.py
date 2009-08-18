@@ -87,7 +87,7 @@ def main():
         exit()
 
     client.RegisterHandler('presence', handler.presence_handle)
-#    client.RegisterHandler('iq', handler.iq_handle)
+    client.RegisterHandler('iq', handler.iq_handle, ns=xmpp.NS_RPC)
     client.sendInitPresence()
 
     logging.info('Connection started')
