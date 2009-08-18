@@ -11,13 +11,14 @@ Contributor(s):
 ***** END LICENCE BLOCK *****
 """
 
+import xmlrpclib
 import xmpp
 import logging
 import os
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'dds.settings'
 
-from dds.slide.models import Client
+from dds.slide.models import Client, Slide
 from dds.utils import generate_request
 
 
@@ -36,9 +37,52 @@ class DDSHandler(object):
     def iq_handle(self, dispatch, iq):
         jid = iq.getFrom()
         iq_type = iq.getType()
-        logging.debug('Got IQ from %s' % jid)
+        ns = iq.getQueryNS()
 
-        self.send_initial_slides(dispatch, jid)
+        logging.debug('Got IQ from %s' % jid)
+        if not jid:
+            logging.debug('No jid')
+            raise xmpp.NodeProcessed
+
+        if iq_type == 'get':
+            request = xmlrpclib.loads(str(iq))
+            method_name = request[1]
+
+            if method_name == 'getSlide':
+                try:
+                    self.get_slide(dispatch, iq)
+                except Exception, e:
+                    logging.error('%s : %s' % (jid, e))
+
+            raise xmpp.NodeProcessed
+
+    def get_slide(self, dispatch, iq):
+        # Sample method call:
+        #
+        # <methodCall>
+        #   <methodName>getSlide</methodName>
+        #   <params>
+        #     <param>
+        #       <value><int>1</int></value>
+        #     </param>
+        #   </params>
+        # </methodCall>
+        jid = iq.getFrom()
+        reply = iq.buildReply(typ='result')
+        reply.setQueryNS(iq.getQueryNS())
+
+        # parse the xml find the slide
+        request = xmlrpclib.loads(str(iq))
+        slide_id = request[0][0]
+        slide = Slide.objects.get(pk=slide_id)
+
+        # Prepare the result
+        result = xmlrpclib.dumps(slide.parse())
+        payload = [xmpp.simplexml.NodeBuilder(result).getDom()]
+        reply.setQueryPayload(payload)
+        logging.info('%s : sending getSlide %d reply.' % (jid, slide.pk))
+        dispatch.send(reply)
+        logging.info('%s : sent getSlide %d reply.' % (jid, slide.pk))
 
     def send_initial_slides(dispatch, jid):
         """Sends the initial slides to the Jabber id."""
