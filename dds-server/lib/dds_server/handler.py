@@ -57,6 +57,7 @@ class DDSHandler(object):
                 try:
                     self.get_slide(dispatch, iq)
                 except Exception, e:
+                    self.send_error(dispatch, jid)
                     logging.error('%s : %s' % (jid, e))
 
             raise xmpp.NodeProcessed
@@ -81,6 +82,11 @@ class DDSHandler(object):
         slide_id = request[0][0]
         slide = Slide.objects.get(pk=slide_id)
 
+        # Check ACL
+        client = self.get_client(jid.getStripped())
+        if (client is None) or (client not in slide.all_clients()):
+            raise Exception('%s is not allowed.' % jid)
+
         # Prepare the result
         result = xmlrpclib.dumps(slide.parse())
         payload = [xmpp.simplexml.NodeBuilder(result).getDom()]
@@ -89,7 +95,7 @@ class DDSHandler(object):
         dispatch.send(reply)
         logging.info('%s : sent getSlide %d reply.' % (jid, slide.pk))
 
-    def send_initial_slides(dispatch, jid):
+    def send_initial_slides(self, dispatch, jid):
         """Sends the initial slides to the Jabber id."""
         logging.info('%s : sending initial slides.' % jid)
         for slide in self.get_slides_for(jid.getStripped()):
@@ -110,6 +116,18 @@ class DDSHandler(object):
 
         dispatch.send(iq)
         logging.info('%s : sent slide %d.' % (jid, slide.pk))
+
+    def send_error(self, dispatch, jid, payload=('error',)):
+        """Sends an error."""
+        logging.info('%s : sending error' % jid)
+        request = generate_request(payload)
+
+        iq = xmpp.Iq(to=jid, typ='error')
+        iq.setQueryNS(xmpp.NS_RPC)
+        iq.setQueryPayload(request)
+
+        dispatch.send(iq)
+        logging.info('%s : sent error' % jid)
 
     def get_slides_for(self, jid):
         """Return a list of the Slide objects for the Client with the given
