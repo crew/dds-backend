@@ -9,11 +9,21 @@
 #
 # ***** END LICENCE BLOCK *****
 
+import gflags as flags
 import xmpp
 import logging
 import os
-from optparse import OptionParser
+import sys
 import ConfigParser
+
+flags.DEFINE_string('config_file', '/etc/dds-server.conf',
+                    'Path to the configuration file')
+flags.DEFINE_string('config_section', 'DEFAULT',
+                    'Configuration file section to parse')
+flags.DEFINE_string('log_file', None, 'Log file path')
+flags.DEFINE_boolean('debug', False, 'Enable debugging')
+
+FLAGS = flags.FLAGS
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'dds.settings'
 
@@ -126,34 +136,24 @@ def get_client(jid):
 
 ##################################### Main ###################################
 
-def parse_config(filename, section='DEFAULT'):
+def parse_config():
     config = ConfigParser.RawConfigParser()
-    config.read(filename)
-    return [ config.get(section, 'username'),
-             config.get(section, 'password'),
-             config.get(section, 'resource'),
-             config.get(section, 'server'),
-             config.get(section, 'log'),
-             config.getboolean(section, 'debug'), ]
+    config.read(FLAGS.config_file)
+    return [ config.get(FLAGS.config_section, 'username'),
+             config.get(FLAGS.config_section, 'password'),
+             config.get(FLAGS.config_section, 'resource'),
+             config.get(FLAGS.config_section, 'server'),
+             config.get(FLAGS.config_section, 'log'),
+             config.getboolean(FLAGS.config_section, 'debug'), ]
 
 def get_options():
-    parser = OptionParser()
-    parser.add_options('-f', '--config', metavar='CONFIG_FILE', dest='config'
-                       help='Path to the configuration file.',
-                       action='store', default='/etc/dds-server.conf')
-    parser.add_options('-s', '--section', metavar='SECTION', dest='section',
-                       action='store', default='DEFAULT',
-                       help='Specify the section in the configuration file.')
-    parser.add_options('-l', '--log-file', metavar='LOG_FILE', default=None,
-                       dest='log', action='store',
-                       help='Specify the log file.')
+    all_list = parse_config()
 
-    (options, _) = parser.parse_args()
+    if FLAGS.log_file:
+        all_list[4] = FLAGS.log_file
 
-    all_list = parse_config(options.config, options.section)
-
-    if options.logfile:
-        all_list[4] = options.logfile
+    if FLAGS.debug:
+        all_list[5] = FLAGS.debug
 
     return all_list
 
@@ -175,7 +175,7 @@ def main():
                         filename=log,
                         filemode='a')
 
-    if options['debug']:
+    if debug:
         client = xmpp.Client(server=server)
     else:
         client = xmpp.Client(server=server, debug=[])
@@ -201,4 +201,5 @@ def main():
         pass
 
 if __name__ == '__main__':
+    FLAGS(sys.argv)
     main()
