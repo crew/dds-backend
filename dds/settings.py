@@ -50,7 +50,7 @@ MEDIA_ROOT = ROOT('media')
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = 'http://bigpicture.ccs.neu.edu/media/'
+MEDIA_URL = 'http://dds-master.ccs.neu.edu/media/'
 
 if DEVELOP:
     MEDIA_URL = '/media/'

@@ -5,7 +5,6 @@ from utils import register_signals, temp_upload_to
 import signalhandlers
 import shutil
 import os
-from os import path
 from datetime import datetime
 
 
@@ -110,7 +109,7 @@ class Asset(models.Model):
         return client_list
 
     def file_name(self):
-        return path.basename(self.file.name)
+        return os.path.basename(self.file.name)
 
     def url(self):
         return '%s/%s/%d/%s' % (settings.MEDIA_URL, self.UPLOAD_PATH, self.pk,
@@ -167,17 +166,17 @@ class Asset(models.Model):
 
         # Create the new directory.
         file_new_dir = self.upload_dir()
-        if not path.isdir(file_new_dir):
+        if not os.path.isdir(file_new_dir):
             os.makedirs(file_new_dir, 0755)
 
         # Find the new path
-        file_new_path = path.join(file_new_dir,
-                                  path.basename(self.file.path))
+        file_new_path = os.path.join(file_new_dir,
+                                     os.path.basename(self.file.path))
 
         # XXX Should we remove the old file or not?
         # Move the file, then delete the temporary directory.
         shutil.move(self.file.path, file_new_path)
-        temp_dir = path.dirname(self.file.path)
+        temp_dir = os.path.dirname(self.file.path)
         if len(os.listdir(temp_dir)) == 0:
             os.rmdir(temp_dir)
         self.file = file_new_path

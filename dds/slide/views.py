@@ -10,7 +10,7 @@ from forms import SlideForm, AssetForm
 
 
 def index(request):
-    return HttpResponse('not implemented yet')
+    return HttpResponse('Not Implemented Yet')
 
 
 def slide(request, slide_id):

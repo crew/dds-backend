@@ -1,13 +1,16 @@
 #!/usr/bin/python
-# ***** BEGIN LICENCE BLOCK *****
-#
-# The Initial Developer of the Original Code is
-# The Northeastern University CCIS Volunteer Systems Group
-#
-# Contributor(s):
-#   Alex Lee <lee@ccs.neu.edu>
-#
-# ***** END LICENCE BLOCK *****
+"""DDS XMPP Server Executable.
+
+***** BEGIN LICENCE BLOCK *****
+
+The Initial Developer of the Original Code is
+The Northeastern University CCIS Volunteer Systems Group
+
+Contributor(s):
+  Alex Lee <lee@ccs.neu.edu>
+
+***** END LICENCE BLOCK *****
+"""
 
 import gflags as flags
 import xmpp
@@ -30,7 +33,8 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'dds.settings'
 
 from dds.slide.models import Client
 from dds.utils import generate_request
- 
+
+
 def daemonize():
     """Daemonizes the calling process."""
     first_child_pid = os.fork()

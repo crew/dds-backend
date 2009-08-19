@@ -13,7 +13,7 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     (r'^admin/(.*)', admin.site.root),
     
-    # FIXME Production only, we will do apache later
+    # FIXME Development only, we will do apache later
     (r'^media/(?P<path>.*)$', 'django.views.static.serve',
      {'document_root' : settings.MEDIA_ROOT}),
 

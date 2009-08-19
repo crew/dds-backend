@@ -13,7 +13,6 @@ import xmlrpclib
 import os
 import threading
 import time
-from os import path
 
 
 def module(file_path):
@@ -21,9 +20,9 @@ def module(file_path):
     >>> module('/a/b/c/xx.py')
     'c'
     """
-    dir = path.dirname(file_path)
-    dir_abs = path.abspath(dir)
-    dir_norm = path.normpath(dir_abs)
+    dir = os.path.dirname(file_path)
+    dir_abs = os.path.abspath(dir)
+    dir_norm = os.path.normpath(dir_abs)
     return dir_norm.split(os.sep)[-1]
 
 
@@ -35,9 +34,9 @@ def root(file_path):
     >>> x('t', 's')
     '/a/b/c/t/s'
     """
-    dir = path.dirname(file_path)
-    normpath = path.normpath
-    join = path.join
+    dir = os.path.dirname(file_path)
+    normpath = os.path.normpath
+    join = os.path.join
     return (lambda *base: normpath(join(dir, *base)).replace('\\', '/'))
 
 
