@@ -30,7 +30,8 @@ class DDSHandler(object):
             jid = pr.getFrom()
             typ = pr.getType()
             logging.debug('%s : got presence.' % jid)
-            if(typ != 'unavailable'):
+            if ((typ != 'unavailable') and
+                pr.getStatus() == 'initialsliderequest'):
                 self.send_initial_slides(dispatch, jid)
             else:
                 logging.info('%s : has gone offline.' % jid)
