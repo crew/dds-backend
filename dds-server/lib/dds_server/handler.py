@@ -26,13 +26,17 @@ class DDSHandler(object):
 
     def presence_handle(self, dispatch, pr):
         """If a client sends presence, send its initial slides."""
-        jid = pr.getFrom()
-        typ = pr.getType()
-        logging.debug('%s : got presence.' % jid)
-        if(typ != 'unavailable'):
-            self, send_initial_slides(dispatch, jid)
-        else:
-            logging.info('%s : has gone offline.' % jid)
+        try:
+            jid = pr.getFrom()
+            typ = pr.getType()
+            logging.debug('%s : got presence.' % jid)
+            if(typ != 'unavailable'):
+                self.send_initial_slides(dispatch, jid)
+            else:
+                logging.info('%s : has gone offline.' % jid)
+        except Exception, e:
+            logging.error('%s' % e)
+        raise xmpp.NodeProcessed
 
     def iq_handle(self, dispatch, iq):
         jid = iq.getFrom()
@@ -97,7 +101,7 @@ class DDSHandler(object):
     def add_slide(self, dispatch, jid, slide, method_name='addSlide'):
         """Sends a parsed Slide object to the Jabber id."""
         logging.info('%s : sending slide %d.' % (jid, slide.pk))
-        request = generate_request(slide.parse(), method_name)
+        request = generate_request(slide.parse(), methodname=method_name)
 
         iq = xmpp.Iq(to=jid, typ='set')
         iq.setQueryNS(xmpp.NS_RPC)
@@ -109,7 +113,7 @@ class DDSHandler(object):
     def get_slides_for(self, jid):
         """Return a list of the Slide objects for the Client with the given
         Jabber id."""
-        c = get_client(jid)
+        c = self.get_client(jid)
         if c is None:
             return []
         return c.all_slides()
