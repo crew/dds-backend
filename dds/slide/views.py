@@ -19,14 +19,14 @@ def slide(request, slide_id):
     except Slide.DoesNotExist:
         return HttpResponseRedirect('error.html')
 
-    return render_to_response('slide/slide-index.html', { 'slide' : slide })
+    return render_to_response('slide-index.html', { 'slide' : slide })
 
 
 @login_required
 def slide_add(request):
     if request.method == 'GET':
         slide = SlideForm()
-        return render_to_response('slide/slide-form.html',
+        return render_to_response('slide-form.html',
                                   { 'slide' : slide },
                                   context_instance=RequestContext(request))
     elif request.method == 'POST':
@@ -34,7 +34,7 @@ def slide_add(request):
         slide_form = SlideForm(data=request.POST)
         if slide_form.is_valid():
             slide = slide_form.save()
-            
+
             # Add new assets
             for key, val in request.FILES.items():
                 asset = Asset()
@@ -51,7 +51,7 @@ def slide_add(request):
                     slide.assets.add(asset)
                 except Asset.DoesNotExist:
                     continue
-            
+
             slide.save()
 
             return HttpResponse('Yay!')
@@ -78,7 +78,7 @@ def parse_slide_post(post):
 def asset_add(request):
     if request.method == 'GET':
         asset = AssetForm()
-        return render_to_response('slide/asset-form.html',
+        return render_to_response('asset-form.html',
                                   { 'asset' : asset })
     elif request.method == 'POST':
         asset = Asset()
@@ -94,9 +94,9 @@ def asset_add(request):
 
 def asset_options(request):
     if request.method == 'GET':
-        return render_to_response('slide/asset-options.html',
+        return render_to_response('asset-options.html',
                                   { 'assets' : Asset.objects.all() })
-    return 
+    return
 
 
 @login_required
@@ -122,7 +122,7 @@ def clients(request, location=None):
     else:
         clients = Client.objects.filter(location=location)
 
-    return render_to_response('slide/clients.html', { 'clients' : clients })
+    return render_to_response('clients.html', { 'clients' : clients })
 
 
 @login_required
