@@ -68,14 +68,6 @@ def asset_add(request):
 
     return
 
-
-def asset_options(request):
-    if request.method == 'GET':
-        return render_to_response('asset-options.html',
-                                  { 'assets' : Asset.objects.all() })
-    return
-
-
 @login_required
 def slide_add_asset(request, slide_id, asset_id):
     try:

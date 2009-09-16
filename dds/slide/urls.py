@@ -6,7 +6,6 @@ urlpatterns = patterns('%s.slide.views' % settings.MODULE,
     (r'^(\d+)/$', 'slide'),
     (r'^add/$', 'slide_add'),
     (r'^add-asset/$', 'asset_add'),
-    (r'^asset-options/$', 'asset_options'),
     (r'^clients/([^/]+)/$', 'clients'),
     (r'^clients/$', 'clients'),
 )
