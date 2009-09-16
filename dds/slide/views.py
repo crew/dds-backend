@@ -51,17 +51,6 @@ def slide_add(request):
     else:
         return HttpResponseNotAllowed(['GET', 'POST'])
 
-
-def parse_slide_post(post):
-    """Parse the POST data for existing asset_id's."""
-    for key, val in post.items():
-        if key.startswith('link'):
-            try:
-                yield int(val)
-            except ValueError:
-                continue
-
-
 @login_required
 def asset_add(request):
     if request.method == 'GET':
