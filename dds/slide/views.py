@@ -1,6 +1,7 @@
 from django.core import serializers
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import (HttpResponse, HttpResponseRedirect,
+                         HttpResponseBadRequest, HttpResponseNotAllowed)
 from django.shortcuts import render_to_response
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
@@ -21,7 +22,6 @@ def slide(request, slide_id):
 
     return render_to_response('slide-index.html', { 'slide' : slide })
 
-
 @login_required
 def slide_add(request):
     if request.method == 'GET':
@@ -30,7 +30,6 @@ def slide_add(request):
                                   { 'slide' : slide },
                                   context_instance=RequestContext(request))
     elif request.method == 'POST':
-        # FIXME check access
         slide_form = SlideForm(data=request.POST)
         if slide_form.is_valid():
             slide = slide_form.save()
@@ -42,18 +41,15 @@ def slide_add(request):
                                  { 'file' : val },
                                  instance=asset)
                 asset = form.save()
-                # TODO failed validation?
+                slide.assets.add(asset)
 
             slide.save()
 
-            return HttpResponse('Yay!')
+            return HttpResponse('Slide added successfully.')
         else:
-            # TODO error!
-            return
-
-        return
-
-    return # XXX unimplemented HTTP request, e.g. PUT, DELETE, ...
+            return HttpResponseBadRequest()
+    else:
+        return HttpResponseNotAllowed(['GET', 'POST'])
 
 
 def parse_slide_post(post):
