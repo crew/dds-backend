@@ -44,14 +44,6 @@ def slide_add(request):
                 asset = form.save()
                 # TODO failed validation?
 
-            # Link existing assets
-            for asset_id in parse_slide_post(request.POST):
-                try:
-                    asset = Asset.objects.get(pk=asset_id)
-                    slide.assets.add(asset)
-                except Asset.DoesNotExist:
-                    continue
-
             slide.save()
 
             return HttpResponse('Yay!')

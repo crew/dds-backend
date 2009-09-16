@@ -39,23 +39,6 @@ $(document).ready(function() {
             $("#asset_button" + id).click(remove_asset_input);
         })
     );
-
-    // for the inputs loaded from the start.
-    $("a.remove_asset").click(remove_asset_input);
-
-    $("a.link_asset_button").click(asset_button_append(
-        function(id) {
-            return '<li><select id="link' + id + '" name="link' + id + '">' +
-                       '</select>' +
-                   '<a href="" class="remove_asset" id="asset_link_button' +
-                   id + '">remove</a></li>';
-        },
-        function(id) {
-            $("select#link" + id).load("/asset-options/");
-
-            $("#asset_link_button" + id).click(remove_asset_input);
-        })
-    );
 });
 </script>
 
@@ -74,14 +57,6 @@ $(document).ready(function() {
 <div class="assets">
     <a href="#" class="add_asset_button">add_asset</a>
     <ol>
-<!--        <li><input type="file" name="file" />
-            <a href="#" class="remove_asset">remove</a></li> -->
-    </ol>
-</div>
-<div>
-    <a href="" class="link_asset_button">link asset</a>
-    <ol>
-    <!-- A select form of existing assets -->
     </ol>
 </div>
 <input type="submit" value="post" />
