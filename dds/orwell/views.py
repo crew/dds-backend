@@ -13,7 +13,6 @@ from forms import SlideForm, AssetForm
 def index(request):
     return HttpResponse('Not Implemented Yet')
 
-
 def slide(request, slide_id):
     try:
         slide = Slide.objects.get(pk=slide_id)
