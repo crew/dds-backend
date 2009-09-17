@@ -13,7 +13,7 @@ from forms import SlideForm, AssetForm
 def index(request):
     return HttpResponse('Not Implemented Yet')
 
-def slide(request, slide_id):
+def slide_info(request, slide_id):
     try:
         slide = Slide.objects.get(pk=slide_id)
     except Slide.DoesNotExist:
@@ -22,7 +22,7 @@ def slide(request, slide_id):
     return render_to_response('orwell/slide-info.html', { 'slide' : slide })
 
 @login_required
-def slide_add(request):
+def add_slide(request):
     if request.method == 'GET':
         slide = SlideForm()
         return render_to_response('orwell/add-slide.html',
@@ -51,7 +51,7 @@ def slide_add(request):
         return HttpResponseNotAllowed(['GET', 'POST'])
 
 @login_required
-def asset_add(request):
+def add_asset(request):
     if request.method == 'GET':
         asset = AssetForm()
         return render_to_response('orwell/add-asset.html',
