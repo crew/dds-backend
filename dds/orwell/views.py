@@ -20,13 +20,13 @@ def slide(request, slide_id):
     except Slide.DoesNotExist:
         return HttpResponseRedirect('error.html')
 
-    return render_to_response('slide-index.html', { 'slide' : slide })
+    return render_to_response('orwell/slide-info.html', { 'slide' : slide })
 
 @login_required
 def slide_add(request):
     if request.method == 'GET':
         slide = SlideForm()
-        return render_to_response('slide-form.html',
+        return render_to_response('orwell/add-slide.html',
                                   { 'slide' : slide },
                                   context_instance=RequestContext(request))
     elif request.method == 'POST':
@@ -55,7 +55,7 @@ def slide_add(request):
 def asset_add(request):
     if request.method == 'GET':
         asset = AssetForm()
-        return render_to_response('asset-form.html',
+        return render_to_response('orwell/add-asset.html',
                                   { 'asset' : asset })
     elif request.method == 'POST':
         asset = Asset()
@@ -91,7 +91,7 @@ def clients(request, location=None):
     else:
         clients = Client.objects.filter(location=location)
 
-    return render_to_response('clients.html', { 'clients' : clients })
+    return render_to_response('orwell/clients.html', { 'clients' : clients })
 
 
 @login_required

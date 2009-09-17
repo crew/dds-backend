@@ -91,7 +91,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.admin',
     'django.contrib.sites',
-    '%s.slide' % MODULE,
+    '%s.orwell' % MODULE,
 )
 
 AUTHENTICATION_BACKENDS = (
