@@ -76,9 +76,6 @@ class Client(models.Model):
     client_id = models.EmailField(max_length=128, primary_key=True)
     location = models.ForeignKey(Location, null=True, related_name='clients')
     groups = models.ManyToManyField(Group, related_name='clients')
-    current_slide = models.ForeignKey(Slide, null=True, blank=True,
-                                      related_name='current_clients')
-    active = models.BooleanField(blank=True)
 
     def all_slides(self):
         """Return all the Slides allowed."""
@@ -89,6 +86,12 @@ class Client(models.Model):
 
     def __unicode__(self):
         return '%s@%s' % (self.client_id, self.location)
+
+class ClientActivity(models.Model):
+    client = models.OneToOneField(Client, primary_key=True)
+    current_slide = models.ForeignKey(Slide, null=True, blank=True,
+                                      related_name='activities')
+    active = models.BooleanField(blank=True)
 
 
 class Asset(models.Model):

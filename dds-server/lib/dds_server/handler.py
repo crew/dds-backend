@@ -17,8 +17,8 @@ import logging
 import os
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'dds.settings'
-
-from dds.orwell.models import Client, Slide
+from django.core.exceptions import ObjectDoesNotExist
+from dds.orwell.models import Client, ClientActivity, Slide
 from dds.utils import generate_request
 
 
@@ -26,15 +26,30 @@ class DDSHandler(object):
 
     def presence_handle(self, dispatch, pr):
         """If a client sends presence, send its initial slides."""
+        jid = pr.getFrom()
+        typ = pr.getType()
+        logging.debug('%s : got presence.' % jid)
+
         try:
-            jid = pr.getFrom()
-            typ = pr.getType()
-            logging.debug('%s : got presence.' % jid)
-            if ((typ != 'unavailable') and
-                pr.getStatus() == 'initialsliderequest'):
-                self.send_initial_slides(dispatch, jid)
-            else:
-                logging.info('%s : has gone offline.' % jid)
+            client = self.get_client(jid.getStripped())
+            client_activity = client.clientactivity
+            if client:
+                if (typ == 'unavailable'):
+                    logging.info('%s : has gone offline.' % jid)
+                    client_activity.active = False
+                    client_activity.current_slide = None
+                elif (pr.getStatus() == 'initialsliderequest'):
+                    self.send_initial_slides(dispatch, jid, client.all_slides())
+                    client_activity.active = True
+                else:
+                    slide_id = int(pr.getStatus())
+                    client_activity.current_slide = Slide.objects.get(pk=slide_id)
+                client_activity.save()
+        except ObjectDoesNotExist, e:
+            logging.info("No client activity for this client")
+            client_activity = ClientActivity(client=self.get_client(jid.getStripped()))
+            client_activity.save()
+            self.presence_handle(dispatch, pr)
         except Exception, e:
             logging.error('%s' % e)
         raise xmpp.NodeProcessed
@@ -95,10 +110,10 @@ class DDSHandler(object):
         dispatch.send(reply)
         logging.info('%s : sent getSlide %d reply.' % (jid, slide.pk))
 
-    def send_initial_slides(self, dispatch, jid):
+    def send_initial_slides(self, dispatch, jid, slides):
         """Sends the initial slides to the Jabber id."""
         logging.info('%s : sending initial slides.' % jid)
-        for slide in self.get_slides_for(jid.getStripped()):
+        for slide in slides:
             self.add_slide(dispatch, jid, slide)
         else:
             # The client is unregistered, send it a slide to that effect
@@ -128,14 +143,6 @@ class DDSHandler(object):
 
         dispatch.send(iq)
         logging.info('%s : sent error' % jid)
-
-    def get_slides_for(self, jid):
-        """Return a list of the Slide objects for the Client with the given
-        Jabber id."""
-        c = self.get_client(jid)
-        if c is None:
-            return []
-        return c.all_slides()
 
     def get_client(self, jid):
         """ Gets the Client from Django, if one exists. """

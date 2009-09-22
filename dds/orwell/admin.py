@@ -1,4 +1,4 @@
-from models import Slide, Asset, Client, Location
+from models import Slide, Asset, Client, Location, ClientActivity
 from django.contrib import admin
 
 
@@ -34,3 +34,4 @@ admin.site.register(Slide, SlideAdmin)
 admin.site.register(Asset, AssetAdmin)
 admin.site.register(Client, ClientAdmin)
 admin.site.register(Location)
+admin.site.register(ClientActivity)
