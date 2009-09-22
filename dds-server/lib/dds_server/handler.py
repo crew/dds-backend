@@ -18,7 +18,7 @@ import os
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'dds.settings'
 
-from dds.slide.models import Client, Slide
+from dds.orwell.models import Client, Slide
 from dds.utils import generate_request
 
 

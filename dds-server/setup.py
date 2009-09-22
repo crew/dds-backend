@@ -14,7 +14,7 @@ setup(
     #url = '',
     scripts = ['scripts/dds-server'],
     py_modules = ['gflags'],
-    packages = ['dds', 'dds.slide', 'dds_server'],
+    packages = ['dds', 'dds.orwell', 'dds_server'],
     package_dir = {'' : 'lib'},
     data_files = [('/etc', ['cfg/dds-server.conf']),],
 )
