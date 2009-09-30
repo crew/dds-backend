@@ -11,7 +11,8 @@ from forms import SlideForm, AssetForm
 
 
 def index(request):
-    return HttpResponse('Not Implemented Yet')
+    return render_to_response('orwell/info-index.html',
+                              context_instance=RequestContext(request));
 
 def slide_info(request, slide_id):
     try:
@@ -19,7 +20,8 @@ def slide_info(request, slide_id):
     except Slide.DoesNotExist:
         return HttpResponseRedirect('error.html')
 
-    return render_to_response('orwell/slide-info.html', { 'slide' : slide })
+    return render_to_response('orwell/slide-info.html', { 'slide' : slide },
+                              context_instance=RequestContext(request))
 
 @login_required
 def add_slide(request):
@@ -55,7 +57,8 @@ def add_asset(request):
     if request.method == 'GET':
         asset = AssetForm()
         return render_to_response('orwell/add-asset.html',
-                                  { 'asset' : asset })
+                                  { 'asset' : asset },
+                                  context_instance=RequestContext(request))
     elif request.method == 'POST':
         asset = Asset()
         asset_form = AssetForm(request.POST, request.FILES, instance=asset)
@@ -90,7 +93,8 @@ def clients(request, location=None):
     else:
         clients = Client.objects.filter(location=location)
 
-    return render_to_response('orwell/clients.html', { 'clients' : clients })
+    return render_to_response('orwell/clients.html', { 'clients' : clients },
+                              context_instance=RequestContext(request))
 
 
 @login_required
