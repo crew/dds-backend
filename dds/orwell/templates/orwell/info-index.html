@@ -1,12 +1,20 @@
 {% extends "base.html" %}
+{% block title %}Active Clients{% endblock %}
 {% block content %}
-
 {% if clients %}
 <h2>Active Clients</h2>
 {% for client in clients %}
 <table class="client">
-  <tr><th>Client</th><td>{{ client.client }}</td></tr>
-  <tr><th>Current Slide</th><td><a href="{% url orwell-slide-info client.current.pk %}">{{ client.current.title }}</a></td></tr>
+  <tr>
+    <th>Client</th>
+    <td>{{ client.client }}</td>
+  </tr>
+  <tr>
+    <th>Current Slide</th>
+    <td>
+      <a href="{% url orwell-slide-info client.current.pk %}">{{ client.current.title }}</a>
+    </td>
+  </tr>
 </table>
 {% endfor %}
 {% else %}
