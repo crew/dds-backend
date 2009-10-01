@@ -3,10 +3,7 @@ from django.contrib import admin
 
 
 class AssetAdmin(admin.ModelAdmin):
-#    fieldsets = [
-#        (None, {'fields' : ['file']}),
-#    ]
-    list_display = ('id', 'file')
+    list_display = ('id', 'file', 'url')
 
 
 class SlideAdmin(admin.ModelAdmin):

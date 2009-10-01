@@ -5,7 +5,7 @@ body {
     margin: 30px 30px 30px 30px;
 }
 
-input[type="text"] {
+input {
     border: 1px solid #8b8b8b;
     border-radius: 4px;
     font-size: 20px;
