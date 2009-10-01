@@ -53,7 +53,7 @@ MEDIA_ROOT = ROOT('media')
 MEDIA_URL = 'http://dds-master.ccs.neu.edu/media/'
 
 if DEVELOP:
-    MEDIA_URL = '/media/'
+    MEDIA_URL = 'http://localhost:8000/media/'
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
