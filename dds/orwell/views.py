@@ -22,6 +22,15 @@ def index(request):
                               { 'clients' : clients },
                               context_instance=RequestContext(request));
 
+def generic_index(request, indexed_class, template, variable_name):
+    objects = indexed_class.objects.all()
+
+    return render_to_response(template, { variable_name : objects },
+                              context_instance=RequestContext(request))
+
+def slide_index(request):
+    return generic_index(request, Slide, 'orwell/slide-index.html', 'slides')
+
 def slide_info(request, slide_id):
     try:
         slide = Slide.objects.get(pk=slide_id)
@@ -93,17 +102,8 @@ def slide_add_asset(request, slide_id, asset_id):
 
     return HttpResponseRedirect('success.html')
 
-
-@login_required
-def clients(request, location=None):
-    if not location:
-        clients = Client.objects.all()
-    else:
-        clients = Client.objects.filter(location=location)
-
-    return render_to_response('orwell/clients.html', { 'clients' : clients },
-                              context_instance=RequestContext(request))
-
+def client_index(request):
+    return generic_index(request, Client, 'orwell/client-index.html', 'clients')
 
 @login_required
 def manage_assets(request, slide_id, asset_id):

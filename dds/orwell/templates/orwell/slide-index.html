@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Slides{% endblock %}
+
+{% block content %}
+{% for slide in slides %}
+<div class="section">
+  <h3>{{ slide.title }}</h3>
+  <dl>
+    <dt>User</dt>
+    <dd>{{ slide.user.get_full_name }}</dd>
+    <dt>Group</dt>
+    <dd>{{ slide.group }}</dd>
+    <dt>Priority</dt>
+    <dd>{{ slide.priority }}</dd>
+    <dt>Duration</dt>
+    <dd>{{ slide.duration }} seconds</dd>
+    <dt>Expires</dt>
+    <dd>{{ slide.expires_at|date:"P - N j, Y" }}</dd>
+    <dt>Mode</dt>
+    <dd>{{ slide.get_mode_display }}</dd>
+    <dt>Transition</dt>
+    <dd>{{ slide.get_transition_display }}</dd>
+    <dt>Last Update</dt>
+    <dd>{{ slide.last_update|date:"P - N j, Y" }}</dd>
+    <dt>Assets</dt>
+    {% for a in slide.assets.all %}
+    <dd><a href="{{ a.url }}">{{ a.file_name }}</a> - {{ a.last_update }}</dd>
+    {% endfor %}
+  </dl>
+</div>
+{% endfor %}
+{% endblock %}
