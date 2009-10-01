@@ -4,7 +4,7 @@
 {% block content %}
 {% for slide in slides %}
 <div class="section">
-  <h3>{{ slide.title }}</h3>
+  <h2>{{ slide.title }}</h2>
   <dl>
     <dt>User</dt>
     <dd>{{ slide.user.get_full_name }}</dd>
@@ -23,9 +23,13 @@
     <dt>Last Update</dt>
     <dd>{{ slide.last_update|date:"P - N j, Y" }}</dd>
     <dt>Assets</dt>
-    {% for a in slide.assets.all %}
-    <dd><a href="{{ a.url }}">{{ a.file_name }}</a> - {{ a.last_update }}</dd>
-    {% endfor %}
+    <dd>
+      <ul>
+        {% for a in slide.assets.all %}
+        <li><a href="{{ a.url }}">{{ a.file_name }}</a> - {{ a.last_update }}</li>
+        {% endfor %}
+      </ul>
+    </dd>
   </dl>
 </div>
 {% endfor %}

@@ -4,17 +4,13 @@
 {% if clients %}
 <h2>Active Clients</h2>
 {% for client in clients %}
-<table class="client">
-  <tr>
-    <th>Client</th>
-    <td>{{ client.client }}</td>
-  </tr>
-  <tr>
-    <th>Current Slide</th>
-    <td>
-      <a href="{% url orwell-slide-info client.current.pk %}">{{ client.current.title }}</a>
-    </td>
-  </tr>
+<dl class="activity">
+  <dt>Client</dt>
+  <dd>{{ client.client }}</dd>
+  <dt>Current Slide</dt>
+  <dd>
+    <a href="{% url orwell-slide-info client.current.pk %}">{{ client.current.title }}</a>
+  </dd>
 </table>
 {% endfor %}
 {% else %}
