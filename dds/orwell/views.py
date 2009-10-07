@@ -22,10 +22,16 @@ def index(request):
                               { 'clients' : clients },
                               context_instance=RequestContext(request));
 
-def generic_index(request, indexed_class, template, variable_name):
-    objects = indexed_class.objects.all()
-
-    return render_to_response(template, { variable_name : objects },
+def generic_index(request, cls, template, variable_name):
+    """
+    Args:
+        cls, a model.
+        template, the name of the template file.
+        variable_name, the name of the variable of all objects in the
+                       template.
+    """
+    return render_to_response(template,
+                              { variable_name : cls.objects.all() },
                               context_instance=RequestContext(request))
 
 def slide_index(request):
@@ -107,6 +113,32 @@ def client_index(request):
 
 @login_required
 def manage_assets(request, slide_id, asset_id):
+    """
+    The HTTP interface to DDS.
+
+    GET slide_id asset_id
+
+    If asset_id is not present (i.e. None), get the slide and the assets.
+    Otherwise, return the asset.
+
+    POST slide_id asset_id
+
+    If asset_id is not present (i.e. None), treat the POST body as the single
+    file attached to the slide.
+    Otherwise, create an asset.
+
+    DELETE slide_id asset_id
+
+    If asset_id is not present (i.e. None), remove the slide.
+    Otherwise, remove the asset from the slide.
+
+    Relevant status codes:
+        200 (Success)
+        201 (Created)
+        404 (Not Found)
+        501 (Not Implemented)
+
+    """
     if request.method == 'GET':
         if asset_id:
             try:
@@ -123,6 +155,7 @@ def manage_assets(request, slide_id, asset_id):
                 return HttpResponse(status=404)
     elif request.method == 'POST':
         if asset_id:
+            # XXX TODO FIXME CREATE AN ASSET VIA HTTP.
             return HttpResponse(status=501)
         else:
             file = request.FILES['file']
@@ -142,7 +175,9 @@ def manage_assets(request, slide_id, asset_id):
             except (Slide.DoesNotExist, Asset.DoesNotExist):
                 pass
         else:
+            # XXX TODO FIXME DELETE A SLIDE VIA HTTP.
             status = 501
         return HttpResponse(status=status)
     else:
+        # PUT OPTIONS HEAD TRACE CONNECT
         return HttpResponse(status=501)

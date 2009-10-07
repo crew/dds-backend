@@ -8,4 +8,5 @@ urlpatterns = patterns('%s.orwell.views' % settings.MODULE,
     url(r'^slides/add/$', 'add_slide', name='orwell-slide-add'),
     url(r'^assets/add/$', 'add_asset', name='orwell-asset-add'),
     url(r'^clients/$', 'client_index', name='orwell-clients-index'),
+    url(r'^(\d+)/assets/(\d+)?', 'manage_assets'),
 )
