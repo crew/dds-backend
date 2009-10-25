@@ -9,9 +9,13 @@
   <dd>{{ client.client }}</dd>
   <dt>Current Slide</dt>
   <dd>
+    {% if client.current %}
     <a href="{% url orwell-slide-info client.current.pk %}">{{ client.current.title }}</a>
+    {% else %}
+    No slide
+    {% endif %}
   </dd>
-</table>
+</dl>
 {% endfor %}
 {% else %}
   <p>No active clients.</p>
