@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Asset {{ asset.pk }}{% endblock %}
+
+
+{% block content %}
+<div class="asset">
+<ul>
+<li>Name: {{ asset.name }}</li>
+<li>Description: {{ asset.description }}</li>
+<li>File: <a href="{{ asset.url }}">{{ asset.file_name }}</a></li>
+</ul>
+</div>
+{% endblock %}

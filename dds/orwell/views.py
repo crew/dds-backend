@@ -2,7 +2,7 @@ from django.core import serializers
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http import (HttpResponse, HttpResponseRedirect,
                          HttpResponseBadRequest, HttpResponseNotAllowed)
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, redirect
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 
@@ -75,6 +75,18 @@ def add_slide(request):
     else:
         return HttpResponseNotAllowed(['GET', 'POST'])
 
+def asset_index(request):
+    return generic_index(request, Asset, 'orwell/asset-index.html', 'assets')
+
+def asset_info(request, asset_id):
+    try:
+        asset = Asset.objects.get(pk=asset_id)
+    except Slide.DoesNotExist:
+        return HttpResponse(status=404)
+
+    return render_to_response('orwell/asset-info.html', { 'asset' : asset },
+                              context_instance=RequestContext(request))
+
 @login_required
 def add_asset(request):
     if request.method == 'GET':
@@ -87,7 +99,7 @@ def add_asset(request):
         asset_form = AssetForm(request.POST, request.FILES, instance=asset)
         if asset_form.is_valid():
             asset = asset_form.save()
-            return HttpResponse('Yeah!')
+            return redirect('orwell-asset-info', asset.id)
         else:
             return HttpResponse('No')
 

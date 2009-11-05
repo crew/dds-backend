@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Assets{% endblock %}
+
+{% block content %}
+{% for asset in assets %}
+<div class="section">
+  <a href="{{ asset.url }}">
+    {% if asset.name %}
+    {{ asset.name }}
+    {% else %}
+    {{ asset.url }}
+    {% endif %}
+  </a>
+</div>
+{% endfor %}
+{% endblock %}
