@@ -1,17 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
-{% for c in clients %}
-<div class="section">
-  <h2>{{ c.client_id }}</h2>
-  <dl>
-    <dt>Location</dt>
-    <dd>{{ c.location }}</dd>
-    <dt>Groups</dt>
-    {% for g in c.groups.all %}
-    <dd>{{ g }}</dd>
-    {% endfor %}
-  </dl>
+{% for client in clients %}
+<a href="{% url orwell-client-info client.pk %}">
+<div class="pointer">
+  {{ client.client_id }}
 </div>
+</a>
 {% endfor %}
 {% endblock %}

@@ -5,10 +5,14 @@
 
 {% block content %}
 <div class="asset">
-<ul>
-<li>Name: {{ asset.name }}</li>
-<li>Description: {{ asset.description }}</li>
-<li>File: <a href="{{ asset.url }}">{{ asset.file_name }}</a></li>
-</ul>
+<dl>
+  <h2>{{ asset.name }}</h2>
+  {% if asset.description %}
+  <dt>Description</dt>
+  <dd>{{ asset.description }}</dd>
+  {% endif %}
+  <dt>File</dt>
+  <dd><a href="{{ asset.url }}">{{ asset.file_name }}</a></dd>
+</dl>
 </div>
 {% endblock %}

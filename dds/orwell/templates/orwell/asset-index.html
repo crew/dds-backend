@@ -3,14 +3,14 @@
 
 {% block content %}
 {% for asset in assets %}
-<div class="section">
-  <a href="{{ asset.url }}">
+<a href="{% url orwell-asset-info asset.pk %}">
+<div class="pointer">
     {% if asset.name %}
     {{ asset.name }}
     {% else %}
     {{ asset.url }}
     {% endif %}
-  </a>
 </div>
+</a>
 {% endfor %}
 {% endblock %}

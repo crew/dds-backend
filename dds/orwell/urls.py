@@ -10,5 +10,7 @@ urlpatterns = patterns('%s.orwell.views' % settings.MODULE,
     url(r'^assets/(\d+)/$', 'asset_info', name='orwell-asset-info'),
     url(r'^assets/add/$', 'add_asset', name='orwell-asset-add'),
     url(r'^clients/$', 'client_index', name='orwell-client-index'),
+    url(r'^clients/add/$', 'add_client', name='orwell-client-add'),
+    url(r'^clients/(.+)/$', 'client_info', name='orwell-client-info'),
     url(r'^(\d+)/assets/(\d+)?', 'manage_assets'),
 )

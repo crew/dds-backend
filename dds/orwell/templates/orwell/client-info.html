@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Client {{ client.pk }}{% endblock %}
+
+
+{% block content %}
+<div class="client">
+  <h2>{{ client.client_id }}</h2>
+  <dl>
+    <dt>Location</dt>
+    <dd>{{ client.location }}</dd>
+    <dt>Groups</dt>
+    {% for g in client.groups.all %}
+    <dd>{{ g }}</dd>
+    {% endfor %}
+  </dl>
+</div>
+{% endblock %}

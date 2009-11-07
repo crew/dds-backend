@@ -4,18 +4,19 @@
 {% if clients %}
 <h2>Active Clients</h2>
 {% for client in clients %}
-<dl class="activity">
-  <dt>Client</dt>
-  <dd>{{ client.client }}</dd>
-  <dt>Current Slide</dt>
-  <dd>
-    {% if client.current %}
-    <a href="{% url orwell-slide-info client.current.pk %}">{{ client.current.title }}</a>
-    {% else %}
-    No slide
-    {% endif %}
-  </dd>
-</dl>
+<div class="activity">
+  <a href="{% url orwell-client-info client.pk %}">{{ client.client_id }}</a>
+  <dl>
+    <dt>Current Slide</dt>
+    <dd>
+      {% if client.current %}
+      <a href="{% url orwell-slide-info client.current.pk %}">{{ client.current.title }}</a>
+      {% else %}
+      No slide
+      {% endif %}
+    </dd>
+  </dl>
+</div>
 {% endfor %}
 {% else %}
   <p>No active clients.</p>

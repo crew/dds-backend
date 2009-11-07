@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 
 from models import Slide, Asset, Client, ClientActivity
-from forms import SlideForm, AssetForm
+from forms import SlideForm, AssetForm, ClientForm
 
 
 def index(request):
@@ -81,7 +81,7 @@ def asset_index(request):
 def asset_info(request, asset_id):
     try:
         asset = Asset.objects.get(pk=asset_id)
-    except Slide.DoesNotExist:
+    except Asset.DoesNotExist:
         return HttpResponse(status=404)
 
     return render_to_response('orwell/asset-info.html', { 'asset' : asset },
@@ -103,7 +103,7 @@ def add_asset(request):
         else:
             return HttpResponse('No')
 
-    return
+    return HttpResponseNotAllowed(['GET', 'POST'])
 
 @login_required
 def slide_add_asset(request, slide_id, asset_id):
@@ -122,6 +122,34 @@ def slide_add_asset(request, slide_id, asset_id):
 
 def client_index(request):
     return generic_index(request, Client, 'orwell/client-index.html', 'clients')
+
+def client_info(request, asset_id):
+    try:
+        client = Client.objects.get(pk=asset_id)
+    except Client.DoesNotExist:
+        return HttpResponse(status=404)
+
+    return render_to_response('orwell/client-info.html', { 'client' : client },
+                              context_instance=RequestContext(request))
+
+@login_required
+def add_client(request):
+    if request.method == 'GET':
+        client = ClientForm()
+        return render_to_response('orwell/add-client.html',
+                                  { 'client' : client },
+                                  context_instance=RequestContext(request))
+    elif request.method == 'POST':
+        client = Client()
+        client_form = ClientForm(request.POST, request.FILES, instance=client)
+        if client_form.is_valid():
+            client = client_form.save()
+            return redirect('orwell-client-info', client.client_id)
+        else:
+            return HttpResponse('No')
+
+    return HttpResponseNotAllowed(['GET', 'POST'])
+
 
 @login_required
 def manage_assets(request, slide_id, asset_id):

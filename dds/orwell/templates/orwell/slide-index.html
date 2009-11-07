@@ -3,34 +3,8 @@
 
 {% block content %}
 {% for slide in slides %}
-<div class="section">
-  <h2>{{ slide.title }}</h2>
-  <dl>
-    <dt>User</dt>
-    <dd>{{ slide.user.get_full_name }}</dd>
-    <dt>Group</dt>
-    <dd>{{ slide.group }}</dd>
-    <dt>Priority</dt>
-    <dd>{{ slide.priority }}</dd>
-    <dt>Duration</dt>
-    <dd>{{ slide.duration }} seconds</dd>
-    <dt>Expires</dt>
-    <dd>{{ slide.expires_at|date:"P - N j, Y" }}</dd>
-    <dt>Mode</dt>
-    <dd>{{ slide.get_mode_display }}</dd>
-    <dt>Transition</dt>
-    <dd>{{ slide.get_transition_display }}</dd>
-    <dt>Last Update</dt>
-    <dd>{{ slide.last_update|date:"P - N j, Y" }}</dd>
-    <dt>Assets</dt>
-    <dd>
-      <ul>
-        {% for a in slide.assets.all %}
-        <li><a href="{{ a.url }}">{{ a.file_name }}</a> - {{ a.last_update }}</li>
-        {% endfor %}
-      </ul>
-    </dd>
-  </dl>
-</div>
+<a href="{% url orwell-slide-info slide.pk %}">
+  <div class="pointer">{{ slide.title }}</div>
+</a>
 {% endfor %}
 {% endblock %}
