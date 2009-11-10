@@ -91,7 +91,7 @@ class ClientActivity(models.Model):
     client = models.OneToOneField(Client, primary_key=True)
     current_slide = models.ForeignKey(Slide, null=True, blank=True,
                                       related_name='activities')
-    active = models.BooleanField(blank=True)
+    active = models.BooleanField(default=False)
 
 
 class Asset(models.Model):

@@ -6,12 +6,20 @@ from django.shortcuts import render_to_response
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 
-from models import Slide, Asset, Client
+from models import Slide, Asset, Client, ClientActivity
 from forms import SlideForm, AssetForm
 
 
 def index(request):
+    activities = ClientActivity.objects.filter(active=True)
+    clients = []
+
+    for activity in activities:
+        clients.append({ 'client' : activity.client,
+                         'current' : activity.current_slide })
+
     return render_to_response('orwell/info-index.html',
+                              { 'clients' : clients },
                               context_instance=RequestContext(request));
 
 def slide_info(request, slide_id):
