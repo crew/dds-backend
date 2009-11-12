@@ -1,21 +1,22 @@
 {% extends "base.html" %}
 {% block title %}Active Clients{% endblock %}
 {% block content %}
-{% if clients %}
+{% if client_pairs %}
 <h2>Active Clients</h2>
-{% for client in clients %}
+
+{% for client_pair in client_pairs %}
 <div class="activity">
-  <a href="{% url orwell-client-info client.pk %}">{{ client.client_id }}</a>
+  <a href="{% url orwell-client-info client_pair.client.client_id %}">{{ client_pair.client.client_id }}</a>
+  {% if client_pair.current %}
   <dl>
     <dt>Current Slide</dt>
     <dd>
-      {% if client.current %}
-      <a href="{% url orwell-slide-info client.current.pk %}">{{ client.current.title }}</a>
-      {% else %}
-      No slide
-      {% endif %}
+      <a href="{% url orwell-slide-info client_pair.current.pk %}">{{ client_pair.current.title }}</a>
     </dd>
   </dl>
+  {% else %}
+  <p>No slide</p>
+  {% endif %}
 </div>
 {% endfor %}
 {% else %}

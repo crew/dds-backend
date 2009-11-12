@@ -12,14 +12,14 @@ from forms import SlideForm, AssetForm, ClientForm
 
 def index(request):
     activities = ClientActivity.objects.filter(active=True)
-    clients = []
+    client_pairs = []
 
     for activity in activities:
-        clients.append({ 'client' : activity.client,
-                         'current' : activity.current_slide })
+        client_pairs.append({ 'client' : activity.client,
+                              'current' : activity.current_slide })
 
     return render_to_response('orwell/info-index.html',
-                              { 'clients' : clients },
+                              { 'client_pairs' : client_pairs },
                               context_instance=RequestContext(request));
 
 def generic_index(request, cls, template, variable_name):
