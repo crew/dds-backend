@@ -74,7 +74,7 @@ class CCISLDAPBackend(LDAPBackend):
         if len(result):
             (dn, info) = result[0]
             user.email = info['mail'][0]
-            name = info['displayName'][0].split(' ', 1)
+            name = info['displayName'][0].split(' ')
             user.first_name = name[0]
             user.last_name = name[-1]
 

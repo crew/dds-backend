@@ -14,3 +14,8 @@ urlpatterns = patterns('%s.orwell.views' % settings.MODULE,
     url(r'^clients/(.+)/$', 'client_info', name='orwell-client-info'),
     url(r'^(\d+)/assets/(\d+)?', 'manage_assets'),
 )
+
+# The JSON API
+urlpatterns += patterns('%s.orwell.views' % settings.MODULE,
+    url(r'^json/activity/all/$', 'client_activity_all_json'),
+)

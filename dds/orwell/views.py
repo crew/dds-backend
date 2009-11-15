@@ -6,6 +6,8 @@ from django.shortcuts import render_to_response, redirect
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 
+import json
+
 from models import Slide, Asset, Client, ClientActivity
 from forms import SlideForm, AssetForm, ClientForm
 
@@ -151,6 +153,11 @@ def add_client(request):
 
     return HttpResponseNotAllowed(['GET', 'POST'])
 
+def client_activity_all_json(request):
+    if request.method == 'GET':
+        all = [x.parse() for x in ClientActivity.objects.all()]
+        return HttpResponse(json.dumps(all))
+    return HttpResponseNotAllowed(['GET'])
 
 @login_required
 def manage_assets(request, slide_id, asset_id):

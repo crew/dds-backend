@@ -5,6 +5,7 @@ from utils import register_signals, temp_upload_to
 import signalhandlers
 import shutil
 import os
+import json
 from datetime import datetime
 
 
@@ -93,6 +94,19 @@ class ClientActivity(models.Model):
                                       related_name='activities')
     active = models.BooleanField(default=False)
 
+    def parse(self):
+        slide_parsed = None
+        if self.current_slide:
+            slide = self.current_slide.__dict__
+            slide_parsed = dict((k, str(v)) for k, v in slide.items())
+        return {
+            'client': self.client.client_id,
+            'slide': slide_parsed,
+            'is_active': self.active,
+        }
+
+    def json(self):
+        return json.dumps(self.parse())
 
 class Asset(models.Model):
     UPLOAD_PATH = 'assets'

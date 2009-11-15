@@ -1,8 +1,55 @@
 {% extends "base.html" %}
 {% block title %}Active Clients{% endblock %}
+{% block scripts %}
+<script type="text/javascript">
+
+function format_activity(act) {
+    if (!act.is_active) {
+        return "";
+    }
+
+    var slide = act.slide;
+    var result = '<a href="/clients/' + act.client + '/">' +
+                 act.client + '</a>';
+
+    if (slide) {
+        result += '<dl><dt>Current Slide</dt>' +
+                  '<dd><a href="/slides/' + slide.id + '">' +
+                  slide.title + '</a></dd></dl>';
+    }
+    else {
+        result += '<p>No Slide</p>';
+    }
+    return result;
+}
+
+function update() {
+    var target = $("#active-clients");
+    $.getJSON("/json/activity/all/", function(data, textStatus) {
+        if (data.length == 0) {
+            target.html("<p>No Active Clients</p>");
+        }
+        else {
+            var activities = "";
+            for (i in data) {
+                activities += format_activity(data[i]);
+            }
+            target.html(activities);
+        }
+    });
+    window.setTimeout(update, 5000);
+}
+
+$(document).ready(function() {
+    window.setTimeout(update, 1000);
+});
+</script>
+{% endblock %}
 {% block content %}
 {% if client_pairs %}
 <h2>Active Clients</h2>
+
+<div id="active-clients">
 
 {% for client_pair in client_pairs %}
 <div class="activity">
@@ -22,5 +69,7 @@
 {% else %}
   <p>No active clients.</p>
 {% endif %}
+
+</div>
 
 {% endblock %}
