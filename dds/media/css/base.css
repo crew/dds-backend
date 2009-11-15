@@ -92,6 +92,7 @@ dd ul {
 .info {
     padding-right: 7px;
     padding-left: 7px;
+    display: none;
 }
 
 .pointer {
