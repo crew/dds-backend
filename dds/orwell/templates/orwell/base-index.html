@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block scripts %}
+<script type="text/javascript">
+$(document).ready(function(){
+  $(".pointer").click(function() {
+    $(this).next().toggle('slow');
+    return false;
+  });
+});
+</script>
+{% endblock %}

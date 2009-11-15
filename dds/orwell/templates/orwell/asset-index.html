@@ -1,16 +1,26 @@
-{% extends "base.html" %}
+{% extends "orwell/base-index.html" %}
 {% block title %}Assets{% endblock %}
 
 {% block content %}
 {% for asset in assets %}
-<a href="{% url orwell-asset-info asset.pk %}">
-<div class="pointer">
+<div class="section">
+  <div class="pointer">
     {% if asset.name %}
     {{ asset.name }}
     {% else %}
     {{ asset.url }}
     {% endif %}
+  </div>
+  <div class="info">
+    <dl>
+      {% if asset.description %}
+      <dt>Description</dt>
+      <dd>{{ asset.description }}</dd>
+      {% endif %}
+      <dt>File</dt>
+      <dd><a href="{{ asset.url }}">{{ asset.file_name }}</a></dd>
+    </dl>
+  </div>
 </div>
-</a>
 {% endfor %}
 {% endblock %}
