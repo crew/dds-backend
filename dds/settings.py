@@ -22,10 +22,6 @@ DATABASE_PASSWORD = ''         # Not used with sqlite3.
 DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
 DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
 
-if DEVELOP:
-    DATABASE_ENGINE = 'sqlite3'
-    DATABASE_NAME = ROOT('temp.sqlite3')
-
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
@@ -51,9 +47,6 @@ MEDIA_ROOT = ROOT('media')
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
 MEDIA_URL = 'http://dds-master.ccs.neu.edu/media/'
-
-if DEVELOP:
-    MEDIA_URL = 'http://localhost:8000/media/'
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
@@ -109,3 +102,8 @@ LDAPBACKEND_HOST = 'ldap://cluster.ldap.ccs.neu.edu/'
 LDAPBACKEND_DN   = 'uid=%s,ou=people,dc=ccs,dc=neu,dc=edu'
 
 LOGIN_REDIRECT_URL = "/"
+
+try:
+    from local_settings import *
+except ImportError:
+    pass
