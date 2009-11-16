@@ -2,6 +2,15 @@
 {% block title %}Clients{% endblock %}
 
 {% block content %}
+<div class="adder">
+Add A Client
+</div>
+<div class="addsession">
+<table>
+  {{ clients_form.as_table }}
+</table>
+<input type="submit" value="Add" />
+</div>
 {% for client in clients %}
 <div class="section">
   <div class="pointer">

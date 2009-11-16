@@ -2,6 +2,15 @@
 {% block title %}Assets{% endblock %}
 
 {% block content %}
+<div class="adder">
+Add An Asset
+</div>
+<div class="addsession">
+<table>
+  {{ assets_form.as_table }}
+</table>
+<input type="submit" value="Add" />
+</div>
 {% for asset in assets %}
 <div class="section">
   <div class="pointer">

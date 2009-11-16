@@ -1,0 +1,42 @@
+@import "base.css";
+
+.section {
+    background-color: #333;
+    color: white;
+    border-radius: 4px;
+    margin-bottom: 30px;
+}
+
+.info {
+    padding-right: 7px;
+    padding-left: 7px;
+    display: none;
+}
+
+.pointer {
+    padding: 7px;
+    border-top-right-radius: 4px;
+    border-top-left-radius: 4px;
+}
+
+.pointer:hover {
+    background-color: #68afff;
+}
+
+.adder {
+    background-color: #68afff;
+    font-weight: bold;
+    margin-bottom: 20px;
+    width: 100px;
+    padding: 10px;
+    border-radius: 6px;
+    text-align: center;
+}
+
+.addsession {
+    background-color: #333;
+    color: white;
+    border-radius: 4px;
+    margin-bottom: 30px;
+    display: none;
+}

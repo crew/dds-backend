@@ -22,7 +22,7 @@ def index(request):
                               { 'client_pairs' : client_pairs },
                               context_instance=RequestContext(request));
 
-def generic_index(request, cls, template, variable_name):
+def generic_index(request, cls, form, template, variable_name):
     """
     Args:
         cls, a model.
@@ -31,11 +31,12 @@ def generic_index(request, cls, template, variable_name):
                        template.
     """
     return render_to_response(template,
-                              { variable_name : cls.objects.all() },
+                              { variable_name : cls.objects.all(),
+                                variable_name + '_form' : form },
                               context_instance=RequestContext(request))
 
 def slide_index(request):
-    return generic_index(request, Slide, 'orwell/slide-index.html', 'slides')
+    return generic_index(request, Slide, SlideForm(), 'orwell/slide-index.html', 'slides')
 
 def slide_info(request, slide_id):
     try:
@@ -76,7 +77,7 @@ def add_slide(request):
         return HttpResponseNotAllowed(['GET', 'POST'])
 
 def asset_index(request):
-    return generic_index(request, Asset, 'orwell/asset-index.html', 'assets')
+    return generic_index(request, Asset, AssetForm(), 'orwell/asset-index.html', 'assets')
 
 def asset_info(request, asset_id):
     try:
@@ -121,7 +122,7 @@ def slide_add_asset(request, slide_id, asset_id):
     return HttpResponseRedirect('success.html')
 
 def client_index(request):
-    return generic_index(request, Client, 'orwell/client-index.html', 'clients')
+    return generic_index(request, Client, ClientForm(), 'orwell/client-index.html', 'clients')
 
 def client_info(request, asset_id):
     try:

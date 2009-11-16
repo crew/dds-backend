@@ -22,7 +22,7 @@ input {
     background-color: #292929;
     border-radius: 4px;
     font-size: 20px;
-    color: #FFFDD8;
+    color: white;
 }
 
 #header {
@@ -80,27 +80,4 @@ dd ul {
     margin-top: 30px;
     line-height: 175%;
     list-style-type: none;
-}
-
-.section {
-    background-color: #333;
-    color: white;
-    border-radius: 4px;
-    margin-bottom: 30px;
-}
-
-.info {
-    padding-right: 7px;
-    padding-left: 7px;
-    display: none;
-}
-
-.pointer {
-    padding: 7px;
-    border-top-right-radius: 4px;
-    border-top-left-radius: 4px;
-}
-
-.pointer:hover {
-    background-color: #68afff
 }

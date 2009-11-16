@@ -2,6 +2,15 @@
 {% block title %}Slides{% endblock %}
 
 {% block content %}
+<div class="adder">
+Add A Slide
+</div>
+<div class="addsession">
+  <table>
+    {{ slides_form.as_table }}
+  </table>
+  <input type="submit" value="Add" />
+</div>
 {% for slide in slides %}
 <div class="section">
   <div class="pointer">{{ slide.title }}</div>

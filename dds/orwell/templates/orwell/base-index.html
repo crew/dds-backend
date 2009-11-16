@@ -1,11 +1,18 @@
 {% extends "base.html" %}
+{% block style %}index.css{% endblock %}
 {% block scripts %}
 <script type="text/javascript">
 $(document).ready(function(){
   $(".pointer").click(function() {
-    $(this).next().toggle('slow');
+    $(this).next().toggle('fast');
     return false;
   });
+
+  $(".adder").click(function() {
+    $(".addsession").toggle('fast');
+    return false;
+  });
+
 });
 </script>
 {% endblock %}
