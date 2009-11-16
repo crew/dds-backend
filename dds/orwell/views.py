@@ -37,6 +37,7 @@ def generic_index(request, cls, form, template, variable_name):
                                 variable_name + '_form' : form },
                               context_instance=RequestContext(request))
 
+@login_required
 def slide_index(request):
     return generic_index(request, Slide, SlideForm(), 'orwell/slide-index.html', 'slides')
 
@@ -78,6 +79,7 @@ def add_slide(request):
     else:
         return HttpResponseNotAllowed(['GET', 'POST'])
 
+@login_required
 def asset_index(request):
     return generic_index(request, Asset, AssetForm(), 'orwell/asset-index.html', 'assets')
 
@@ -123,6 +125,7 @@ def slide_add_asset(request, slide_id, asset_id):
 
     return HttpResponseRedirect('success.html')
 
+@login_required
 def client_index(request):
     return generic_index(request, Client, ClientForm(), 'orwell/client-index.html', 'clients')
 
