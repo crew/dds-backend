@@ -13,6 +13,26 @@
     display: none;
 }
 
+.info dt {
+    float: left;
+    font-weight: bold;
+    margin-right: 10px;
+    padding: 5px;
+    width: 125px;
+    font-family: sans-serif;
+}
+
+.info dd {
+    margin-left: 2px;
+    padding: 6px 0;
+}
+
+.info dd ul {
+    margin-top: 30px;
+    line-height: 175%;
+    list-style-type: none;
+}
+
 .pointer {
     padding: 7px;
     border-top-right-radius: 4px;
@@ -37,6 +57,7 @@
     background-color: #333;
     color: white;
     border-radius: 4px;
+    padding: 7px;
     margin-bottom: 30px;
     display: none;
 }
