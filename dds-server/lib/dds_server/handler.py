@@ -32,8 +32,8 @@ class DDSHandler(object):
 
         try:
             client = self.get_client(jid.getStripped())
-            client_activity = client.clientactivity
             if client:
+                client_activity = client.clientactivity
                 if (typ == 'unavailable'):
                     logging.info('%s : has gone offline.' % jid)
                     client_activity.active = False
@@ -47,7 +47,8 @@ class DDSHandler(object):
                 client_activity.save()
         except ObjectDoesNotExist, e:
             logging.info("No client activity for this client")
-            client_activity = ClientActivity(client=self.get_client(jid.getStripped()))
+            client = self.get_client(jid.getStripped())
+            client_activity = ClientActivity(client=client)
             client_activity.save()
             self.presence_handle(dispatch, pr)
         except Exception, e:
