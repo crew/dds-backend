@@ -66,7 +66,8 @@ def main():
         daemonize()
 
     logging.basicConfig(level=logging.DEBUG,
-                        format='%(asctime)s %(levelname)s %(message)s',
+                        format='%(asctime)s %(filename)s %(lineno)s '
+                               '%(levelname)s %(message)s',
                         filename=log,
                         filemode='a')
 
