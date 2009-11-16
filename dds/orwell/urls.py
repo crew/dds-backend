@@ -17,5 +17,6 @@ urlpatterns = patterns('%s.orwell.views' % settings.MODULE,
 
 # The JSON API
 urlpatterns += patterns('%s.orwell.views' % settings.MODULE,
-    url(r'^json/activity/all/$', 'client_activity_all_json'),
+    url(r'^json/activity/all/$', 'client_activity_all_json',
+        name='orwell-json-activity-all'),
 )

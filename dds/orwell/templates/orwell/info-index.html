@@ -4,17 +4,15 @@
 <script type="text/javascript">
 
 function format_activity(act) {
-    if (!act.is_active) {
+    if (!act.active) {
         return "";
     }
-
+    var result = '<a href="' + act.client.url + '">' +
+                 act.client_id + '</a>';
     var slide = act.slide;
-    var result = '<a href="/clients/' + act.client + '/">' +
-                 act.client + '</a>';
-
     if (slide) {
         result += '<dl><dt>Current Slide</dt>' +
-                  '<dd><a href="/slides/' + slide.id + '">' +
+                  '<dd><a href="' + slide.url + '">' +
                   slide.title + '</a></dd></dl>';
     }
     else {
@@ -23,31 +21,40 @@ function format_activity(act) {
     return result;
 }
 
-function update() {
-    var target = $("#active-clients");
-    $.getJSON("/json/activity/all/", function(data, textStatus) {
-        if (data.length == 0) {
-            target.html("<p>No Active Clients</p>");
-        }
-        else {
-            var activities = "";
-            for (i in data) {
-                activities += format_activity(data[i]);
+/*
+ * Return a function that updates with a timeout of 5000
+ */
+function update(url, target, timeout) {
+    return function _update() {
+        $.getJSON(url, function(data, textStatus) {
+            if (data.length == 0) {
+                target.html("<p>No Active Clients</p>");
             }
-            target.html(activities);
-        }
-    });
-    window.setTimeout(update, 5000);
+            else {
+                var activities = "";
+                for (i in data) {
+                    activities += format_activity(data[i]);
+                }
+                target.html(activities);
+            }
+        });
+        window.setTimeout(_update, timeout);
+    };
 }
 
 $(document).ready(function() {
-    window.setTimeout(update, 1000);
+    var target = $("#active-clients");
+    var url = $("#update-url").val();
+    window.setTimeout(update(url, target, 5000), 1000);
 });
 </script>
 {% endblock %}
 {% block content %}
 {% if client_pairs %}
 <h2>Active Clients</h2>
+
+<input id="update-url" type="hidden"
+    value="{% url orwell-json-activity-all %}" />
 
 <div id="active-clients">
 

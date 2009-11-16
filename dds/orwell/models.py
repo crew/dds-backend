@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User, Group
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from utils import register_signals, temp_upload_to
 import signalhandlers
 import shutil
@@ -95,18 +96,19 @@ class ClientActivity(models.Model):
     active = models.BooleanField(default=False)
 
     def parse(self):
-        slide_parsed = None
+        p = self.__dict__
+        c = self.client
+        p['client'] = c.__dict__
+        p['client']['url'] = reverse('orwell-client-info', args=[c.pk])
+        p['slide'] = None
         if self.current_slide:
-            slide = self.current_slide.__dict__
-            slide_parsed = dict((k, str(v)) for k, v in slide.items())
-        return {
-            'client': self.client.client_id,
-            'slide': slide_parsed,
-            'is_active': self.active,
-        }
+            s = self.current_slide
+            p['slide'] = s.__dict__
+            p['slide']['url'] = reverse('orwell-slide-info', args=[s.pk])
+        return p
 
     def json(self):
-        return json.dumps(self.parse())
+        return json.dumps(self.parse(), default=str)
 
 class Asset(models.Model):
     UPLOAD_PATH = 'assets'

@@ -156,7 +156,7 @@ def add_client(request):
 def client_activity_all_json(request):
     if request.method == 'GET':
         all = [x.parse() for x in ClientActivity.objects.all()]
-        return HttpResponse(json.dumps(all))
+        return HttpResponse(json.dumps(all, default=str))
     return HttpResponseNotAllowed(['GET'])
 
 @login_required
