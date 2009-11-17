@@ -18,7 +18,8 @@ import os
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'dds.settings'
 from django.core.exceptions import ObjectDoesNotExist
-from dds.orwell.models import Client, ClientActivity, Slide
+from dds.orwell.models import Client, ClientActivity, Slide, Location
+from django.contrib.auth.models import Group
 from dds.utils import generate_request
 
 
@@ -149,8 +150,15 @@ class DDSHandler(object):
         """ Gets the Client from Django, if one exists. """
         logging.debug('%s : looking for client in the database.' % jid)
         try:
-            c = Client.objects.get(pk=jid)
+            c, created = Client.objects.get_or_create(pk=jid)
         except:
             logging.debug('%s : client is not found.' % jid)
             return None
+        if created:
+            logging.debug('%s : registering previously unseen client' % jid)
+            location, loc_created = Location.objects.get_or_create(name='Unknown')
+            c.location = location
+            group, group_created = Group.objects.get_or_create(name='Unregistered clients')
+            c.groups = [group]
+            c.save()
         return c
