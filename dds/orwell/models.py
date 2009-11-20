@@ -129,7 +129,7 @@ class Client(models.Model):
         caption = self.currentslide().title
       else:
         path = '/media/images/unknown.png'
-        caption = 'No Slide Preview Available'
+        caption = self.currentslide().title
       return path, caption
 
     def thumbnailurl(self):
