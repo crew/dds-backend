@@ -1,3 +1,4 @@
+# vim: set shiftwidth=4 tabstop=4 softtabstop=4 :
 # ***** BEGIN LICENCE BLOCK *****
 #
 # The Initial Developer of the Original Code is
@@ -8,7 +9,7 @@
 #
 # ***** END LICENCE BLOCK *****
 
-import xmpp
+import xmpp 
 import xmlrpclib
 import os
 import threading

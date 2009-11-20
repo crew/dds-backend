@@ -1,3 +1,4 @@
+# vim: set shiftwidth=4 tabstop=4 softtabstop=4 :
 from django.contrib.auth.models import User, check_password
 from django.conf import settings
 import ldap

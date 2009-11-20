@@ -1,3 +1,4 @@
+# vim: set shiftwidth=4 tabstop=4 softtabstop=4 :
 from django.core import serializers
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http import (HttpResponse, HttpResponseRedirect,
@@ -39,7 +40,8 @@ def generic_index(request, cls, form, template, variable_name):
 
 @login_required
 def slide_index(request):
-    return generic_index(request, Slide, SlideForm(), 'orwell/slide-index.html', 'slides')
+    return generic_index(request, Slide, SlideForm(),
+                         'orwell/slide-index.html', 'slides')
 
 def slide_info(request, slide_id):
     try:
@@ -81,7 +83,8 @@ def add_slide(request):
 
 @login_required
 def asset_index(request):
-    return generic_index(request, Asset, AssetForm(), 'orwell/asset-index.html', 'assets')
+    return generic_index(request, Asset, AssetForm(),
+                         'orwell/asset-index.html', 'assets')
 
 def asset_info(request, asset_id):
     try:

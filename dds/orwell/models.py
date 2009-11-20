@@ -1,3 +1,4 @@
+# vim: set shiftwidth=4 tabstop=4 softtabstop=4 :
 from django.db import models
 from django.contrib.auth.models import User, Group
 from django.conf import settings
@@ -9,7 +10,7 @@ import shutil
 import os
 import json
 from datetime import datetime
-
+ 
 
 class Slide(models.Model):
     MODE_CHOICES = (
@@ -24,6 +25,8 @@ class Slide(models.Model):
         (3, 'slide-up-down'),
         (4, 'slide-down-up'),
     )
+
+
     title = models.CharField(max_length=512)
     user = models.ForeignKey(User, related_name='slides')
     group = models.ForeignKey(Group, related_name='slides')
@@ -81,12 +84,12 @@ class Client(models.Model):
     groups = models.ManyToManyField(Group, related_name='clients')
 
     def id_hash(self):
-      hash = hashlib.md5()
-      hash.update(self.client_id)
-      return hash.hexdigest()
+        hash = hashlib.md5()
+        hash.update(self.client_id)
+        return hash.hexdigest()
 
     def id_user_part(self):
-      return self.client_id.split('@')[0]
+        return self.client_id.split('@')[0]
 
     def all_slides(self):
         """Return all the Slides allowed."""
@@ -96,47 +99,48 @@ class Client(models.Model):
         return slide_list
 
     def active(self):
-      try:
-        return self.clientactivity.active
-      except:
-        return False
+        try:
+            return self.clientactivity.active
+        except:
+            return False
 
     def currentslide(self):
-      if not self.active():
-        return None
-      else:
-        return self.clientactivity.current_slide
+        if not self.active():
+            return None
+        else:
+            return self.clientactivity.current_slide
 
     def get_class_tags(self):
-      """Get a list of textual tags for this slide."""
-      tags = ['client-location-%s' % self.location.id]
-      for group in self.groups.all():
-        tags.append('client-group-%s' % group.id)
-      if self.active():
-        tags.append('client-online')
-      else:
-        tags.append('client-offline')
-      return ' '.join(tags)
+        """Get a list of textual tags for this slide."""
+        tags = ['client-location-%s' % self.location.id]
+        for group in self.groups.all():
+            tags.append('client-group-%s' % group.id)
+            if self.active():
+                tags.append('client-online')
+            else:
+                tags.append('client-offline')
+        return ' '.join(tags)
 
     #XXX Hack. This needs to be fixed to be path agnostic and configurable. The
     # thumbnailing should come from Slide, not from here too.
     def slideinfo(self):
-      if not self.active():
-        path = '/media/images/offline.png'
-        caption = 'Client Offline'
-      elif self.currentslide().id in [1,2,7,8,10]:
-        path = '/media/screenshots/thumbnail-%d.png' % self.currentslide().id
-        caption = self.currentslide().title
-      else:
-        path = '/media/images/unknown.png'
-        caption = self.currentslide().title
-      return path, caption
+        ssbase = '/media/screenshots/'
+        if not self.active():
+            path = '/media/images/offline.png'
+            caption = 'Client Offline'
+        elif self.currentslide().id in [1,2,7,8,10]:
+            path = '%s/thumbnail-%d.png' % (ssbase, self.currentslide().id)
+            caption = self.currentslide().title
+        else:
+            path = '/media/images/unknown.png'
+            caption = self.currentslide().title
+            return path, caption
 
     def thumbnailurl(self):
-      return self.slideinfo()[0]
+        return self.slideinfo()[0]
 
     def slidecaption(self):
-      return self.slideinfo()[1]
+        return self.slideinfo()[1]
 
 
     def __unicode__(self):

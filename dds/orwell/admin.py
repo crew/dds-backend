@@ -1,3 +1,4 @@
+# vim: set shiftwidth=4 tabstop=4 softtabstop=4 :
 from models import Slide, Asset, Client, Location, ClientActivity
 from django.contrib import admin
 

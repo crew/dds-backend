@@ -1,3 +1,4 @@
+# vim: set shiftwidth=4 tabstop=4 softtabstop=4 :
 from django.conf.urls.defaults import *
 from django.conf import settings
 
