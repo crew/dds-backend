@@ -20,6 +20,16 @@
     <li><a href="{% url orwell-index %}">Main</a></li>
     <li><a href="{% url orwell-slide-index %}">Slides</a></li>
     <li><a href="{% url orwell-client-index %}">Clients</a></li>
+    <li>
+    {% if user.is_authenticated %}
+    <a href="{% url django.contrib.auth.views.logout %}">Logout</a>
+    {% else %}
+    <a href="%{% url django.contrib.auth.views.logout %}">Login</a>
+    {% endif %}
+    </li>
+    {% if user.is_staff %}
+    <li><a href="{% url admin.site.root %}">Admin</a></li>
+    {% endif %}
   </ul>
   </div>
 </div>
