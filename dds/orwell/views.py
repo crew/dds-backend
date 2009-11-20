@@ -125,7 +125,6 @@ def slide_add_asset(request, slide_id, asset_id):
 
     return HttpResponseRedirect('success.html')
 
-@login_required
 def client_index(request):
     return render_to_response('orwell/client-index.html',
                               { 'clients' : Client.objects.all(),
