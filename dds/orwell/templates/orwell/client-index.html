@@ -1,5 +1,8 @@
 {% extends "orwell/base-index.html" %}
 {% block title %}Clients{% endblock %}
+{% block scripts %}
+<script type="text/javascript" src="/media/js/clientindex.js"></script>
+{% endblock %}
 
 {% block content %}
 <div class="adder">
@@ -11,12 +14,38 @@ Add A Client
 </table>
 <input type="submit" value="Add" />
 </div>
+
+<form id="clientfilterform">
+<select id="locationselect">
+  <option value="">--Location--</option>
+  {% for loc in locations %}
+  <option value="{{loc.id}}">{{loc}}</option>
+  {% endfor %}
+</select>
+<select id="groupselect">
+  <option value="">--Group--</option>
+  {% for grp in groups %}
+  <option value="{{grp.id}}">{{grp}}</option>
+  {% endfor %}
+</select>
+<label for="showoffline">Display offline clients?</label>
+<input type="checkbox" id="showoffline" checked="true">
+<input type="reset" id="resetfilter">
+</form>
+<div id="clientarea">
 {% for client in clients %}
-<div class="section">
-  <div class="pointer">
-    {{ client.client_id }}
-  </div>
-  <div class="info">
+<div class="clientbox {{client.get_class_tags}}"
+  id="client-{{ client.id_hash }}">
+  {% if client.activity %}
+  <img src="/media/images/Unknown.png" alt="Unknown slide" 
+       class="slidepreview">
+  {% else %}
+  <img src="/media/images/offline.png" alt="Frontend Offline" 
+       class="slidepreview">
+  {% endif %}
+  {{ client.client_id }}
+  <div class="infopopup" title="{{client.client_id}}"
+    id="infobox-{{ client.id_hash }}">
     <dl>
       <dt>Location</dt>
       <dd>{{ client.location }}</dd>
@@ -32,4 +61,5 @@ Add A Client
   </div>
 </div>
 {% endfor %}
+</div>
 {% endblock %}

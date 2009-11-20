@@ -1,4 +1,5 @@
 @import "base.css";
+@import "jquery-ui-1.7.2.custom.css";
 
 .section {
     background-color: #333;
@@ -60,4 +61,28 @@
     padding: 7px;
     margin-bottom: 30px;
     display: none;
+}
+
+
+#clientarea {
+padding:5px;
+}
+
+.clientbox {
+display:block;
+float:left;
+padding:3px;
+text-align:center;
+background-color: #303030;
+border: 2px solid #222;
+}
+
+.slidepreview {
+display:block;
+float:none;
+clear:both;
+}
+
+.infopopup {
+  display:none;
 }

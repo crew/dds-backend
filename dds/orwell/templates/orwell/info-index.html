@@ -1,82 +1,9 @@
 {% extends "base.html" %}
-{% block title %}Active Clients{% endblock %}
-{% block scripts %}
-<script type="text/javascript">
-
-function format_activity(act) {
-    if (!act.active) {
-        return "";
-    }
-    var result = '<a href="' + act.client.url + '">' +
-                 act.client_id + '</a>';
-    var slide = act.slide;
-    if (slide) {
-        result += '<dl><dt>Current Slide</dt>' +
-                  '<dd><a href="' + slide.url + '">' +
-                  slide.title + '</a></dd></dl>';
-    }
-    else {
-        result += '<p>No Slide</p>';
-    }
-    return result;
-}
-
-/*
- * Return a function that updates with a timeout of 5000
- */
-function update(url, target, timeout) {
-    return function _update() {
-        $.getJSON(url, function(data, textStatus) {
-            if (data.length == 0) {
-                target.html("<p>No Active Clients</p>");
-            }
-            else {
-                var activities = "";
-                for (i in data) {
-                    activities += format_activity(data[i]);
-                }
-                target.html(activities);
-            }
-        });
-        window.setTimeout(_update, timeout);
-    };
-}
-
-$(document).ready(function() {
-    var target = $("#active-clients");
-    var url = $("#update-url").val();
-    window.setTimeout(update(url, target, 5000), 1000);
-});
-</script>
-{% endblock %}
+{% block title %}Digital Display Manager{% endblock %}
 {% block content %}
-{% if client_pairs %}
-<h2>Active Clients</h2>
-
-<input id="update-url" type="hidden"
-    value="{% url orwell-json-activity-all %}" />
-
-<div id="active-clients">
-
-{% for client_pair in client_pairs %}
-<div class="activity">
-  <a href="{% url orwell-client-info client_pair.client.client_id %}">{{ client_pair.client.client_id }}</a>
-  {% if client_pair.current %}
-  <dl>
-    <dt>Current Slide</dt>
-    <dd>
-      <a href="{% url orwell-slide-info client_pair.current.pk %}">{{ client_pair.current.title }}</a>
-    </dd>
-  </dl>
-  {% else %}
-  <p>No slide</p>
-  {% endif %}
-</div>
-{% endfor %}
-{% else %}
-  <p>No active clients.</p>
-{% endif %}
-
-</div>
-
+<ul>
+  <li>System Status
+  <li>Slide Manager
+  <li>Create A Slide
+</ul>
 {% endblock %}

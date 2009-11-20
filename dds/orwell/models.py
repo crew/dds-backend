@@ -3,6 +3,7 @@ from django.contrib.auth.models import User, Group
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from utils import register_signals, temp_upload_to
+import hashlib
 import signalhandlers
 import shutil
 import os
@@ -79,12 +80,31 @@ class Client(models.Model):
     location = models.ForeignKey(Location, null=True, related_name='clients')
     groups = models.ManyToManyField(Group, related_name='clients')
 
+    def id_hash(self):
+      hash = hashlib.md5()
+      hash.update(self.client_id)
+      return hash.hexdigest()
+
     def all_slides(self):
         """Return all the Slides allowed."""
         slide_list = set()
         for g in self.groups.all():
             slide_list.update(g.slides.all())
         return slide_list
+
+    def get_class_tags(self):
+      """Get a list of textual tags for this slide."""
+      tags = ['client-location-%s' % self.location.id]
+      for group in self.groups.all():
+        tags.append('client-group-%s' % group.id)
+      try:
+        if self.activities:
+          tags.append('client-online')
+        else:
+          raise
+      except:
+        tags.append('client-offline')
+      return ' '.join(tags)
 
     def __unicode__(self):
         return '%s@%s' % (self.client_id, self.location)

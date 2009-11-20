@@ -8,7 +8,7 @@ from django.template import RequestContext
 
 import json
 
-from models import Slide, Asset, Client, ClientActivity
+from models import Slide, Asset, Client, ClientActivity, Location, Group
 from forms import SlideForm, AssetForm, ClientForm
 
 
@@ -127,7 +127,12 @@ def slide_add_asset(request, slide_id, asset_id):
 
 @login_required
 def client_index(request):
-    return generic_index(request, Client, ClientForm(), 'orwell/client-index.html', 'clients')
+    return render_to_response('orwell/client-index.html',
+                              { 'clients' : Client.objects.all(),
+                                'clients_form' : ClientForm(),
+                                'locations' : Location.objects.all(),
+                                'groups' : Group.objects.all()},
+                              context_instance=RequestContext(request))
 
 def client_info(request, asset_id):
     try:
