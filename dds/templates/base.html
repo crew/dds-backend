@@ -24,7 +24,7 @@
     {% if user.is_authenticated %}
     <a href="{% url django.contrib.auth.views.logout %}">Logout</a>
     {% else %}
-    <a href="%{% url django.contrib.auth.views.logout %}">Login</a>
+    <a href="{% url django.contrib.auth.views.login %}">Login</a>
     {% endif %}
     </li>
     {% if user.is_staff %}
