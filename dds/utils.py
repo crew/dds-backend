@@ -9,7 +9,7 @@
 #
 # ***** END LICENCE BLOCK *****
 
-import xmpp 
+import xmpp
 import xmlrpclib
 import os
 import threading

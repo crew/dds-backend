@@ -10,7 +10,7 @@ import shutil
 import os
 import json
 from datetime import datetime
- 
+
 
 class Slide(models.Model):
     MODE_CHOICES = (
