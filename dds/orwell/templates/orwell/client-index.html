@@ -36,7 +36,7 @@ Add A Client
 {% for client in clients %}
 <div class="clientbox {{client.get_class_tags}}"
   id="client-{{ client.id_hash }}">
-  {% if client.activity %}
+  {% if client.active %}
   <img src="/media/images/Unknown.png" alt="Unknown slide" 
        class="slidepreview">
   {% else %}

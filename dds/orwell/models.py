@@ -95,17 +95,20 @@ class Client(models.Model):
             slide_list.update(g.slides.all())
         return slide_list
 
+    def active(self):
+      try:
+        return self.clientactivity.active
+      except:
+        return False
+
     def get_class_tags(self):
       """Get a list of textual tags for this slide."""
       tags = ['client-location-%s' % self.location.id]
       for group in self.groups.all():
         tags.append('client-group-%s' % group.id)
-      try:
-        if self.activities:
-          tags.append('client-online')
-        else:
-          raise
-      except:
+      if self.active():
+        tags.append('client-online')
+      else:
         tags.append('client-offline')
       return ' '.join(tags)
 
