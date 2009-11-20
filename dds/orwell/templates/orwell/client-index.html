@@ -36,13 +36,8 @@ Add A Client
 {% for client in clients %}
 <div class="clientbox {{client.get_class_tags}}"
   id="client-{{ client.id_hash }}">
-  {% if client.active %}
-  <img src="/media/screenshots/thumbnail-{{client.currentslide.id}}.png"
-       alt="{{client.currentslide.title}}" class="slidepreview">
-  {% else %}
-  <img src="/media/images/offline.png" alt="Frontend Offline" 
-       class="slidepreview">
-  {% endif %}
+  <img src="{{client.thumbnailurl}}" alt="{{client.slidecaption}}"
+  title="{{client.slidecaption}}" height="125" width="200" class="slidepreview">
   {{ client.id_user_part }}
   <div class="infopopup" title="{{client.client_id}}"
     id="infobox-{{ client.id_hash }}">

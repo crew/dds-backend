@@ -118,6 +118,27 @@ class Client(models.Model):
         tags.append('client-offline')
       return ' '.join(tags)
 
+    #XXX Hack. This needs to be fixed to be path agnostic and configurable. The
+    # thumbnailing should come from Slide, not from here too.
+    def slideinfo(self):
+      if not self.active():
+        path = '/media/images/offline.png'
+        caption = 'Client Offline'
+      elif self.currentslide().id in [1,2,7,8,10]:
+        path = '/media/screenshots/thumbnail-%d.png' % self.currentslide().id
+        caption = self.currentslide().title
+      else:
+        path = '/media/images/unknown.png'
+        caption = 'No Slide Preview Available'
+      return path, caption
+
+    def thumbnailurl(self):
+      return self.slideinfo()[0]
+
+    def slidecaption(self):
+      return self.slideinfo()[1]
+
+
     def __unicode__(self):
         return '%s@%s' % (self.client_id, self.location)
 
