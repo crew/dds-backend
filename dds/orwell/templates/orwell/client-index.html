@@ -37,8 +37,8 @@ Add A Client
 <div class="clientbox {{client.get_class_tags}}"
   id="client-{{ client.id_hash }}">
   {% if client.active %}
-  <img src="/media/images/unknown.png" alt="Unknown slide" 
-       class="slidepreview">
+  <img src="/media/screenshots/thumbnail-{{client.currentslide.id}}.png"
+       alt="{{client.currentslide.title}}" class="slidepreview">
   {% else %}
   <img src="/media/images/offline.png" alt="Frontend Offline" 
        class="slidepreview">

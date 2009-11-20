@@ -101,6 +101,12 @@ class Client(models.Model):
       except:
         return False
 
+    def currentslide(self):
+      if not self.active():
+        return None
+      else:
+        return self.clientactivity.current_slide
+
     def get_class_tags(self):
       """Get a list of textual tags for this slide."""
       tags = ['client-location-%s' % self.location.id]
