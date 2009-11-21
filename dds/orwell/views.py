@@ -159,7 +159,7 @@ def add_client(request):
         client_form = ClientForm(request.POST, request.FILES, instance=client)
         if client_form.is_valid():
             client = client_form.save()
-            return redirect('orwell-client-info', client.client_id)
+            return redirect('orwell-client-info', client.pk)
         else:
             return HttpResponse('No')
 

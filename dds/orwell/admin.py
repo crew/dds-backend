@@ -25,7 +25,7 @@ class SlideAdmin(admin.ModelAdmin):
 
 
 class ClientAdmin(admin.ModelAdmin):
-    list_display = ('client_id', 'location')
+    list_display = ('pk', 'location', 'last_contact')
 
 
 admin.site.register(Slide, SlideAdmin)

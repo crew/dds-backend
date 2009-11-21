@@ -26,7 +26,6 @@ class Slide(models.Model):
         (4, 'slide-down-up'),
     )
 
-
     title = models.CharField(max_length=512)
     user = models.ForeignKey(User, related_name='slides')
     group = models.ForeignKey(Group, related_name='slides')
@@ -90,9 +89,26 @@ class Location(models.Model):
 
 class Client(models.Model):
     """Represents a DDS Jabber client."""
+    name = models.CharField(max_length=100, default='Unnamed')
     client_id = models.EmailField(max_length=128, primary_key=True)
     location = models.ForeignKey(Location, null=True, related_name='clients')
-    groups = models.ManyToManyField(Group, related_name='clients')
+    groups = models.ManyToManyField(Group, through='ClientToGroup',
+                                    related_name='clients')
+
+    # XXX hack, the add function should wait till Client's save
+    #     to do the actual save.
+    def __getattribute__(self, name):
+        if name == 'groups':
+            gs = object.__getattribute__(self, name)
+            gs.add = self.add_groups
+            return gs
+        return models.Model.__getattribute__(self, name)
+
+    def last_contact(self):
+        try:
+            return self.activity.last_update
+        except:
+            pass
 
     def id_hash(self):
         hash = hashlib.md5()
@@ -111,7 +127,7 @@ class Client(models.Model):
 
     def active(self):
         try:
-            return self.clientactivity.active
+            return self.activity.active
         except:
             return False
 
@@ -119,7 +135,7 @@ class Client(models.Model):
         if not self.active():
             return None
         else:
-            return self.clientactivity.current_slide
+            return self.activity.current_slide
 
     def get_class_tags(self):
         """Get a list of textual tags for this slide."""
@@ -150,15 +166,41 @@ class Client(models.Model):
     def slidecaption(self):
         return self.slideinfo()[1]
 
+    def add_group(self, group):
+        c_to_g = ClientToGroup(client=self, group=group)
+        try:
+            c_to_g.save()
+        except:
+            pass
+
+    def add_groups(self, *groups):
+        for g in groups:
+            self.add_group(g)
 
     def __unicode__(self):
-        return '%s@%s' % (self.client_id, self.location)
+        return '%s@%s' % (self.pk, self.location)
+
+
+class ClientToGroup(models.Model):
+    client = models.ForeignKey(Client, related_name='client_and_groups')
+    group = models.ForeignKey(Group, related_name='client_and_groups')
+
+    class Meta:
+        unique_together = ['client', 'group']
+
+
+register_signals(ClientToGroup,
+                 pre_save=signalhandlers.client_to_group_pre_save,
+                 post_save=signalhandlers.client_to_group_post_save)
+
 
 class ClientActivity(models.Model):
-    client = models.OneToOneField(Client, primary_key=True)
+    client = models.OneToOneField(Client, primary_key=True,
+                                  related_name='activity')
     current_slide = models.ForeignKey(Slide, null=True, blank=True,
                                       related_name='activities')
     active = models.BooleanField(default=False)
+    last_update = models.DateTimeField(auto_now=True)
 
     def parse(self):
         p = self.__dict__

@@ -48,3 +48,28 @@ def asset_post_save(sender, instance, created, **kwargs):
 
     for slide in instance.all_slides():
         j_post_save(slide.__class__, slide, False, **kwargs)
+
+
+def client_to_group_pre_save(sender, instance, **kwargs):
+    try:
+        ctg = sender.objects.get(pk=instance.pk)
+    except:
+        # It is being created, do nothing.
+        return
+
+    # The group differs, so remove the old group.
+    if ctg.group != instance.group:
+        c = ctg.client
+        for s in ctg.group.slides.all():
+            request = generate_request((s.pk,), 'removeSlide')
+            jid = '%s/%s' % (instance.client.pk, settings.J_CLIENT_RESOURCE)
+            client.send_request(jid, request)
+
+
+def client_to_group_post_save(sender, instance, created, **kwargs):
+    client = settings.JABBER_CLIENT
+    group = instance.group
+    for s in group.slides.all():
+        request = generate_request((s.pk,), 'removeSlide')
+        jid = '%s/%s' % (instance.client.pk, settings.J_CLIENT_RESOURCE)
+        client.send_request(jid, request)
