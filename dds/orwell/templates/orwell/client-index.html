@@ -5,16 +5,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="adder">
-Add A Client
-</div>
-<div class="addsession">
-<table>
-  {{ clients_form.as_table }}
-</table>
-<input type="submit" value="Add" />
-</div>
-
+<h1>Frontend Status</h1>
 <form id="clientfilterform">
 <select id="locationselect">
   <option value="">--Location--</option>
@@ -34,7 +25,7 @@ Add A Client
 </form>
 <div id="clientarea">
 {% for client in clients %}
-<div class="clientbox {{client.get_class_tags}}"
+<div class="clientbox {{client.get_class_tags}} ui-corner-all"
   id="client-{{ client.id_hash }}">
   <img src="{{client.thumbnailurl}}" alt="{{client.slidecaption}}"
   title="{{client.slidecaption}}" height="125" width="200" class="slidepreview">
@@ -53,6 +44,9 @@ Add A Client
         </ul>
       </dd>
     </dl>
+    <div id="save-{{ client.id_hash }}" class="ui-state-default ui-corner-all"
+      title="Save">
+      <span class="ui-icon ui-icon-disk"></span></div>
   </div>
 </div>
 {% endfor %}

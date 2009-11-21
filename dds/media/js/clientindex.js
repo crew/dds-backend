@@ -9,7 +9,7 @@ function getfilters() {
   }
   if (group != '') {
     classes.push('.client-group-'+group);
-  }  
+  }
   if (!showoffline) {
     classes.push('.client-online');
   }
@@ -31,7 +31,8 @@ function resetfilterform() {
 function setupdialogs() {
   $('.clientbox').each(function() {
       var id = $(this).children('.infopopup').attr('id');
-      $('#'+id).dialog({modal:true,autoOpen:false});
+      $('#'+id).dialog({modal:true,autoOpen:false,
+                        resizable:false,draggable:false});
       $(this).click(function() {
         $('#'+id).dialog('open');});
       });
