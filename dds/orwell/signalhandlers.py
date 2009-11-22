@@ -67,4 +67,4 @@ def client_to_group_post_save(sender, instance, created, **kwargs):
     jabber = settings.JABBER_CLIENT
     group = instance.group
     for s in group.slides.all():
-        jabber.send_parsed_model(c.jid(), s.parse(), 'addSlide')
+        jabber.send_parsed_model(instance.client.jid(), s.parse(), 'addSlide')
