@@ -13,6 +13,7 @@ from datetime import datetime
 
 
 class Slide(models.Model):
+    SCREENSHOTS_DIR = 'screenshots'
     MODE_CHOICES = (
         (0, 'layout'),
         (1, 'module'),
@@ -64,12 +65,25 @@ class Slide(models.Model):
         """Get a list of textual tags for this slide."""
         return 'slide-group-%d' % self.group.id
 
+    def has_thumbnail(self):
+        path = os.path.join(settings.MEDIA_ROOT,
+                            self.SCREENSHOTS_DIR,
+                            'thumbnail-%d.png' % self.id)
+        try:
+            os.stat(path)
+            return True
+        except: # OSError
+            return False
+
     def thumbnailurl(self):
-        ssbase = '/media/screenshots/'
-        if self.id in [1,2,7,8,10]:
-            return '%s/thumbnail-%d.png' % (ssbase, self.id)
+        if self.has_thumbnail():
+            base = '%s/%s' % (settings.MEDIA_URL, self.SCREENSHOTS_DIR)
+            return '%s/thumbnail-%d.png' % (base, self.id)
         else:
-            return '/media/images/unknown.png'
+            return '%s/images/unknown.png' % settings.MEDIA_URL
+
+    def allowed(self, user):
+        return self.group in user.groups or user.is_staff
 
     def __unicode__(self):
         return '%s %s %s' % (self.title, self.user, self.group)
@@ -148,12 +162,12 @@ class Client(models.Model):
                 tags.append('client-offline')
         return ' '.join(tags)
 
-    #XXX Hack. This needs to be fixed to be path agnostic and configurable. The
-    # thumbnailing should come from Slide, not from here too.
     def slideinfo(self):
-        ssbase = '/media/screenshots/'
+        ssbase = '%s/%s' % (settings.MEDIA_URL, Slide.SCREENSHOT_DIR)
         if not self.active():
-            path = '/media/images/offline.png'
+            # XXX Hack. This needs to be fixed to be path agnostic
+            #     and configurable.
+            path = '%s/images/offline.png' % settings.MEDIA_URL
             caption = 'Client Offline'
         else:
             path = self.currentslide().thumnailurl()
@@ -216,6 +230,11 @@ class ClientActivity(models.Model):
 
     def json(self):
         return json.dumps(self.parse(), default=str)
+
+    class Meta:
+        verbose_name = 'activity'
+        verbose_name_plural = 'activities'
+
 
 class Asset(models.Model):
     UPLOAD_PATH = 'assets'
