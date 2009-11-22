@@ -38,7 +38,7 @@ class Slide(models.Model):
     last_update = models.DateTimeField(auto_now=True)
     assets = models.ManyToManyField('Asset', related_name='slides', blank=True)
     thumbnail = models.FileField(max_length=300, upload_to=temp_upload_to,
-                                 null=True)
+                                 null=True, blank=True)
 
     def all_assets(self):
         """Return the list of Assets used by this Slide."""
@@ -67,20 +67,14 @@ class Slide(models.Model):
         """Get a list of textual tags for this slide."""
         return 'slide-group-%d' % self.group.id
 
-    def has_thumbnail(self):
-        path = os.path.join(settings.MEDIA_ROOT,
-                            self.SCREENSHOTS_DIR,
-                            'thumbnail-%d.png' % self.id)
-        try:
-            os.stat(path)
-            return True
-        except: # OSError
-            return False
+    def thumbnail_name(self):
+        return os.path.basename(self.thumbnail.name)
 
     def thumbnailurl(self):
-        if self.has_thumbnail():
-            base = '%s/%s' % (settings.MEDIA_URL, self.SCREENSHOTS_DIR)
-            return '%s/thumbnail-%d.png' % (base, self.id)
+        if self.thumbnail:
+            return '%s/%s/%d/%s' % (settings.MEDIA_URL, self.UPLOAD_PATH,
+                                    self.pk,
+                                    self.thumbnail_name())
         else:
             return '%s/images/unknown.png' % settings.MEDIA_URL
 
@@ -93,12 +87,6 @@ class Slide(models.Model):
     def upload_dir(self):
         return '%s/%s/%d' % (settings.MEDIA_ROOT, self.__class__.UPLOAD_PATH,
                              self.pk)
-
-    def is_temporary(self):
-        if not self.file:
-            return True
-        p = self.file.path
-        return p.startswith('%s/%s/' % (settings.MEDIA_ROOT, 'tmp'))
 
     def _acquire_pk(self):
         """Pre-allocate the primary key by creating an empty object and saving
@@ -124,11 +112,11 @@ class Slide(models.Model):
         super(self.__class__, self).save(force_insert=force_insert,
                                          force_update=force_update)
 
-        if not self.file.name:
+        if not self.thumbnail.name:
             return
 
-        if not self.file.closed:
-            self.file.close()
+        if not self.thumbnail.closed:
+            self.thumbnail.close()
 
         # Create the new directory.
         file_new_dir = self.upload_dir()
@@ -137,15 +125,15 @@ class Slide(models.Model):
 
         # Find the new path
         file_new_path = os.path.join(file_new_dir,
-                                     os.path.basename(self.file.path))
+                                     os.path.basename(self.thumbnail.path))
 
         # XXX Should we remove the old file or not?
         # Move the file, then delete the temporary directory.
-        shutil.move(self.file.path, file_new_path)
-        temp_dir = os.path.dirname(self.file.path)
+        shutil.move(self.thumbnail.path, file_new_path)
+        temp_dir = os.path.dirname(self.thumbnail.path)
         if len(os.listdir(temp_dir)) == 0:
             os.rmdir(temp_dir)
-        self.file = file_new_path
+        self.thumbnail = file_new_path
 
         super(self.__class__, self).save(force_insert=force_insert,
                                          force_update=force_update)
