@@ -61,6 +61,13 @@ class Slide(models.Model):
 
         return (slide, assets)
 
+    def thumbnailurl(self):
+        ssbase = '/media/screenshots/'
+        if self.id in [1,2,7,8,10]:
+            return '%s/thumbnail-%d.png' % (ssbase, self.id)
+        else:
+            return '/media/images/unknown.png'
+
     def __unicode__(self):
         return '%s %s %s' % (self.title, self.user, self.group)
 
@@ -78,7 +85,7 @@ class Location(models.Model):
 
 
 class Client(models.Model):
-    """Represents a Jabber client."""
+    """Represents a DDS Jabber client."""
     client_id = models.EmailField(max_length=128, primary_key=True)
     location = models.ForeignKey(Location, null=True, related_name='clients')
     groups = models.ManyToManyField(Group, related_name='clients')
@@ -128,11 +135,8 @@ class Client(models.Model):
         if not self.active():
             path = '/media/images/offline.png'
             caption = 'Client Offline'
-        elif self.currentslide().id in [1,2,7,8,10]:
-            path = '%s/thumbnail-%d.png' % (ssbase, self.currentslide().id)
-            caption = self.currentslide().title
         else:
-            path = '/media/images/unknown.png'
+            path = self.currentslide().thumnailurl()
             caption = self.currentslide().title
         return path, caption
 

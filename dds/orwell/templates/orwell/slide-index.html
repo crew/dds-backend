@@ -1,47 +1,41 @@
 {% extends "orwell/base-index.html" %}
 {% block title %}Slides{% endblock %}
+{% block scripts %}
+<script type="text/javascript" src="/media/js/clientindex.js"></script>
+{% endblock %}
 
 {% block content %}
-<div class="adder">
-Add A Slide
-</div>
-<div class="addsession">
-  <table>
-    {{ slides_form.as_table }}
-  </table>
-  <input type="submit" value="Add" />
-</div>
+<h1>Slides</h1>
+<form id="slidefilterform">
+<select id="locationselect">
+  <option value="">--Location--</option>
+  {% for loc in locations %}
+  <option value="{{loc.id}}">{{loc}}</option>
+  {% endfor %}
+</select>
+<select id="groupselect">
+  <option value="">--Group--</option>
+  {% for grp in groups %}
+  <option value="{{grp.id}}">{{grp}}</option>
+  {% endfor %}
+</select>
+<input type="reset" id="resetfilter">
+</form>
+<div id="slidearea">
 {% for slide in slides %}
-<div class="section">
-  <div class="pointer">{{ slide.title }}</div>
-  <div class="info">
-    <dl>
-      <dt>User</dt>
-      <dd>{{ slide.user.get_full_name }}</dd>
-      <dt>Group</dt>
-      <dd>{{ slide.group }}</dd>
-      <dt>Priority</dt>
-      <dd>{{ slide.priority }}</dd>
-      <dt>Duration</dt>
-      <dd>{{ slide.duration }} seconds</dd>
-      <dt>Expires</dt>
-      <dd>{{ slide.expires_at|date:"P - N j, Y" }}</dd>
-      <dt>Mode</dt>
-      <dd>{{ slide.get_mode_display }}</dd>
-      <dt>Transition</dt>
-      <dd>{{ slide.get_transition_display }}</dd>
-      <dt>Last Update</dt>
-      <dd>{{ slide.last_update|date:"P - N j, Y" }}</dd>
-      <dt>Assets</dt>
-      <dd>
-        <ul>
-          {% for a in slide.assets.all %}
-          <li><a href="{{ a.url }}">{{ a.file_name }}</a> - {{ a.last_update }}</li>
-          {% endfor %}
-        </ul>
-      </dd>
-    </dl>
+<div class="slidebox {{ client.get_class_tags }} ui-corner-all"
+  id="slide-{{ slide.id }}">
+  <img src="{{ slide.thumbnailurl }}" alt="{{ slide.title }}"
+       title="{{ slide.title }}" height="125" width="200" class="slidepreview">
+  {{ client.id_user_part }}
+  <div class="infopopup" title="{{slide.title}}"
+    id="infobox-slide-{{ slide.id }}">
+    Slide information goes here
+    <div id="save-slide{{ slide.id }}" class="ui-state-default ui-corner-all"
+         title="Save">
+      <span class="ui-icon ui-icon-disk"></span></div>
   </div>
 </div>
 {% endfor %}
+</div>
 {% endblock %}
