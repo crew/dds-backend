@@ -39,7 +39,7 @@ function setupdialogs() {
 }
 
 function updateclients() {
-  $.getJSON('/json/activity/all',
+  $.getJSON(jsonupdateurl,
     function(data){
       $.each(data, function(i,client_activity) {
         div = $('#client-'+client_activity['client']['hash'])
