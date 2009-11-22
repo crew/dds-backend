@@ -156,10 +156,10 @@ class Client(models.Model):
         tags = ['client-location-%s' % self.location.id]
         for group in self.groups.all():
             tags.append('client-group-%s' % group.id)
-            if self.active():
-                tags.append('client-online')
-            else:
-                tags.append('client-offline')
+        if self.active():
+            tags.append('client-online')
+        else:
+            tags.append('client-offline')
         return ' '.join(tags)
 
     def slideinfo(self):
@@ -170,7 +170,7 @@ class Client(models.Model):
             path = '%s/images/offline.png' % settings.MEDIA_URL
             caption = 'Client Offline'
         else:
-            path = self.currentslide().thumnailurl()
+            path = self.currentslide().thumbnailurl()
             caption = self.currentslide().title
         return path, caption
 
@@ -220,7 +220,11 @@ class ClientActivity(models.Model):
         p = self.__dict__
         c = self.client
         p['client'] = c.__dict__
+        p['client']['hash'] = c.id_hash()
         p['client']['url'] = reverse('orwell-client-info', args=[c.pk])
+        slide_info = c.slideinfo()
+        p['client']['screenshot'] = slide_info[0]
+        p['client']['caption'] = slide_info[1]
         p['slide'] = None
         if self.current_slide:
             s = self.current_slide

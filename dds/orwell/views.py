@@ -45,6 +45,10 @@ def slide_index(request):
                                 'groups' : Group.objects.all()},
                               context_instance=RequestContext(request))
 
+def slide_json(request):
+    return generic_index(request, Slide, SlideForm(),
+                         'orwell/slide-json.js', 'slides')
+
 def slide_info(request, slide_id):
     try:
         slide = Slide.objects.get(pk=slide_id)
