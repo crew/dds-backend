@@ -134,7 +134,7 @@ class Client(models.Model):
         else:
             path = '/media/images/unknown.png'
             caption = self.currentslide().title
-            return path, caption
+        return path, caption
 
     def thumbnailurl(self):
         return self.slideinfo()[0]
