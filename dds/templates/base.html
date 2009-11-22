@@ -10,6 +10,7 @@
 
     <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/{% block style %}base.css{% endblock %}">
 
+
 {% block scripts %}{% endblock %}
 </head>
 <body>
@@ -42,5 +43,6 @@
 <div class="content">
 {% block content %}{% endblock %}
 </div>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/base.js"></script>
 </body>
 </html>
