@@ -40,8 +40,10 @@ def generic_index(request, cls, form, template, variable_name):
 
 @login_required
 def slide_index(request):
-    return generic_index(request, Slide, SlideForm(),
-                         'orwell/slide-index.html', 'slides')
+    return render_to_response('orwell/slide-index.html',
+                              { 'slides' : Slide.objects.all(),
+                                'groups' : Group.objects.all()},
+                              context_instance=RequestContext(request))
 
 def slide_info(request, slide_id):
     try:

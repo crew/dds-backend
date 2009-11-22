@@ -61,6 +61,10 @@ class Slide(models.Model):
 
         return (slide, assets)
 
+    def get_class_tags(self):
+        """Get a list of textual tags for this slide."""
+        return 'slide-group-%d' % self.group.id
+
     def thumbnailurl(self):
         ssbase = '/media/screenshots/'
         if self.id in [1,2,7,8,10]:

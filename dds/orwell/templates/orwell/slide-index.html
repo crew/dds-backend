@@ -1,18 +1,12 @@
 {% extends "orwell/base-index.html" %}
 {% block title %}Slides{% endblock %}
 {% block scripts %}
-<script type="text/javascript" src="/media/js/clientindex.js"></script>
+<script type="text/javascript" src="/media/js/slideindex.js"></script>
 {% endblock %}
 
 {% block content %}
 <h1>Slides</h1>
 <form id="slidefilterform">
-<select id="locationselect">
-  <option value="">--Location--</option>
-  {% for loc in locations %}
-  <option value="{{loc.id}}">{{loc}}</option>
-  {% endfor %}
-</select>
 <select id="groupselect">
   <option value="">--Group--</option>
   {% for grp in groups %}
@@ -23,11 +17,11 @@
 </form>
 <div id="slidearea">
 {% for slide in slides %}
-<div class="slidebox {{ client.get_class_tags }} ui-corner-all"
+<div class="slidebox {{ slide.get_class_tags }} ui-corner-all"
   id="slide-{{ slide.id }}">
   <img src="{{ slide.thumbnailurl }}" alt="{{ slide.title }}"
        title="{{ slide.title }}" height="125" width="200" class="slidepreview">
-  {{ client.id_user_part }}
+  {{ slide.title }}
   <div class="infopopup" title="{{slide.title}}"
     id="infobox-slide-{{ slide.id }}">
     Slide information goes here
