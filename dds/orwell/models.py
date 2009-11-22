@@ -153,12 +153,13 @@ class Client(models.Model):
         return ' '.join(tags)
 
     def slideinfo(self):
-        if not self.active():
+        curslide = self.currentslide()
+        if curslide is None:
             path = os.path.join(settings.MEDIA_URL, 'images', 'offline.png')
             caption = 'Client Offline'
         else:
-            path = self.currentslide().thumbnailurl()
-            caption = self.currentslide().title
+            path = curslide.thumbnailurl()
+            caption = curslide.title
         return path, caption
 
     def thumbnailurl(self):

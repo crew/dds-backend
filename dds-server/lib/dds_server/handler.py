@@ -163,6 +163,6 @@ class DDSHandler(object):
             location, loc_created = Location.objects.get_or_create(name='Unknown')
             c.location = location
             group, group_created = Group.objects.get_or_create(name='Unregistered clients')
-            c.groups = [group]
+            c.groups.add(group)
             c.save()
         return c
