@@ -19,7 +19,7 @@ class SlideAdmin(admin.ModelAdmin):
                        'transition'),
         }),
         ('Assets', {
-            'fields': ('assets',),
+            'fields': ('assets', 'thumbnail'),
         }),
     )
 
