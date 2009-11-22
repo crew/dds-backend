@@ -13,7 +13,7 @@ from datetime import datetime
 
 
 class Slide(models.Model):
-    SCREENSHOTS_DIR = 'screenshots'
+    UPLOAD_PATH = 'slidethumbnails'
     MODE_CHOICES = (
         (0, 'layout'),
         (1, 'module'),
@@ -37,6 +37,8 @@ class Slide(models.Model):
     transition = models.IntegerField(choices=TRANSITION_CHOICES, default=0)
     last_update = models.DateTimeField(auto_now=True)
     assets = models.ManyToManyField('Asset', related_name='slides', blank=True)
+    thumbnail = models.FileField(max_length=300, upload_to=temp_upload_to,
+                                 null=True)
 
     def all_assets(self):
         """Return the list of Assets used by this Slide."""
@@ -87,6 +89,66 @@ class Slide(models.Model):
 
     def __unicode__(self):
         return '%s %s %s' % (self.title, self.user, self.group)
+
+    def upload_dir(self):
+        return '%s/%s/%d' % (settings.MEDIA_ROOT, self.__class__.UPLOAD_PATH,
+                             self.pk)
+
+    def is_temporary(self):
+        if not self.file:
+            return True
+        p = self.file.path
+        return p.startswith('%s/%s/' % (settings.MEDIA_ROOT, 'tmp'))
+
+    def _acquire_pk(self):
+        """Pre-allocate the primary key by creating an empty object and saving
+        it, but only if needed.
+        >>> a = Asset()
+        >>> not a.pk
+        True
+        >>> not a._acquire_pk()
+        False
+        """
+        if not self.pk:
+            temp = self.__class__()
+            super(temp.__class__, temp).save()
+            self.pk = temp.pk
+        return self.pk
+
+    def save(self, force_insert=False, force_update=False):
+        """Adds a scaffold option. When scaffold is True, the file field
+        is not renamed."""
+        self._acquire_pk()
+
+        # Load the file onto the file system
+        super(self.__class__, self).save(force_insert=force_insert,
+                                         force_update=force_update)
+
+        if not self.file.name:
+            return
+
+        if not self.file.closed:
+            self.file.close()
+
+        # Create the new directory.
+        file_new_dir = self.upload_dir()
+        if not os.path.isdir(file_new_dir):
+            os.makedirs(file_new_dir, 0755)
+
+        # Find the new path
+        file_new_path = os.path.join(file_new_dir,
+                                     os.path.basename(self.file.path))
+
+        # XXX Should we remove the old file or not?
+        # Move the file, then delete the temporary directory.
+        shutil.move(self.file.path, file_new_path)
+        temp_dir = os.path.dirname(self.file.path)
+        if len(os.listdir(temp_dir)) == 0:
+            os.rmdir(temp_dir)
+        self.file = file_new_path
+
+        super(self.__class__, self).save(force_insert=force_insert,
+                                         force_update=force_update)
 
 # Signals for Slide
 register_signals(Slide, pre_save=signalhandlers.slide_pre_save,
