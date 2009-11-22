@@ -34,7 +34,7 @@ class DDSHandler(object):
         try:
             client = self.get_client(jid.getStripped())
             if client:
-                client_activity = client.clientactivity
+                client_activity = client.activity
                 if (typ == 'unavailable'):
                     logging.info('%s : has gone offline.' % jid)
                     client_activity.active = False
@@ -43,8 +43,12 @@ class DDSHandler(object):
                     self.send_initial_slides(dispatch, jid, client.all_slides())
                     client_activity.active = True
                 else:
-                    slide_id = int(pr.getStatus())
-                    client_activity.current_slide = Slide.objects.get(pk=slide_id)
+                    try:
+                      slide_id = int(pr.getStatus())
+                      curslide = Slide.objects.get(pk=slide_id)
+                      client_activity.current_slide = curslide
+                    except:
+                      logging.exception('Error setting current slide')
                 client_activity.save()
         except ObjectDoesNotExist, e:
             logging.info("No client activity for this client")
@@ -53,7 +57,7 @@ class DDSHandler(object):
             client_activity.save()
             self.presence_handle(dispatch, pr)
         except Exception, e:
-            logging.error('%s' % e)
+            logging.exception('Exception while setting presence')
         raise xmpp.NodeProcessed
 
     def iq_handle(self, dispatch, iq):
