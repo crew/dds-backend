@@ -70,7 +70,7 @@ class Slide(models.Model):
         if self.thumbnail:
             return self.thumbnail.url()
         else:
-            return '%s/images/unknown.png' % settings.MEDIA_URL
+            return os.path.join(settings.MEDIA_URL, 'images', 'unknown.png')
 
     def allowed(self, user):
         return self.group in user.groups or user.is_staff
@@ -153,11 +153,8 @@ class Client(models.Model):
         return ' '.join(tags)
 
     def slideinfo(self):
-        ssbase = '%s/%s' % (settings.MEDIA_URL, Slide.SCREENSHOT_DIR)
         if not self.active():
-            # XXX Hack. This needs to be fixed to be path agnostic
-            #     and configurable.
-            path = '%s/images/offline.png' % settings.MEDIA_URL
+            path = os.path.join(settings.MEDIA_URL, 'images', 'offline.png')
             caption = 'Client Offline'
         else:
             path = self.currentslide().thumbnailurl()
