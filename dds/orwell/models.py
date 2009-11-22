@@ -101,7 +101,7 @@ class Client(models.Model):
 
     def jid(self):
         """The jabber id of the client."""
-        return '%s/%s' % (self.pk % settings.J_CLIENT_RESOURCE)
+        return '%s/%s' % (self.pk, settings.J_CLIENT_RESOURCE)
 
     # XXX hack, the add function should wait till Client's save
     #     to do the actual save.
