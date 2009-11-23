@@ -28,8 +28,12 @@ class DDSHandler(object):
     def presence_handle(self, dispatch, pr):
         """If a client sends presence, send its initial slides."""
         jid = pr.getFrom()
+        jidto = pr.getTo()
+        if jid.getStripped() == jidto.getStripped():
+          logging.debug('Skipping message from self')
+          return
         typ = pr.getType()
-        logging.debug('%s : got presence.' % jid)
+        logging.debug('%s : got presence. %s' % (jid, jidto))
 
         try:
             client = self.get_client(jid.getStripped())
