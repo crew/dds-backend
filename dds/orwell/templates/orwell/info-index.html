@@ -2,11 +2,11 @@
 {% block title %}Digital Display Manager{% endblock %}
 {% block content %}
 <ul>
-  <li><button class="fg-button ui-state-default ui-corner-all" type="button">
-  Display Status</button>
-  <li><button class="fg-button ui-state-default ui-corner-all" type="button">
-  Slide Management</button>
-  <li><button class="fg-button ui-state-default ui-corner-all" type="button">
-    WYSIWYG Editor</button>
+  <li><a href="{% url orwell-client-index %}"
+         class="fg-button ui-state-default ui-corner-all">Display Status</a>
+  <li><a href="{% url orwell-slide-index %}"
+         class="fg-button ui-state-default ui-corner-all">Slide Management</a>
+  <li><a href="http://www.google.com/search?q=not+done+yet"
+         class="fg-button ui-state-default ui-corner-all">WYSIWYG Editor</a>
 </ul>
 {% endblock %}
