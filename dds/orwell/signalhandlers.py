@@ -5,7 +5,7 @@ from dds.utils import generate_request
 
 def j_post_save(sender, instance, created, **kwargs):
     """Send the instance to Clients that are allowed."""
-    client = settings.JABBER_CLIENT
+    jabber = settings.JABBER_CLIENT
 
     if created:
         method_name = 'add%s' % sender.__name__
@@ -13,20 +13,18 @@ def j_post_save(sender, instance, created, **kwargs):
         method_name = 'update%s' % sender.__name__
 
     for c in instance.all_clients():
-        client.send_parsed_model('%s/%s' % (c.pk, settings.J_CLIENT_RESOURCE),
-                                 instance.parse(), method_name)
+        jabber.send_parsed_model(c.jid(), instance.parse(), method_name)
 
 
 def j_pre_delete(sender, instance, **kwargs):
     """Notify the Clients before deleting from the database."""
-    client = settings.JABBER_CLIENT
+    jabber = settings.JABBER_CLIENT
 
     method_name = 'remove%s' % sender.__name__
 
     for c in instance.all_clients():
         request = generate_request((instance.pk,), method_name)
-        client.send_request('%s/%s' % (c.pk, settings.J_CLIENT_RESOURCE),
-                            request)
+        jabber.send_request(c.jid(), request)
 
 
 def slide_pre_save(sender, instance, **kwargs):
@@ -51,6 +49,7 @@ def asset_post_save(sender, instance, created, **kwargs):
 
 
 def client_to_group_pre_save(sender, instance, **kwargs):
+    jabber = settings.JABBER_CLIENT
     try:
         ctg = sender.objects.get(pk=instance.pk)
     except:
@@ -59,17 +58,13 @@ def client_to_group_pre_save(sender, instance, **kwargs):
 
     # The group differs, so remove the old group.
     if ctg.group != instance.group:
-        c = ctg.client
         for s in ctg.group.slides.all():
             request = generate_request((s.pk,), 'removeSlide')
-            jid = '%s/%s' % (instance.client.pk, settings.J_CLIENT_RESOURCE)
-            client.send_request(jid, request)
+            jabber.send_request(instance.client.jid(), request)
 
 
 def client_to_group_post_save(sender, instance, created, **kwargs):
-    client = settings.JABBER_CLIENT
+    jabber = settings.JABBER_CLIENT
     group = instance.group
     for s in group.slides.all():
-        request = generate_request((s.pk,), 'removeSlide')
-        jid = '%s/%s' % (instance.client.pk, settings.J_CLIENT_RESOURCE)
-        client.send_request(jid, request)
+        jabber.send_parsed_model(instance.client.jid(), s.parse(), 'addSlide')
