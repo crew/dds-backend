@@ -123,8 +123,11 @@ class Client(models.Model):
         hash.update(self.client_id)
         return hash.hexdigest()
 
-    def id_user_part(self):
-        return self.client_id.split('@')[0]
+    def displayname(self):
+        if self.name == 'Unnamed':
+            return self.client_id.split('@')[0]
+        else:
+            return self.name
 
     def all_slides(self):
         """Return all the Slides allowed."""

@@ -30,7 +30,7 @@ class ClientToGroupInline(admin.TabularInline):
 
 
 class ClientAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'location', 'last_contact')
+    list_display = ('name', 'pk', 'location', 'last_contact')
     inlines = [
         ClientToGroupInline,
     ]
