@@ -2,7 +2,7 @@
 #
 # The Initial Developer of the Original Code is
 # The Northeastern University CCIS Volunteer Systems Group
-# 
+#
 # Contributor(s):
 #   Alex Lee <lee@ccs.neu.edu>
 #
@@ -12,7 +12,6 @@ import logging
 import xmpp
 import gflags as flags
 from daemonize import daemonize
-from handler import DDSHandler
 
 flags.DEFINE_string('config_file', '/etc/dds-server.conf',
                     'Path to the configuration file')
@@ -21,7 +20,7 @@ flags.DEFINE_string('config_section', 'DEFAULT',
 flags.DEFINE_string('log_file', None, 'Log file path')
 flags.DEFINE_boolean('debug', False, 'Enable debugging')
 flags.DEFINE_boolean('daemonize', True, 'Enable Daemon Mode')
-
+flags.DEFINE_string('dds_path', '/', 'Path to the dds module.')
 FLAGS = flags.FLAGS
 
 
@@ -29,12 +28,13 @@ def parse_config():
     import ConfigParser
     config = ConfigParser.RawConfigParser()
     config.read(FLAGS.config_file)
-    return [ config.get(FLAGS.config_section, 'username'),
-             config.get(FLAGS.config_section, 'password'),
-             config.get(FLAGS.config_section, 'resource'),
-             config.get(FLAGS.config_section, 'server'),
-             config.get(FLAGS.config_section, 'log'),
-             config.getboolean(FLAGS.config_section, 'debug'), ]
+    return [config.get(FLAGS.config_section, 'username'),
+            config.get(FLAGS.config_section, 'password'),
+            config.get(FLAGS.config_section, 'resource'),
+            config.get(FLAGS.config_section, 'server'),
+            config.get(FLAGS.config_section, 'log'),
+            config.getboolean(FLAGS.config_section, 'debug'),
+            config.get(FLAGS.config_section, 'dds-path'), ]
 
 
 def get_options():
@@ -59,8 +59,14 @@ def alive(dispatch):
 
 
 def main():
-    (username, password, resource, server, log, debug) = get_options()
-    handler = DDSHandler()
+    (username, password, resource, server, log, debug, path) = get_options()
+    # Delayed import because the path is not set before this point.
+    sys.path.insert(0, path)
+    try:
+        from handler import DDSHandler
+        handler = DDSHandler()
+    except ImportError:
+        logging.critical('The path to DDS is not set.')
 
     if FLAGS.daemonize:
         daemonize()

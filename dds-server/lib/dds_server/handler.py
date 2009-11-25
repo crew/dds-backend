@@ -1,3 +1,4 @@
+# vim: set tabstop=4 softtabstop=4 shiftwidth=4 expandtab :
 """DDS XMPP Server Executable.
 
 ***** BEGIN LICENCE BLOCK *****
@@ -11,16 +12,13 @@ Contributor(s):
 ***** END LICENCE BLOCK *****
 """
 
+__author__ = 'Alex Lee <lee@ccs.neu.edu>'
+
 import xmlrpclib
 import xmpp
 import logging
-import os
-
-os.environ['DJANGO_SETTINGS_MODULE'] = 'dds.settings'
-from django.core.exceptions import ObjectDoesNotExist
-from dds.orwell.models import Client, ClientActivity, Slide, Location
-from django.contrib.auth.models import Group
-from dds.utils import generate_request
+import dblayer
+from dblayer import generate_request
 
 
 class DDSHandler(object):
@@ -30,38 +28,33 @@ class DDSHandler(object):
         jid = pr.getFrom()
         jidto = pr.getTo()
         if jid.getStripped() == jidto.getStripped():
-          logging.debug('Skipping message from self')
-          return
+            logging.debug('Skipping message from self')
+            return
         typ = pr.getType()
         logging.debug('%s : got presence. %s' % (jid, jidto))
 
-        try:
-            client = self.get_client(jid.getStripped())
-            if client:
-                client_activity = client.activity
-                if (typ == 'unavailable'):
-                    logging.info('%s : has gone offline.' % jid)
-                    client_activity.active = False
-                    client_activity.current_slide = None
-                elif (pr.getStatus() == 'initialsliderequest'):
-                    self.send_initial_slides(dispatch, jid, client.all_slides())
-                    client_activity.active = True
-                else:
-                    try:
-                      slide_id = int(pr.getStatus())
-                      curslide = Slide.objects.get(pk=slide_id)
-                      client_activity.current_slide = curslide
-                    except:
-                      logging.exception('Error setting current slide')
-                client_activity.save()
-        except ObjectDoesNotExist, e:
+        client = None
+
+        logging.debug('%s : looking for client in the database.' % jid)
+        jid_stripped = jid.getStripped()
+        client, client_created = dblayer.get_client(jid_stripped)
+        activity, activity_created = dblayer.get_activity(jid_stripped)
+
+        if client_created:
+            logging.debug('%s : registered previously unseen client' % jid)
+        if activity_created:
             logging.info("No client activity for this client")
-            client = self.get_client(jid.getStripped())
-            client_activity = ClientActivity(client=client)
-            client_activity.save()
             self.presence_handle(dispatch, pr)
-        except Exception, e:
-            logging.exception('Exception while setting presence')
+
+        if client:
+            if (pr.getStatus() == 'initialsliderequest'):
+                self.send_initial_slides(dispatch, jid, client.all_slides())
+            ca = client.activity
+            ca.active = (typ != 'unavailable')
+            ca.current_slide = dblayer.get_slide(pr.getStatus())
+            ca.save()
+            if not ca.active:
+                logging.info('%s : has gone offline.' % jid)
         raise xmpp.NodeProcessed
 
     def iq_handle(self, dispatch, iq):
@@ -69,7 +62,7 @@ class DDSHandler(object):
         iq_type = iq.getType()
         ns = iq.getQueryNS()
 
-        logging.debug('Got IQ from %s' % jid)
+        logging.debug('%s : got IQ' % jid)
         if not jid:
             logging.debug('No jid')
             raise xmpp.NodeProcessed
@@ -130,43 +123,23 @@ class DDSHandler(object):
             # TODO: Make this happen
             pass
 
+    @classmethod
+    def get_iq(cls, jid, typ, request):
+        iq = xmpp.Iq(to=jid, typ=typ)
+        iq.setQueryNS(xmpp.NS_RPC)
+        iq.setQueryPayload(request)
+        return iq
+
     def add_slide(self, dispatch, jid, slide, method_name='addSlide'):
         """Sends a parsed Slide object to the Jabber id."""
         logging.info('%s : sending slide %d.' % (jid, slide.pk))
         request = generate_request(slide.parse(), methodname=method_name)
-
-        iq = xmpp.Iq(to=jid, typ='set')
-        iq.setQueryNS(xmpp.NS_RPC)
-        iq.setQueryPayload(request)
-
-        dispatch.send(iq)
+        dispatch.send(self.get_iq(jid, 'set', request))
         logging.info('%s : sent slide %d.' % (jid, slide.pk))
 
-    def send_error(self, dispatch, jid, payload=('error',)):
+    def send_error(self, dispatch, jid, payload=('error', )):
         """Sends an error."""
         logging.info('%s : sending error' % jid)
         request = generate_request(payload)
-
-        iq = xmpp.Iq(to=jid, typ='error')
-        iq.setQueryNS(xmpp.NS_RPC)
-        iq.setQueryPayload(request)
-
-        dispatch.send(iq)
+        dispatch.send(self.get_iq(jid, 'error', request))
         logging.info('%s : sent error' % jid)
-
-    def get_client(self, jid):
-        """ Gets the Client from Django, if one exists. """
-        logging.debug('%s : looking for client in the database.' % jid)
-        try:
-            c, created = Client.objects.get_or_create(pk=jid)
-        except:
-            logging.debug('%s : client is not found.' % jid)
-            return None
-        if created:
-            logging.debug('%s : registering previously unseen client' % jid)
-            location, loc_created = Location.objects.get_or_create(name='Unknown')
-            c.location = location
-            group, group_created = Group.objects.get_or_create(name='Unregistered clients')
-            c.groups.add(group)
-            c.save()
-        return c
