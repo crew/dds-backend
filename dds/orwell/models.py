@@ -1,4 +1,4 @@
-# vim: set shiftwidth=4 tabstop=4 softtabstop=4 :
+# vim: set shiftwidth=4 tabstop=4 softtabstop=4 expandtab :
 from django.db import models
 from django.contrib.auth.models import User, Group
 from django.conf import settings
@@ -10,6 +10,14 @@ import shutil
 import os
 import json
 from datetime import datetime
+
+
+class Message(models.Model):
+    message = models.TextField()
+    timestamp = models.DateTimeField(auto_now=True)
+
+    def tuple(self):
+        return self.message, self.timestamp
 
 
 class Slide(models.Model):
@@ -79,9 +87,9 @@ class Slide(models.Model):
         return '%s %s %s' % (self.title, self.user, self.group)
 
 # Signals for Slide
-register_signals(Slide, pre_save=signalhandlers.slide_pre_save,
-                        post_save=signalhandlers.j_post_save,
-                        pre_delete=signalhandlers.j_pre_delete)
+register_signals(Slide, pre_save=signalhandlers.slide_m_pre_save,
+                        post_save=signalhandlers.slide_m_post_save,
+                        pre_delete=signalhandlers.slide_m_pre_delete)
 
 
 class Location(models.Model):
@@ -284,7 +292,6 @@ class Asset(models.Model):
     def __save_file(self):
         if not self.file.name:
             return
-
         if not self.file.closed:
             self.file.close()
 
@@ -307,8 +314,3 @@ class Asset(models.Model):
 
     def save(self, *args, **kwargs):
         scaffolded_save(self, self.__class__.__save_file, *args, **kwargs)
-
-
-# Signals for Asset
-register_signals(Asset, post_save=signalhandlers.asset_post_save,
-                        pre_delete=signalhandlers.j_pre_delete)

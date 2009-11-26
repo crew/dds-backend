@@ -9,8 +9,6 @@
 #
 # ***** END LICENCE BLOCK *****
 
-import xmpp
-import xmlrpclib
 import os
 import threading
 import time
@@ -40,69 +38,6 @@ def root(file_path):
     join = os.path.join
     return (lambda *base: normpath(join(dir, *base)).replace('\\', '/'))
 
-
-def generate_request(variables, methodname=None, methodresponse=None,
-                     encoding='utf-8', allow_none=False):
-    """Create an xml format of the varibles and the methodname if given."""
-    request = xmlrpclib.dumps(variables, methodname, methodresponse, encoding,
-                              allow_none)
-    return [xmpp.simplexml.NodeBuilder(request).getDom()]
-
-
-class JabberClientWrapper(object):
-    """A wrapper for xmpp.Client"""
-    _client = None
-    _pinger = None
-
-    def __init__(self, username='', password='', resource='', server='',
-                 port=5222, proxy=None, ssl=None, use_srv=True, debug=[]):
-        if self.__class__._client:
-            self.client = self.__class__._client
-            self.refresh()
-            return
-
-        self.__class__._client = xmpp.Client(server, port, debug)
-        self.client = self.__class__._client
-        self.client.connect(proxy=proxy, secure=ssl, use_srv=use_srv)
-        if self.client.isConnected():
-            self.client.auth(username, password, resource)
-            self.client.sendInitPresence(requestRoster=1)
-        self.client.UnregisterDisconnectHandler(self.client.DisconnectHandler)
-        self.__class__._pinger = threading.Thread(target=self.__class__.pinger)
-        self.__class__._pinger.daemon = True
-        self.__class__._pinger.start()
-
-    @classmethod
-    def pinger(cls):
-        while True:
-            cls._client.sendPresence()
-            time.sleep(10)
-
-    def refresh(self):
-        if not self.client.isConnected():
-            self.client.reconnectAndReauth()
-            self.client.sendPresence()
-
-    def send_model(self, jid, model, function):
-        """Sends a django model with the function name."""
-        m = model.__class__.objects.values().get(pk=model.pk)
-        request = generate_request((m, ), function)
-        self.send_request(jid, request)
-
-    def send_parsed_model(self, jid, parsed_model, function):
-        """Send a django model, but parse it with the given function, the
-        parser should return a tuple."""
-        request = generate_request(parsed_model, function)
-        self.send_request(jid, request)
-
-    def send_request(self, jid, request, typ = 'set'):
-        """Send the given request over Jabber. The request must be an xml
-        node."""
-        self.refresh()
-        iq = xmpp.Iq(to = jid, typ = typ)
-        iq.setQueryNS(xmpp.NS_RPC)
-        iq.setQueryPayload(request)
-        self.client.send(iq)
 
 if __name__ == '__main__':
     import doctest

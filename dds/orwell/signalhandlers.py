@@ -1,55 +1,32 @@
-from datetime import datetime
-from django.conf import settings
-from dds.utils import generate_request
+import json
 
 
-def j_post_save(sender, instance, created, **kwargs):
-    """Send the instance to Clients that are allowed."""
-    jabber = settings.JABBER_CLIENT
-
-    if created:
-        method_name = 'add%s' % sender.__name__
-    else:
-        method_name = 'update%s' % sender.__name__
-
-    for c in instance.all_clients():
-        jabber.send_parsed_model(c.jid(), instance.parse(), method_name)
-
-
-def j_pre_delete(sender, instance, **kwargs):
-    """Notify the Clients before deleting from the database."""
-    jabber = settings.JABBER_CLIENT
-
-    method_name = 'remove%s' % sender.__name__
-
-    for c in instance.all_clients():
-        request = generate_request((instance.pk,), method_name)
-        jabber.send_request(c.jid(), request)
-
-
-def slide_pre_save(sender, instance, **kwargs):
-    """Sends the Clients a remove signal over jabber if the group for the
-    slide has changed."""
+def slide_m_pre_save(sender, instance, **kwargs):
+    from models import Message
     try:
-        slide = sender.objects.get(pk=instance.pk)
+        sender.objects.get(pk=instance.pk)
     except:
         return
+    message = {'method': 'add', 'slide': instance.pk,
+               'assets': instance.assets.count()}
+    Message(message=json.dumps(message)).save()
 
-    if not instance.group == slide.group:
-        j_pre_delete(sender, slide, **kwargs)
-        j_post_save(sender, instance, True, **kwargs)
+
+def slide_m_post_save(sender, instance, created, **kwargs):
+    from models import Message
+    if created:
+        message = {'method': 'add', 'slide': instance.pk,
+                   'assets': instance.assets.count()}
+        Message(message=json.dumps(message)).save()
 
 
-def asset_post_save(sender, instance, created, **kwargs):
-    if created or instance.is_temporary():
-        return
-
-    for slide in instance.all_slides():
-        j_post_save(slide.__class__, slide, False, **kwargs)
+def slide_m_pre_delete(sender, instance, **kwargs):
+    from models import Message
+    message = {'method': 'delete', 'slide': instance.pk}
+    Message(message=json.dumps(message)).save()
 
 
 def client_to_group_pre_save(sender, instance, **kwargs):
-    jabber = settings.JABBER_CLIENT
     try:
         ctg = sender.objects.get(pk=instance.pk)
     except:
@@ -59,12 +36,17 @@ def client_to_group_pre_save(sender, instance, **kwargs):
     # The group differs, so remove the old group.
     if ctg.group != instance.group:
         for s in ctg.group.slides.all():
-            request = generate_request((s.pk,), 'removeSlide')
-            jabber.send_request(instance.client.jid(), request)
+            message = {'method': 'delete', 'slide': s.pk,
+                       'to': ctg.client.jid()}
+            Message(message=message).save()
 
 
 def client_to_group_post_save(sender, instance, created, **kwargs):
-    jabber = settings.JABBER_CLIENT
     group = instance.group
     for s in group.slides.all():
-        jabber.send_parsed_model(instance.client.jid(), s.parse(), 'addSlide')
+        message = {'method': 'add', 'slide': s.pk,
+                   'to': instance.client.jid()}
+        Message(message=message).save()
+
+
+# TODO client_to_group_pre_delete

@@ -94,8 +94,8 @@ AUTHENTICATION_BACKENDS = (
 )
 
 ############# Jabber ############
-JABBER_CLIENT = utils.JabberClientWrapper('test', 'test', 'dds-server',
-                                          'dds-master.ccs.neu.edu')
+# JABBER_CLIENT = utils.JabberClientWrapper('test', 'test', 'dds-server',
+#                                           'dds-master.ccs.neu.edu')
 J_CLIENT_RESOURCE = 'dds-client'
 
 ############# LDAP ##############
