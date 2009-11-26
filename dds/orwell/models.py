@@ -3,7 +3,7 @@ from django.db import models
 from django.contrib.auth.models import User, Group
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from utils import register_signals, temp_upload_to
+from utils import register_signals, temp_upload_to, scaffolded_save
 import hashlib
 import signalhandlers
 import shutil
@@ -281,30 +281,7 @@ class Asset(models.Model):
         p = self.file.path
         return p.startswith('%s/%s/' % (settings.MEDIA_ROOT, 'tmp'))
 
-    def _acquire_pk(self):
-        """Pre-allocate the primary key by creating an empty object and saving
-        it, but only if needed.
-        >>> a = Asset()
-        >>> not a.pk
-        True
-        >>> not a._acquire_pk()
-        False
-        """
-        if not self.pk:
-            temp = self.__class__()
-            super(temp.__class__, temp).save()
-            self.pk = temp.pk
-        return self.pk
-
-    def save(self, force_insert=False, force_update=False):
-        """Adds a scaffold option. When scaffold is True, the file field
-        is not renamed."""
-        self._acquire_pk()
-
-        # Load the file onto the file system
-        super(self.__class__, self).save(force_insert=force_insert,
-                                         force_update=force_update)
-
+    def __save_file(self):
         if not self.file.name:
             return
 
@@ -328,8 +305,8 @@ class Asset(models.Model):
             os.rmdir(temp_dir)
         self.file = file_new_path
 
-        super(self.__class__, self).save(force_insert=force_insert,
-                                         force_update=force_update)
+    def save(self, *args, **kwargs):
+        scaffolded_save(self, self.__class__.__save_file, *args, **kwargs)
 
 
 # Signals for Asset
