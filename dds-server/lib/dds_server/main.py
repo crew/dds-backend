@@ -1,3 +1,4 @@
+# vim: set shiftwidth=4 tabstop=4 softtabstop=4 expandtab :
 # ***** BEGIN LICENCE BLOCK *****
 #
 # The Initial Developer of the Original Code is
@@ -7,11 +8,13 @@
 #   Alex Lee <lee@ccs.neu.edu>
 #
 # ***** END LICENCE BLOCK *****
+import os
 import sys
 import logging
 import xmpp
 import gflags as flags
 from daemonize import daemonize
+from harvest import Combine
 
 flags.DEFINE_string('config_file', '/etc/dds-server.conf',
                     'Path to the configuration file')
@@ -52,7 +55,8 @@ def get_options():
 def alive(dispatch):
     try:
         dispatch.Process(1)
-    except:
+    except Exception, e:
+        logging.error(str(e))
         logging.info('Connection closed.')
         return False
     return True
@@ -67,6 +71,8 @@ def main():
         handler = DDSHandler()
     except ImportError:
         logging.critical('The path to DDS is not set.')
+        sys.stderr.write('The dds module is not found.\n')
+        os.exit(1)
 
     if FLAGS.daemonize:
         daemonize()
@@ -85,19 +91,24 @@ def main():
         client.connect()
     except:
         logging.debug('Connecting to server failed.')
-        exit()
+        os.exit(2)
 
     try:
         client.auth(username, password, resource, sasl=False)
     except:
         logging.debug('Authorization failed.')
-        exit()
+        os.exit(3)
 
+    # Register the handlers.
     client.RegisterHandler('presence', handler.presence_handle)
     client.RegisterHandler('iq', handler.iq_handle, ns=xmpp.NS_RPC)
     client.sendInitPresence()
 
     logging.info('Connection started')
+
+    combine = Combine(client, timeout=10)
+    combine.daemon = True
+    combine.start() # wrrrrrrr
 
     while alive(client):
         pass

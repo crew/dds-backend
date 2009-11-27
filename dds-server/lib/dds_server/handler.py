@@ -43,7 +43,7 @@ class DDSHandler(object):
         if client_created:
             logging.debug('%s : registered previously unseen client' % jid)
         if activity_created:
-            logging.info("No client activity for this client")
+            logging.info('No client activity for this client')
             self.presence_handle(dispatch, pr)
 
         if client:

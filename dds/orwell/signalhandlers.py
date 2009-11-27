@@ -27,6 +27,7 @@ def slide_m_pre_delete(sender, instance, **kwargs):
 
 
 def client_to_group_pre_save(sender, instance, **kwargs):
+    from models import Message
     try:
         ctg = sender.objects.get(pk=instance.pk)
     except:
@@ -38,15 +39,16 @@ def client_to_group_pre_save(sender, instance, **kwargs):
         for s in ctg.group.slides.all():
             message = {'method': 'delete', 'slide': s.pk,
                        'to': ctg.client.jid()}
-            Message(message=message).save()
+            Message(message=json.dumps(message)).save()
 
 
 def client_to_group_post_save(sender, instance, created, **kwargs):
+    from models import Message
     group = instance.group
     for s in group.slides.all():
         message = {'method': 'add', 'slide': s.pk,
                    'to': instance.client.jid()}
-        Message(message=message).save()
+        Message(message=json.dumps(message)).save()
 
 
 # TODO client_to_group_pre_delete

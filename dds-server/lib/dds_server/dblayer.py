@@ -1,11 +1,24 @@
 # vim: set tabstop=4 softtabstop=4 shiftwidth=4 expandtab :
 import os
 os.environ['DJANGO_SETTINGS_MODULE'] = 'dds.settings'
-from dds.utils import generate_request
-from dds.orwell.models import Location, Client, Slide
+import xmpp
+import xmlrpclib
 from django.contrib.auth.models import Group
+from dds.orwell.models import Location, Client, ClientActivity, Slide, Message
 
 __author__ = 'Alex Lee <lee@ccs.neu.edu>'
+
+
+def collect_messages():
+    return Message.recent.all()
+
+
+def generate_request(variables, methodname=None, methodresponse=None,
+                     encoding='utf-8', allow_none=False):
+    """Create an xml format of the varibles and the methodname if given."""
+    request = xmlrpclib.dumps(variables, methodname, methodresponse, encoding,
+                              allow_none)
+    return [xmpp.simplexml.NodeBuilder(request).getDom()]
 
 
 def get_default_location():
@@ -37,8 +50,4 @@ def get_slide(pk):
 
 
 def get_activity(jid):
-    return ClientActivity.get_or_create(pk=jid)
-
-
-def generate_request(*args, **kwargs):
-    return dds.utils.generate_request(*args, **kwargs)
+    return ClientActivity.objects.get_or_create(pk=jid)
