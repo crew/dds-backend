@@ -222,7 +222,8 @@ class ClientToGroup(models.Model):
 
 register_signals(ClientToGroup,
                  pre_save=signalhandlers.client_to_group_pre_save,
-                 post_save=signalhandlers.client_to_group_post_save)
+                 post_save=signalhandlers.client_to_group_post_save,
+                 pre_delete=signalhandlers.client_to_group_pre_delete)
 
 
 class ClientActivity(models.Model):

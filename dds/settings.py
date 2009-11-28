@@ -6,8 +6,7 @@ import utils
 ROOT = utils.root(__file__)
 MODULE = utils.module(__file__)
 
-DEVELOP = True
-DEBUG = True or DEVELOP
+DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -94,15 +93,13 @@ AUTHENTICATION_BACKENDS = (
 )
 
 ############# Jabber ############
-# JABBER_CLIENT = utils.JabberClientWrapper('test', 'test', 'dds-server',
-#                                           'dds-master.ccs.neu.edu')
 J_CLIENT_RESOURCE = 'dds-client'
 
 ############# LDAP ##############
 LDAPBACKEND_HOST = 'ldap://cluster.ldap.ccs.neu.edu/'
 LDAPBACKEND_DN   = 'uid=%s,ou=people,dc=ccs,dc=neu,dc=edu'
 
-LOGIN_REDIRECT_URL = "/"
+LOGIN_REDIRECT_URL = '/'
 
 try:
     from local_settings import *
