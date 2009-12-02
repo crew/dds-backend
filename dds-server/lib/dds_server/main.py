@@ -14,7 +14,6 @@ import logging
 import xmpp
 import gflags as flags
 from daemonize import daemonize
-from harvest import Combine
 
 flags.DEFINE_string('config_file', '/etc/dds-server.conf',
                     'Path to the configuration file')
@@ -43,11 +42,13 @@ def parse_config():
 def get_options():
     all_list = parse_config()
 
+    # Sync up.
     if FLAGS.log_file:
         all_list[4] = FLAGS.log_file
-
     if FLAGS.debug:
         all_list[5] = FLAGS.debug
+    if FLAGS.dds_path != '/':
+        all_list[6] = FLAGS.dds_path
 
     return all_list
 
@@ -68,20 +69,19 @@ def main():
     sys.path.insert(0, path)
     try:
         from handler import DDSHandler
+        from harvest import Combine
         handler = DDSHandler()
     except ImportError:
         logging.critical('The path to DDS is not set.')
         sys.stderr.write('The dds module is not found.\n')
-        os.exit(1)
+        sys.exit(1)
 
     if FLAGS.daemonize:
         daemonize()
 
-    logging.basicConfig(level=logging.DEBUG,
+    logging.basicConfig(level=logging.DEBUG, filename=log, filemode='a',
                         format='%(asctime)s %(filename)s %(lineno)s '
-                               '%(levelname)s %(message)s',
-                        filename=log,
-                        filemode='a')
+                               '%(levelname)s %(message)s')
 
     if debug:
         client = xmpp.Client(server=server)
@@ -91,13 +91,13 @@ def main():
         client.connect()
     except:
         logging.debug('Connecting to server failed.')
-        os.exit(2)
+        sys.exit(2)
 
     try:
         client.auth(username, password, resource, sasl=False)
     except:
         logging.debug('Authorization failed.')
-        os.exit(3)
+        sys.exit(3)
 
     # Register the handlers.
     client.RegisterHandler('presence', handler.presence_handle)
@@ -110,5 +110,9 @@ def main():
     combine.daemon = True
     combine.start() # wrrrrrrr
 
-    while alive(client):
-        pass
+    try:
+        while alive(client):
+            pass
+    except KeyboardInterrupt:
+        logging.debug('Shutting down.')
+        sys.exit(0)
