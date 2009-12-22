@@ -25,19 +25,6 @@ def index(request):
                               { 'client_pairs' : client_pairs },
                               context_instance=RequestContext(request));
 
-def generic_index(request, cls, form, template, variable_name):
-    """
-    Args:
-        cls, a model.
-        template, the name of the template file.
-        variable_name, the name of the variable of all objects in the
-                       template.
-    """
-    return render_to_response(template,
-                              { variable_name : cls.objects.all(),
-                                variable_name + '_form' : form },
-                              context_instance=RequestContext(request))
-
 @login_required
 def slide_index(request):
     return render_to_response('orwell/slide-index.html',
@@ -53,34 +40,6 @@ def slide_info(request, slide_id):
 
     return render_to_response('orwell/slide-info.html', { 'slide' : slide },
                               context_instance=RequestContext(request))
-@login_required
-def asset_index(request):
-    return generic_index(request, Asset, AssetForm(),
-                         'orwell/asset-index.html', 'assets')
-
-def asset_info(request, asset_id):
-    try:
-        asset = Asset.objects.get(pk=asset_id)
-    except Asset.DoesNotExist:
-        return HttpResponse(status=404)
-
-    return render_to_response('orwell/asset-info.html', { 'asset' : asset },
-                              context_instance=RequestContext(request))
-
-@login_required
-def slide_add_asset(request, slide_id, asset_id):
-    try:
-        slide = Slide.objects.get(pk=slide_id)
-        # FIXME check access
-        asset = Asset.objects.get(pk=asset_id)
-        slide.assets.add(asset)
-    except Slide.DoesNotExist:
-        # TODO send error message
-        return HttpResponseRedirect('error.html')
-    except Asset.DoesNotExist:
-        return HttpResponseRedirect('error.html')
-
-    return HttpResponseRedirect('success.html')
 
 def client_index(request):
     return render_to_response('orwell/client-index.html',
@@ -104,74 +63,3 @@ def client_activity_all_json(request):
         all = [x.parse() for x in ClientActivity.objects.all()]
         return HttpResponse(json.dumps(all, default=str))
     return HttpResponseNotAllowed(['GET'])
-
-@login_required
-def manage_assets(request, slide_id, asset_id):
-    """
-    The HTTP interface to DDS.
-
-    GET slide_id asset_id
-
-    If asset_id is not present (i.e. None), get the slide and the assets.
-    Otherwise, return the asset.
-
-    POST slide_id asset_id
-
-    If asset_id is not present (i.e. None), treat the POST body as the single
-    file attached to the slide.
-    Otherwise, create an asset.
-
-    DELETE slide_id asset_id
-
-    If asset_id is not present (i.e. None), remove the slide.
-    Otherwise, remove the asset from the slide.
-
-    Relevant status codes:
-        200 (Success)
-        201 (Created)
-        404 (Not Found)
-        501 (Not Implemented)
-
-    """
-    if request.method == 'GET':
-        if asset_id:
-            try:
-                asset = Asset.objects.get(id=asset_id)
-                return HttpResponseRedirect(asset.url())
-            except Asset.DoesNotExist:
-                return HttpResponse(status=404)
-        else:
-            try:
-                slide = Slide.objects.get(id=slide_id)
-                data = serializers.serialize("xml", slide.assets.all())
-                return HttpResponse(data, mimetype="application/xml")
-            except Slide.DoesNotExist:
-                return HttpResponse(status=404)
-    elif request.method == 'POST':
-        if asset_id:
-            # XXX TODO FIXME CREATE AN ASSET VIA HTTP.
-            return HttpResponse(status=501)
-        else:
-            file = request.FILES['file']
-            slide = Slide.objects.get(id=slide_id)
-            asset = Asset.objects.create(content_type=file.content_type)
-            asset.file.save(file.name, file)
-            asset.slides.add(slide)
-            return HttpResponse(status=201)
-    elif request.method == 'DELETE':
-        if asset_id:
-            status = 404
-            try:
-                slide = Slide.objects.get(pk=slide_id)
-                asset = Slide.objects.get(pk=asset_id)
-                slide.assets.remove(asset)
-                status = 200
-            except (Slide.DoesNotExist, Asset.DoesNotExist):
-                pass
-        else:
-            # XXX TODO FIXME DELETE A SLIDE VIA HTTP.
-            status = 501
-        return HttpResponse(status=status)
-    else:
-        # PUT OPTIONS HEAD TRACE CONNECT
-        return HttpResponse(status=501)
