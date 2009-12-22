@@ -53,36 +53,6 @@ def slide_info(request, slide_id):
 
     return render_to_response('orwell/slide-info.html', { 'slide' : slide },
                               context_instance=RequestContext(request))
-
-@login_required
-def add_slide(request):
-    if request.method == 'GET':
-        slide = SlideForm()
-        return render_to_response('orwell/add-slide.html',
-                                  { 'slide' : slide },
-                                  context_instance=RequestContext(request))
-    elif request.method == 'POST':
-        slide_form = SlideForm(data=request.POST)
-        if slide_form.is_valid():
-            slide = slide_form.save()
-
-            # Add new assets
-            for key, val in request.FILES.items():
-                asset = Asset()
-                form = AssetForm({ 'slides' : [slide.pk] },
-                                 { 'file' : val },
-                                 instance=asset)
-                asset = form.save()
-                slide.assets.add(asset)
-
-            slide.save()
-
-            return HttpResponse('Slide added successfully.')
-        else:
-            return HttpResponseBadRequest()
-    else:
-        return HttpResponseNotAllowed(['GET', 'POST'])
-
 @login_required
 def asset_index(request):
     return generic_index(request, Asset, AssetForm(),
@@ -96,24 +66,6 @@ def asset_info(request, asset_id):
 
     return render_to_response('orwell/asset-info.html', { 'asset' : asset },
                               context_instance=RequestContext(request))
-
-@login_required
-def add_asset(request):
-    if request.method == 'GET':
-        asset = AssetForm()
-        return render_to_response('orwell/add-asset.html',
-                                  { 'asset' : asset },
-                                  context_instance=RequestContext(request))
-    elif request.method == 'POST':
-        asset = Asset()
-        asset_form = AssetForm(request.POST, request.FILES, instance=asset)
-        if asset_form.is_valid():
-            asset = asset_form.save()
-            return redirect('orwell-asset-info', asset.id)
-        else:
-            return HttpResponse('No')
-
-    return HttpResponseNotAllowed(['GET', 'POST'])
 
 @login_required
 def slide_add_asset(request, slide_id, asset_id):
@@ -146,24 +98,6 @@ def client_info(request, asset_id):
 
     return render_to_response('orwell/client-info.html', { 'client' : client },
                               context_instance=RequestContext(request))
-
-@login_required
-def add_client(request):
-    if request.method == 'GET':
-        client = ClientForm()
-        return render_to_response('orwell/add-client.html',
-                                  { 'client' : client },
-                                  context_instance=RequestContext(request))
-    elif request.method == 'POST':
-        client = Client()
-        client_form = ClientForm(request.POST, request.FILES, instance=client)
-        if client_form.is_valid():
-            client = client_form.save()
-            return redirect('orwell-client-info', client.pk)
-        else:
-            return HttpResponse('No')
-
-    return HttpResponseNotAllowed(['GET', 'POST'])
 
 def client_activity_all_json(request):
     if request.method == 'GET':
