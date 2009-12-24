@@ -133,7 +133,7 @@ class DDSHandler(object):
     def add_slide(self, dispatch, jid, slide, method_name='addSlide'):
         """Sends a parsed Slide object to the Jabber id."""
         logging.info('%s : sending slide %d.' % (jid, slide.pk))
-        request = generate_request(slide.parse(), methodname=method_name)
+        request = generate_request((slide.parse(), ), methodname=method_name)
         dispatch.send(self.get_iq(jid, 'set', request))
         logging.info('%s : sent slide %d.' % (jid, slide.pk))
 
