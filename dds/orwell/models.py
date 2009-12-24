@@ -52,10 +52,9 @@ class Slide(models.Model):
         priority, duration, and expiration date.
         """
         slide = { 'id'              : self.id,
-                  'url'             : self.get_absolute_url(),
+                  'url'             : self.bundle.url,
                   'priority'        : self.priority,
-                  'duration'        : self.duration,
-                  'expires_at'      : self.expires_at }
+                  'duration'        : self.duration }
 
         return slide
 
