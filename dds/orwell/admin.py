@@ -1,11 +1,6 @@
 # vim: set shiftwidth=4 tabstop=4 softtabstop=4 :
-from models import *
+from models import Slide, Client, ClientActivity, ClientToGroup, Location
 from django.contrib import admin
-
-
-class AssetAdmin(admin.ModelAdmin):
-    list_display = ('id', 'file', 'url')
-
 
 class SlideAdmin(admin.ModelAdmin):
     exclude = ['last_update']
@@ -15,11 +10,7 @@ class SlideAdmin(admin.ModelAdmin):
             'fields': ('title', 'user', 'group')
         }),
         (None, {
-            'fields': ('priority', 'duration', 'expires_at', 'mode',
-                       'transition'),
-        }),
-        ('Assets', {
-            'fields': ('assets', 'thumbnail'),
+            'fields': ('priority', 'duration', 'expires_at', 'thumbnail', 'bundle'),
         }),
     )
 
@@ -28,16 +19,13 @@ class ClientToGroupInline(admin.TabularInline):
     model = ClientToGroup
     extra = 5
 
-
 class ClientAdmin(admin.ModelAdmin):
     list_display = ('name', 'pk', 'location', 'last_contact')
     inlines = [
         ClientToGroupInline,
     ]
 
-
 admin.site.register(Slide, SlideAdmin)
-admin.site.register(Asset, AssetAdmin)
 admin.site.register(Client, ClientAdmin)
 admin.site.register(Location)
 admin.site.register(ClientActivity)

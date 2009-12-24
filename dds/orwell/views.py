@@ -9,8 +9,8 @@ from django.template import RequestContext
 
 import json
 
-from models import Slide, Asset, Client, ClientActivity, Location, Group
-from forms import SlideForm, AssetForm, ClientForm
+from models import Slide, Client, ClientActivity, Location, Group
+from forms import SlideForm, ClientForm
 
 
 def index(request):
@@ -32,14 +32,17 @@ def slide_index(request):
                                 'groups' : Group.objects.all()},
                               context_instance=RequestContext(request))
 
-def slide_info(request, slide_id):
+def slide_add(request):
+    if request.method == 'POST':
+        return HTTPResponse()
+
+def slide_bundle(request, slide_id):
     try:
         slide = Slide.objects.get(pk=slide_id)
     except Slide.DoesNotExist:
-        return HttpResponseRedirect('error.html')
+        return HttpResponse(status=404)
 
-    return render_to_response('orwell/slide-info.html', { 'slide' : slide },
-                              context_instance=RequestContext(request))
+    return redirect(slide.bundle.url)
 
 def client_index(request):
     return render_to_response('orwell/client-index.html',
@@ -47,15 +50,6 @@ def client_index(request):
                                 'clients_form' : ClientForm(),
                                 'locations' : Location.objects.all(),
                                 'groups' : Group.objects.all()},
-                              context_instance=RequestContext(request))
-
-def client_info(request, asset_id):
-    try:
-        client = Client.objects.get(pk=asset_id)
-    except Client.DoesNotExist:
-        return HttpResponse(status=404)
-
-    return render_to_response('orwell/client-info.html', { 'client' : client },
                               context_instance=RequestContext(request))
 
 def client_activity_all_json(request):

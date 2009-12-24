@@ -12,15 +12,13 @@ def slide_m_pre_save(sender, instance, **kwargs):
         sender.objects.get(pk=instance.pk)
     except:
         return
-    message = {'method': 'add', 'slide': instance.pk,
-               'assets': instance.assets.count()}
+    message = {'method': 'add', 'slide': instance.pk}
     write_message(message)
 
 
 def slide_m_post_save(sender, instance, created, **kwargs):
     if created:
-        message = {'method': 'add', 'slide': instance.pk,
-                   'assets': instance.assets.count()}
+        message = {'method': 'add', 'slide': instance.pk }
         write_message(message)
 
 

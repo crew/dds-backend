@@ -1,17 +1,10 @@
 from django.forms import ModelForm
-from models import Slide, Asset, Client
-
+from models import Slide, Client
 
 class SlideForm(ModelForm):
 
     class Meta:
         model = Slide
-
-
-class AssetForm(ModelForm):
-
-    class Meta:
-        model = Asset
 
 class ClientForm(ModelForm):
 
