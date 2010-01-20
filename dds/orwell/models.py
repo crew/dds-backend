@@ -40,8 +40,10 @@ class Slide(models.Model):
     duration = models.IntegerField()
     expires_at = models.DateTimeField(null=True, default=None)
     last_update = models.DateTimeField(auto_now=True)
-    thumbnail = models.ImageField(max_length=300, upload_to="thumbs/%Y%H%M%S", null=True)
-    bundle = models.FileField(max_length=300, upload_to="slides/%Y%H%M%S", null=True)
+    thumbnail = models.ImageField(max_length=300, upload_to="thumbs/%Y%H%M%S",
+                                  null=True)
+    bundle = models.FileField(max_length=300, upload_to="slides/%Y%H%M%S",
+                              null=True)
 
     def all_clients(self):
         """Return the list of Clients allowed to display this Slide."""
@@ -71,6 +73,9 @@ class Slide(models.Model):
 
     def __unicode__(self):
         return '%s %s %s' % (self.title, self.user, self.group)
+
+    def thumbnailurl(self):
+      return self.thumbnail.url
 
 # Signals for Slide
 register_signals(Slide, pre_save=signalhandlers.slide_m_pre_save,
