@@ -1,17 +1,18 @@
 # vim: set shiftwidth=4 tabstop=4 softtabstop=4 :
 from django.core import serializers
-from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.files.base import ContentFile
 from django.http import (HttpResponse, HttpResponseRedirect,
                          HttpResponseBadRequest, HttpResponseNotAllowed)
 from django.shortcuts import render_to_response, redirect
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
+from django.contrib.auth.models import User
 
 import json
 
 from models import Slide, Client, ClientActivity, Location, Group
-from forms import SlideForm, ClientForm
-
+from forms import CreateSlideForm
+import tarfile
 
 def index(request):
     activities = ClientActivity.objects.filter(active=True)
@@ -57,3 +58,33 @@ def client_activity_all_json(request):
         all = [x.parse() for x in ClientActivity.objects.all()]
         return HttpResponse(json.dumps(all, default=str))
     return HttpResponseNotAllowed(['GET'])
+
+def cli_manage_slide(request):
+    if request.method == 'POST':
+        f = CreateSlideForm(request.POST, request.FILES)
+        if f.is_valid():
+            try:
+                tf = tarfile.open(fileobj=request.FILES['bundle'])
+            except:
+                return HttpResponse('Not a tarfile! exitiing')
+            manifest = json.load(tf.extractfile('manifest.js'))
+            id = f.cleaned_data['id']
+            create = f.cleaned_data['mode'] == 'create'
+            if create and not id:
+                s = Slide()
+                s.user = User.objects.all()[0]
+                s.group = Group.objects.all()[0]
+            elif not create and id:
+                s = Slide.objects.filter(id=id)[0]
+            else:
+                return HttpResponse('invalid: %s' % str(f.data))
+            s.title = 'uploaded'
+            s.priority = -1
+            s.duration = -1
+            s.bundle = request.FILES['bundle']
+            if 'thumbnail_img' in manifest:
+                path = manifest['thumbnail_img']
+                s.thumbnail.save(path,
+                                 ContentFile(tf.extractfile(path).read()))
+            s.save()
+    return HttpResponseNotAllowed(['POST'])

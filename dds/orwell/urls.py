@@ -3,6 +3,8 @@ from django.conf import settings
 
 urlpatterns = patterns('%s.orwell.views' % settings.MODULE,
     url(r'^$', 'index', name='orwell-index'),
+    url(r'^cli/manage_slide/$', 'cli_manage_slide',
+        name='orwell-cli-manage-slide'),
     url(r'^slides/$', 'slide_index', name='orwell-slide-index'),
     url(r'^slides/(\d+)/$', 'slide_bundle', name='orwell-slide-bundle'),
     url(r'^clients/$', 'client_index', name='orwell-client-index'),
