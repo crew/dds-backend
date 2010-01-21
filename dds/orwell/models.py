@@ -223,7 +223,6 @@ class ClientActivity(models.Model):
         if self.current_slide:
             s = self.current_slide
             p['slide'] = s.__dict__
-            p['slide']['url'] = reverse('orwell-slide-info', args=[s.pk])
         return p
 
     def json(self):
