@@ -2,6 +2,7 @@
 from django.db import models
 from django.contrib.auth.models import User, Group
 from django.conf import settings
+from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
 from utils import register_signals, temp_upload_to, scaffolded_save
 import hashlib
@@ -75,7 +76,22 @@ class Slide(models.Model):
         return '%s %s %s' % (self.title, self.user, self.group)
 
     def thumbnailurl(self):
-      return self.thumbnail.url
+        return self.thumbnail.url
+    
+    def populate_from_bundle(self, bundle, tarfileobj):
+        manifest = json.load(tarfileobj.extractfile('manifest.js'))
+        if 'priority' in manifest:
+            self.priority = int(manifest['priority'])
+        if 'duration' in manifest:
+            self.duration = int(manifest['duration'])
+        if 'title' in manifest:
+            self.title = str(manifest['title'])
+        if 'thumbnail_img' in manifest:
+            p = manifest['thumbnail_img']
+            self.thumbnail.save(p,
+                                ContentFile(tarfileobj.extractfile(p).read()))
+        self.bundle = bundle
+        self.save()
 
 # Signals for Slide
 register_signals(Slide, pre_save=signalhandlers.slide_m_pre_save,

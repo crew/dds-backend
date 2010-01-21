@@ -59,6 +59,7 @@ def client_activity_all_json(request):
         return HttpResponse(json.dumps(all, default=str))
     return HttpResponseNotAllowed(['GET'])
 
+@login_required
 def cli_manage_slide(request):
     if request.method == 'POST':
         f = CreateSlideForm(request.POST, request.FILES)
@@ -71,20 +72,16 @@ def cli_manage_slide(request):
             id = f.cleaned_data['id']
             create = f.cleaned_data['mode'] == 'create'
             if create and not id:
-                s = Slide()
-                s.user = User.objects.all()[0]
-                s.group = Group.objects.all()[0]
+                s = Slide(user=request.user,
+                          group=Group.objects.all()[0],
+                          title='cli uploaded %s' % (tf.__hash__()),
+                          priority=-1,
+                          duration=-1)
             elif not create and id:
                 s = Slide.objects.filter(id=id)[0]
             else:
                 return HttpResponse('invalid: %s' % str(f.data))
-            s.title = 'uploaded'
-            s.priority = -1
-            s.duration = -1
-            s.bundle = request.FILES['bundle']
-            if 'thumbnail_img' in manifest:
-                path = manifest['thumbnail_img']
-                s.thumbnail.save(path,
-                                 ContentFile(tf.extractfile(path).read()))
-            s.save()
+            s.populate_from_bundle(request.FILES['bundle'], tf)
+            return HttpResponse('Slide %s %sd'
+                                % (s.id, f.cleaned_data['mode']))
     return HttpResponseNotAllowed(['POST'])
