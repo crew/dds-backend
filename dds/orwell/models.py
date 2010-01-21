@@ -216,7 +216,6 @@ class ClientActivity(models.Model):
         c = self.client
         p['client'] = c.__dict__
         p['client']['hash'] = c.id_hash()
-        p['client']['url'] = reverse('orwell-client-info', args=[c.pk])
         slide_info = c.slideinfo()
         p['client']['screenshot'] = slide_info[0]
         p['client']['caption'] = slide_info[1]
