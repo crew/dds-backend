@@ -84,3 +84,17 @@ def cli_manage_slide(request):
             return HttpResponse('Slide %s %sd'
                                 % (s.id, f.cleaned_data['mode']))
     return HttpResponseNotAllowed(['POST'])
+
+@login_required
+def cli_list_slides(request):
+    if request.method == 'GET':
+        slidelist = []
+        for slide in Slide.objects.all():
+            s = {}
+            s['id'] = slide.id
+            s['title'] = slide.title
+            s['owner'] = str(slide.user)
+            slidelist.append(s)
+        return HttpResponse(json.dumps(slidelist))
+
+    return HttpResponseNotAllowed(['GET'])
