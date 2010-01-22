@@ -78,6 +78,9 @@ def cli_manage_slide(request):
                           duration=-1)
             elif not create and id:
                 s = Slide.objects.filter(id=id)[0]
+                if s.user != request.user:
+                    return HttpResponse('Not allowed to modify slide owned'
+                                        ' by %s' % str(s.user))
             else:
                 return HttpResponse('invalid: %s' % str(f.data))
             s.populate_from_bundle(request.FILES['bundle'], tf)
