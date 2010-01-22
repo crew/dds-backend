@@ -48,7 +48,6 @@ def slide_bundle(request, slide_id):
 def client_index(request):
     return render_to_response('orwell/client-index.html',
                               { 'clients' : Client.objects.all(),
-                                'clients_form' : ClientForm(),
                                 'locations' : Location.objects.all(),
                                 'groups' : Group.objects.all()},
                               context_instance=RequestContext(request))
