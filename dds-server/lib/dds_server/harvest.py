@@ -12,12 +12,13 @@ from handler import DDSHandler
 class Combine(threading.Thread):
     """You know, like a farm?"""
 
-    def __init__(self, jabber, timeout=10, **kwargs):
+    def __init__(self, jabber, timeout=2, **kwargs):
         self.jabber = jabber
-        self.timeout = 10
+        self.timeout = 2
         super(self.__class__, self).__init__(**kwargs)
 
     def collect(self):
+        logging.debug('Running message collection')
         for m in dblayer.collect_messages():
             logging.debug(str(m))
             try:
