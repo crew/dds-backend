@@ -101,3 +101,18 @@ def cli_list_slides(request):
         return HttpResponse(json.dumps(slidelist))
 
     return HttpResponseNotAllowed(['GET'])
+
+def web_formy_thing(request):
+    if request.method == 'GET':
+        return render_to_response('orwell/web-formy-thing.html',
+                                  {  },
+                                  context_instance=RequestContext(request))
+    elif request.method == 'POST':
+        formData = request.POST
+        write_to_file(formData.get('name','Whoops'))
+        return render_to_response('orwell/web-formy-thing.html',
+                                  { 'name'  : formData.get('name', 'WOOT!') },
+                                  context_instance=RequestContext(request))
+
+
+    

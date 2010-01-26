@@ -10,6 +10,7 @@ urlpatterns = patterns('%s.orwell.views' % settings.MODULE,
     url(r'^slides/$', 'slide_index', name='orwell-slide-index'),
     url(r'^slides/(\d+)/$', 'slide_bundle', name='orwell-slide-bundle'),
     url(r'^clients/$', 'client_index', name='orwell-client-index'),
+    url(r'^web-formy-thing/$', 'web_formy_thing', name='orwell-web-formy-thing'),
 )
 
 # The JSON API
