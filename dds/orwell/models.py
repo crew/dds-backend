@@ -17,7 +17,7 @@ class RecentManager(models.Manager):
     def get_query_set(self):
         qs = super(self.__class__, self).get_query_set()
         five_minutes_ago = datetime.now() - timedelta(seconds=60 * 5)
-        return qs.filter(timestamp__lt=five_minutes_ago)
+        return qs.filter(timestamp__gt=five_minutes_ago)
 
 
 class Message(models.Model):
