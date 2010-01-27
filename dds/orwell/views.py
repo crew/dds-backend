@@ -9,6 +9,8 @@ from django.template import RequestContext
 from django.contrib.auth.models import User
 
 import json
+import os
+import shutil
 
 from models import Slide, Client, ClientActivity, Location, Group
 from forms import CreateSlideForm
@@ -102,6 +104,8 @@ def cli_list_slides(request):
 
     return HttpResponseNotAllowed(['GET'])
 
+
+# This allows you to create new slides based on a precreated template
 def web_formy_thing(request):
     if request.method == 'GET':
         return render_to_response('orwell/web-formy-thing.html',
@@ -109,10 +113,23 @@ def web_formy_thing(request):
                                   context_instance=RequestContext(request))
     elif request.method == 'POST':
         formData = request.POST
-        write_to_file(formData.get('name','Whoops'))
-        return render_to_response('orwell/web-formy-thing.html',
-                                  { 'name'  : formData.get('name', 'WOOT!') },
-                                  context_instance=RequestContext(request))
+        # TODO: Check for already existing slides and invalid names
+        name = formData.get('name', 'no-name')
+        dirname = './orwell/web-form-slides/' + name + '-slide/'
+
+        if os.path.isdir(dirname):
+            return wft_response('Slide already exists!', request)
+        shutil.copytree('./orwell/web-form-slides/default-slide/', dirname)
+
+        file = open(dirname + 'data.js', 'w')
+        file.write(JSONEncoder().encode(formData))
+        file.close;
+
+        return wft_response('Success!', request)
+
+def wft_response(response, request):
+    return render_to_response('orwell/web-formy-thing-response.html',
+                              { 'msg' : response },
+                              context_instance=RequestContext(request))
 
 
-    
