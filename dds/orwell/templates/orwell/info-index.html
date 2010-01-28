@@ -1,12 +1,17 @@
 {% extends "base.html" %}
 {% block title %}Digital Display Manager{% endblock %}
 {% block content %}
-<ul>
-  <li><a href="{% url orwell-client-index %}"
-         class="fg-button ui-state-default ui-corner-all">Display Status</a>
-  <li><a href="{% url orwell-slide-index %}"
-         class="fg-button ui-state-default ui-corner-all">Slide Management</a>
-  <li><a href="http://www.google.com/search?q=not+done+yet"
-         class="fg-button ui-state-default ui-corner-all">WYSIWYG Editor</a>
-</ul>
+
+<h2>Links to stuff</h2>
+  <a href="{% url orwell-web-formy-thing %}"
+    class="fg-button ui-state-default ui-corner-all"> Simple Slide Creator </a>
+  &nbsp;
+  <a href="{% url orwell-client-index %}"
+    class="fg-button ui-state-default ui-corner-all"> Display Status </a>
+  &nbsp;
+  <a href="{% url orwell-slide-index %}"
+    class="fg-button ui-state-default ui-corner-all"> Slide Management </a>
+  &nbsp;
+  <a href="http://www.google.com/search?q=not+done+yet"
+         class="fg-button ui-state-default ui-corner-all"> WYSIWYG Editor </a>
 {% endblock %}
