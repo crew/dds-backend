@@ -8,6 +8,8 @@ from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.contrib.auth.models import User
 
+import StringIO
+
 import json
 import os
 import shutil
@@ -113,17 +115,43 @@ def web_formy_thing(request):
                                   context_instance=RequestContext(request))
     elif request.method == 'POST':
         formData = request.POST
-        # TODO: Check for already existing slides and invalid names
-        name = formData.get('name', 'no-name')
-        dirname = './orwell/web-form-slides/' + name + '-slide/'
 
-        if os.path.isdir(dirname):
-            return wft_response('Slide already exists!', request)
-        shutil.copytree('./orwell/web-form-slides/default-slide/', dirname)
+        fo = StringIO.StringIO()
 
-        file = open(dirname + 'data.js', 'w')
-        file.write(JSONEncoder().encode(formData))
-        file.close;
+        tf = tarfile.open(fileobj=fo, mode='w')
+
+        def addjson(data, filename):
+            sio = StringIO.StringIO()
+            sio.write(json.dumps(data))
+            sio.name=filename
+            sio.seek(0)
+            ari = tarfile.TarInfo(name=filename)
+            ari.size = len(sio.buf)
+            tf.addfile(ari, sio)
+
+        basepath = './orwell/web-form-slides/default-slide'
+        for x in ['_thumb.png', 'nuacmlogo.png', 'skyline_blue.png',
+                  'sunbeams.png', 'skyline.png', 'layout.py']:
+            tf.add(os.path.join(basepath, x), arcname=x)
+
+        addjson(formData, 'data.js')
+        manifest = {'title':formData.get('name', 'no-name'),
+                    'transition':'fade',
+                    'mode':'module',
+                    'thumbnail_img': '_thumb.png',
+                    'duration': 10,
+                    'priority': 3,
+                   }
+        addjson(manifest, 'manifest.js')
+        s = Slide(user=request.user,
+                  group=Group.objects.all()[0],
+                  title=formData.get('name', 'no-name'),
+                  priority=-1,
+                  duration=-1)
+        tf.close()
+        fo.seek(0)
+        tf = tarfile.TarFile(name='cheese', fileobj=fo, mode='r')
+        s.populate_from_bundle(ContentFile(fo.read()), tf)
 
         return wft_response('Success!', request)
 
