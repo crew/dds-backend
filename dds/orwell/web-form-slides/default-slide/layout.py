@@ -7,10 +7,10 @@ import json
 
 class ACMTalks(baseslide.BaseSlide):
     def __init__(self):
-        
+
         file = open('data.js', 'r')
-        data = JSONDecoder().decode(file.readlines())
-        
+        data = json.load(open('data.js'))
+
         desc_text = data.get('body', 'body should be here')
         date = data.get('date', 'date should be here')
         title_text = data.get('name', 'title should be here')
