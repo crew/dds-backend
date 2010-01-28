@@ -108,6 +108,7 @@ def cli_list_slides(request):
 
 
 # This allows you to create new slides based on a precreated template
+@login_required
 def web_formy_thing(request):
     if request.method == 'GET':
         return render_to_response('orwell/web-formy-thing.html',
