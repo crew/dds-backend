@@ -130,7 +130,8 @@ def web_formy_thing(request):
             ari.mtime = time.time()
             tf.addfile(ari, sio)
 
-        basepath = './orwell/web-form-slides/default-slide'
+        basepath = os.path.join(os.path.dirname(__file__), 'web-form-slides',
+                                'default-slide')
         for x in ['_thumb.png', 'nuacmlogo.png', 'skyline_blue.png',
                   'sunbeams.png', 'skyline.png', 'layout.py']:
             tf.add(os.path.join(basepath, x), arcname=x)
