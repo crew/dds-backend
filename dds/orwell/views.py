@@ -136,7 +136,12 @@ def web_formy_thing(request):
                   'sunbeams.png', 'skyline.png', 'layout.py']:
             tf.add(os.path.join(basepath, x), arcname=x)
 
-        addjson(dict(formData), 'data.js')
+        datadict = {}
+        rawformdata = dict(formData)
+        for k in rawformdata:
+            datadict[k] = rawformdata[k][0]
+        addjson(datadict, 'data.js')
+
         manifest = {'title':formData.get('name', 'no-name'),
                     'transition':'fade',
                     'mode':'module',
