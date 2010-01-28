@@ -17,6 +17,7 @@ import shutil
 from models import Slide, Client, ClientActivity, Location, Group
 from forms import CreateSlideForm
 import tarfile
+import time
 
 def index(request):
     activities = ClientActivity.objects.filter(active=True)
@@ -118,16 +119,15 @@ def web_formy_thing(request):
         formData = request.POST
 
         fo = StringIO.StringIO()
-
-        tf = tarfile.open(fileobj=fo, mode='w')
+        tf = tarfile.open(fileobj=fo, mode='w:gz')
 
         def addjson(data, filename):
             sio = StringIO.StringIO()
             sio.write(json.dumps(data))
-            sio.name=filename
             sio.seek(0)
             ari = tarfile.TarInfo(name=filename)
             ari.size = len(sio.buf)
+            ari.mtime = time.time()
             tf.addfile(ari, sio)
 
         basepath = './orwell/web-form-slides/default-slide'
@@ -135,7 +135,7 @@ def web_formy_thing(request):
                   'sunbeams.png', 'skyline.png', 'layout.py']:
             tf.add(os.path.join(basepath, x), arcname=x)
 
-        addjson(formData, 'data.js')
+        addjson(dict(formData), 'data.js')
         manifest = {'title':formData.get('name', 'no-name'),
                     'transition':'fade',
                     'mode':'module',
@@ -151,8 +151,9 @@ def web_formy_thing(request):
                   duration=-1)
         tf.close()
         fo.seek(0)
-        tf = tarfile.TarFile(name='cheese', fileobj=fo, mode='r')
-        s.populate_from_bundle(ContentFile(fo.read()), tf)
+
+        cf = ContentFile(fo.read())
+        s.populate_from_bundle(cf, tarfile.open(fileobj=cf))
 
         return wft_response('Success!', request)
 

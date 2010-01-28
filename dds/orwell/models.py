@@ -90,7 +90,7 @@ class Slide(models.Model):
             p = manifest['thumbnail_img']
             self.thumbnail.save(p,
                                 ContentFile(tarfileobj.extractfile(p).read()))
-        self.bundle = bundle
+        self.bundle.save('bundle.tar.gz', bundle)
         self.save()
 
 # Signals for Slide
