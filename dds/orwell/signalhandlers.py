@@ -1,10 +1,20 @@
+# vim: set shiftwidth=4 tabstop=4 softtabstop=4 expandtab :
+import datetime
 import json
+
+import models
 
 
 def write_message(message):
     # XXX There is some weird import issue
-    from models import Message
-    Message(message=json.dumps(message)).save()
+    m = json.dumps(message)
+    msgs = models.Message.objects.filter(message=m)
+    if not msgs:
+        models.Message(message=m).save()
+    else:
+        msg = msgs[0]
+        msg.timestamp = datetime.datetime.now()
+        msg.save()
 
 
 def slide_m_pre_save(sender, instance, **kwargs):
