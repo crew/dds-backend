@@ -113,7 +113,7 @@ def cli_list_slides(request):
 def web_formy_thing(request):
     if request.method == 'GET':
         return render_to_response('orwell/web-formy-thing.html',
-                                  {  },
+                                  {"groups":Group.objects.all() },
                                   context_instance=RequestContext(request))
     elif request.method == 'POST':
         formData = request.POST
@@ -151,7 +151,7 @@ def web_formy_thing(request):
                    }
         addjson(manifest, 'manifest.js')
         s = Slide(user=request.user,
-                  group=Group.objects.all()[0],
+                  group=Group.objects.get(name=formData.get('group')),
                   title=formData.get('name', 'no-name'),
                   priority=-1,
                   duration=-1)
