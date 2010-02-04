@@ -40,11 +40,9 @@ def slide_index(request):
                                   context_instance=RequestContext(request))
     else:
         formData = request.POST
-        print formData
         # see if this is a remove operation
         try:
             remdata = formData['remove'][12:]
-            print remdata
             Slide.objects.get(pk=remdata).delete()
         except (Error):
             pass
