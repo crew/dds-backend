@@ -1,7 +1,9 @@
 {% extends "orwell/base-index.html" %}
 {% block title %}Slides{% endblock %}
 {% block scripts %}
+
 <script type="text/javascript" src="/media/js/slideindex.js"></script>
+
 {% endblock %}
 
 {% block content %}
@@ -26,9 +28,15 @@
   <div class="infopopup" title="{{slide.title}}"
     id="infobox-slide-{{ slide.id }}">
     Slide information goes here
-    <div id="save-slide{{ slide.id }}" class="ui-state-default ui-corner-all"
+    
+    <div id="save-slide{{ slide.id }}"
+         class="ui-state-default ui-corner-all slide-details-save"
          title="Save">
-      <span class="ui-icon ui-icon-disk"></span></div>
+    <span class="ui-icon ui-icon-disk"></span></div>
+    <div id="remove-slide{{ slide.id }}"
+         class="ui-state-default ui-corner-all slide-details-remove"
+         title="Remove">
+    <span class="ui-icon ui-icon-disk"></span>Remove</div>
   </div>
 </div>
 {% endfor %}

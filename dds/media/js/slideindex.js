@@ -37,4 +37,13 @@ $(document).ready(function() {
   $('#showoffline').change(filtergrouplocation);
   $('#groupselect').change(filtergrouplocation);
   $('#resetfilter').click(resetfilterform);
+  $('.slide-details-save').live("click", function(){
+	  $.post("", this.id, function(data) {
+		  $('.result').html(data);
+	      });});
+  $('.slide-details-remove').live("click", function(){
+	  $.post("",{ remove : this.id } , function(data) {
+		  $('.result').html(data);
+	      });});
+  
 });

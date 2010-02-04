@@ -33,10 +33,21 @@ def index(request):
 
 @login_required
 def slide_index(request):
-    return render_to_response('orwell/slide-index.html',
-                              { 'slides' : Slide.objects.all(),
-                                'groups' : Group.objects.all()},
-                              context_instance=RequestContext(request))
+    if request.method == 'GET':
+        return render_to_response('orwell/slide-index.html',
+                                  { 'slides' : Slide.objects.all(),
+                                    'groups' : Group.objects.all()},
+                                  context_instance=RequestContext(request))
+    else:
+        formData = request.POST
+        print formData
+        # see if this is a remove operation
+        try:
+            remdata = formData['remove'][12:]
+            print remdata
+            Slide.objects.get(pk=remdata).delete()
+        except (Error):
+            pass
 
 def slide_add(request):
     if request.method == 'POST':
