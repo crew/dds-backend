@@ -14,7 +14,7 @@ import json
 import os
 import shutil
 
-from models import Slide, Client, ClientActivity, Location, Group
+from models import Slide, Client, ClientActivity, Location, Group, Template
 from forms import CreateSlideForm
 import tarfile
 import time
@@ -120,10 +120,16 @@ def cli_list_slides(request):
 # This allows you to create new slides based on a precreated template
 @login_required
 def web_formy_thing(request):
+    def wft_response(response, request):
+        return render_to_response('orwell/web-formy-thing-response.html',
+                                  { 'msg' : response },
+                                  context_instance=RequestContext(request))
+
     if request.method == 'GET':
         return render_to_response('orwell/web-formy-thing.html',
                                   {"groups":Group.objects.all() },
                                   context_instance=RequestContext(request))
+
     elif request.method == 'POST':
         formData = request.POST
 
@@ -172,9 +178,14 @@ def web_formy_thing(request):
 
         return wft_response('Success!', request)
 
-def wft_response(response, request):
-    return render_to_response('orwell/web-formy-thing-response.html',
-                              { 'msg' : response },
+def web_form_slide_select(response) :
+    return render_to_response('orwell/web-form-slide-select.html',
+                              {"templates": Template.objects.all() },
                               context_instance=RequestContext(request))
 
-
+def web_form_slide_customize(response, uid) :
+    return render_to_response('orwell/web-form-slide-customize.html',
+                              {"template": 
+                               Template.objects.get(id=uid) },
+                              context_instance=RequestContext(request))
+    
