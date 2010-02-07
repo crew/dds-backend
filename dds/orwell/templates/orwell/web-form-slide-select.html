@@ -1,0 +1,17 @@
+{% extends "orwell/base-index.html" %}
+{% block title %}Choose a Template{% endblock %}
+
+<style type="text/css">
+div.form-element {
+    margin : 1em;
+    display: block;
+}
+</style>
+
+{% block content %}
+
+  {% for template in templates %}
+    <a href="web-form/slide-customize/{{template.uid}}">{{template.title}}</a>
+  {% endfor %}
+
+{% endblock %}
