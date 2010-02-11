@@ -160,7 +160,7 @@ def web_formy_thing(request):
                    }
         addjson(manifest, 'manifest.js')
         s = Slide(user=request.user,
-                  group=Group.objects.get(name=formData.get('group')),
+                  group=Group.objects.get(id=formData.get('group')),
                   title=formData.get('name', 'no-name'),
                   priority=-1,
                   duration=-1)
