@@ -13,39 +13,36 @@ div.form-element {
 <form enctype="text/plain" id="newslide" method="post">
 
   {% for field in template %}
-  {% if field.type == 'option' %}
   <div class="form-element">
-    <label for="name">Name:</label>
-    <input type="text" name="name" id="name" /> <br />
-  </div>
-  {% elif field.type == 'text' %}
+    <label for="{{field.name}}">{{field.name}}:</label>
+
+  {% ifequal field.type "text" %}
+    {% ifequal field.field_size "s" %}
+    <input type="text" name="{{field.name}}" id="{{field.name}}" /> <br/>
+    {% endifequal %}
+    {% ifequal field.field_size "l" %}
+    <textarea name="{{field.name}}" id="{{field.name}}"> </textarea> <br/>    
+    {% endifequal %}
+  {% endifequal %}
   
-  {% else %}
-
-  {$ endfor %}
-  <div class="form-element">
-  <label for="body">Body:</label>
-  <textarea name="body" id="body"> </textarea> <br/>
+  {% ifequal field.type "dropdown" %}
+    <select name="{{field.name}}">
+    {% for item in field.items %}
+      <option value="{{item}}">{{item}}</option>
+    {% endfor %}
+    </select> <br/>
+  {% endifequal %}
   </div>
-
-  <div class="form-element">
-  <label for="date">Date:</label>
-  <input type="text" name="date" id="date" /> <br />
-  </div>
-
-  <div class="form-element">
-  <label for="time">Time:</label>
-  <input type="text" name="time" id="time" /> <br />
-  </div>
-
-  <div class="form-element">
-  <label for="group">Group:</label>
-  <select name="group">
-  {% for group in groups %}
-    <option value="{{group}}">{{group}}</option>
   {% endfor %}
-  </select> <br />
+  <div class="form-element">
+    <label for="group">Group:</label>
+    <select name="group">
+      {% for group in groups %}
+      <option value="{{group}}">{{group}}</option>
+      {% endfor %}
+    </select> <br />
   </div>
+
   <input type="submit" value="Create" />
 
 </form>
