@@ -11,7 +11,7 @@ urlpatterns = patterns('%s.orwell.views' % settings.MODULE,
     url(r'^slides/(\d+)/$', 'slide_bundle', name='orwell-slide-bundle'),
     url(r'^clients/$', 'client_index', name='orwell-client-index'),
     url(r'^web-formy-thing/$', 'web_formy_thing', name='orwell-web-formy-thing'),
-    url(r'^web-form/slide-select/$', 'web_form_slide_select', name='web-form-slide-select')
+    url(r'^web-form/slide-select/$', 'web_form_slide_select', name='web-form-slide-select'),
     url(r'^web-form/slide-customize/(\d+)/$', 'web_form_slide_customize', name='web-form-slide-customize')
 )
 

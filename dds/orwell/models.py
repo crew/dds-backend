@@ -218,6 +218,16 @@ register_signals(ClientToGroup,
                  post_save=signalhandlers.client_to_group_post_save,
                  pre_delete=signalhandlers.client_to_group_pre_delete)
 
+class Template(models.Model):
+    bundle = models.FileField(max_length=300, upload_to="template/%Y%H%M%S",
+                              null=True)
+    json   = models.FileField(max_length=300, upload_to="template/%Y%H%M%S-json",
+                              null=True)
+    title  = models.CharField(max_length=512)
+
+    def __unicode__(self):
+        return '%s' % self.title
+
 
 class ClientActivity(models.Model):
     client = models.OneToOneField(Client, primary_key=True,
