@@ -113,6 +113,7 @@ class Client(models.Model):
     location = models.ForeignKey(Location, null=True, related_name='clients')
     groups = models.ManyToManyField(Group, through='ClientToGroup',
                                     related_name='clients')
+    playlist = models.ForeignKey(Playlist)
 
     def jid(self):
         """The jabber id of the client."""
@@ -221,7 +222,8 @@ register_signals(ClientToGroup,
 class Template(models.Model):
     bundle = models.FileField(max_length=300, upload_to="template/%Y%H%M%S",
                               null=True)
-    json   = models.FileField(max_length=300, upload_to="template/%Y%H%M%S-json",
+    json   = models.FileField(max_length=300,
+                              upload_to="template/%Y%H%M%S-json",
                               null=True)
     title  = models.CharField(max_length=512)
 
@@ -257,3 +259,91 @@ class ClientActivity(models.Model):
     class Meta:
         verbose_name = 'activity'
         verbose_name_plural = 'activities'
+
+class Playlist(models.Model):
+    name = models.CharField(max_length=200, null=True, blank=True)
+
+    def json(self):
+        """Get this playlist in json form."""
+        output = []
+        for x in self.playlistitem_set.order_by('position'):
+            output.append(x.subitem().asdict())
+        return json.dumps(output)
+
+    def requiredslideids(self):
+        ids = []
+        for x in self.playlistitem_set.order_by('position'):
+            for id in x.subitem().slideids():
+                if id not in ids:
+                    ids.append(id)
+        return ids
+
+
+class PlaylistItem(models.Model):
+    position = models.PositiveIntegerField()
+    playlist = models.ForeignKey(Playlist)
+
+    class Meta:
+        unique_together = (('position', 'playlist'))
+
+    def subitem(self):
+        try:
+            return self.playlistitemgroup
+        except PlaylistItemGroup.DoesNotExist:
+            return self.playlistitemslide
+
+    def mode(self):
+        return 'none'
+
+    def slideids(self):
+        return []
+
+    def slideweights(self):
+        return []
+
+    def asdict(self):
+        return {'position':self.position, 'mode':self.mode(),
+                'slides':self.slideids(), 'weights':self.slideweights()}
+
+
+class PlaylistItemSlide(PlaylistItem):
+    slide = models.ForeignKey(Slide)
+
+    def subitem(self):
+        return self
+
+    def mode(self):
+        return 'single'
+
+    def slideids(self):
+        return [self.slide.id]
+
+    def slideweights(self):
+        return [self.slide.priority]
+
+class PlaylistItemGroup(PlaylistItem):
+    groups   = models.ManyToManyField(Group)
+    weighted = models.BooleanField()
+
+    def subitem(self):
+        return self
+
+    def slideinfo(self):
+        ids = []
+        weights = []
+        for group in self.groups.all():
+            ids.extend(group.slides.values_list('id', flat=True))
+            weights.extend(group.slides.values_list('priority', flat=True))
+        return ids, weights
+
+    def slideids(self):
+        return self.slideinfo()[0]
+
+    def slideweights(self):
+        return self.slideinfo()[1]
+
+    def mode(self):
+        if self.weighted:
+            return 'weighted'
+        else:
+            return 'random'
