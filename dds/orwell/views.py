@@ -184,11 +184,62 @@ def web_form_slide_select(request) :
                               context_instance=RequestContext(request))
 
 def web_form_slide_customize(request, uid) :
-    # game plan: Get the JSON object embedded within the template object
-    # and parse it to 
-    template = Template.objects.get(id=uid)
-    data = json.JSONDecoder().decode(template.json.read())
-    return render_to_response('orwell/web-form-slide-customize.html',
-                              {"template": data, "groups": Group.objects.all() },
-                              context_instance=RequestContext(request))
-    
+    if request.method == 'GET':
+        template = Template.objects.get(id=uid)
+        data = json.JSONDecoder().decode(template.json.read())
+        return render_to_response('orwell/web-form-slide-customize.html',
+                                  {"template": data, "groups": Group.objects.all() },
+                                  context_instance=RequestContext(request))
+    if request.method == 'POST':
+        formData = request.POST
+        
+        fo = StringIO.StringIO()
+
+        bundle = tarfile.open(fileobj=Template.objects.get(id=uid).bundle)
+        tf = tarfile.open(fileobj=fo, mode='w:gz')
+
+        def addjson(data, filename):
+            sio = StringIO.StringIO()
+            sio.write(json.dumps(data))
+            sio.seek(0)
+            ari = tarfile.TarInfo(name=filename)
+            ari.size = len(sio.buf)
+            ari.mtime = time.time()
+            tf.addfile(ari, sio)
+
+        #rebuild the archive since we can't just write to an existing one
+        for item in bundle.getmembers():
+            content = bundle.extractfile(item)
+            tf.addfile(item, content)
+
+        datadict = {}
+        rawformdata = dict(formData)
+        for k in rawformdata:
+            datadict[k] = rawformdata[k][0]
+        
+        addjson(datadict, 'data.js')
+
+        manifest = {'title':formData.get('name', 'no-name'),
+                    'transition':'fade',
+                    'mode':'module',
+                    'thumbnail_img': '_thumb.png',
+                    'duration': 10,
+                    'priority': 3,
+                   }
+        addjson(manifest, 'manifest.js')
+        s = Slide(user=request.user,
+                  group=Group.objects.get(id=formData.get('group')),
+                  title=formData.get('name', 'no-name'),
+                  priority=-1,
+                  duration=-1)
+        print tf.getnames()
+
+        tf.close()
+        fo.seek(0)
+        cf = ContentFile(fo.read())
+
+        s.populate_from_bundle(cf, tarfile.open(fileobj=cf))
+        return render_to_response('orwell/web-form-slide-customize-success.html',
+                                  {"yay":"yay"},
+                                  context_instance=RequestContext(request))
+

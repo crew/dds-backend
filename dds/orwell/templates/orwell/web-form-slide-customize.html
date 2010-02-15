@@ -14,14 +14,14 @@ div.form-element {
 
   {% for field in template %}
   <div class="form-element">
-    <label for="{{field.name}}">{{field.name}}:</label>
+    <label for="{{field.name}}">{{field.caption}}:</label>
 
   {% ifequal field.type "text" %}
     {% ifequal field.field_size "s" %}
-    <input type="text" name="{{field.name}}" id="{{field.name}}" /> <br/>
+    <input type="text" name="{{field.name}}" id="{{field.name}}" />
     {% endifequal %}
     {% ifequal field.field_size "l" %}
-    <textarea name="{{field.name}}" id="{{field.name}}"> </textarea> <br/>    
+    <textarea name="{{field.name}}" id="{{field.name}}"></textarea>
     {% endifequal %}
   {% endifequal %}
   
@@ -30,15 +30,15 @@ div.form-element {
     {% for item in field.items %}
       <option value="{{item}}">{{item}}</option>
     {% endfor %}
-    </select> <br/>
+    </select>
   {% endifequal %}
-  </div>
+  <br /></div>
   {% endfor %}
   <div class="form-element">
     <label for="group">Group:</label>
     <select name="group">
       {% for group in groups %}
-      <option value="{{group}}">{{group}}</option>
+      <option value="{{group.id}}">{{group}}</option>
       {% endfor %}
     </select> <br />
   </div>
