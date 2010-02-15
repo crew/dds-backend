@@ -113,7 +113,7 @@ class Client(models.Model):
     location = models.ForeignKey(Location, null=True, related_name='clients')
     groups = models.ManyToManyField(Group, through='ClientToGroup',
                                     related_name='clients')
-    playlist = models.ForeignKey('Playlist')
+    playlist = models.ForeignKey('Playlist', null=True, blank=True)
 
     def jid(self):
         """The jabber id of the client."""
