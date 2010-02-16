@@ -9,9 +9,10 @@ div.form-element {
 </style>
 
 {% block content %}
-
+<h1>Available Templates</h1>
   {% for template in templates %}
-    <a href="../slide-customize/{{template.id}}/">{{template.title}}</a>
+    <a href="../slide-customize/{{template.id}}/"
+       class="fg-button ui-state-default ui-corner-all">{{template.title}}</a>
   {% endfor %}
 
 {% endblock %}
