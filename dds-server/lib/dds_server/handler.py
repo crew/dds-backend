@@ -47,7 +47,9 @@ class DDSHandler(object):
             self.presence_handle(dispatch, pr)
 
         if client:
-            if (pr.getStatus() == 'initialsliderequest'):
+            if (pr.getStatus() == 'playlistrequest'):
+                self.send_playlist(dispatch, jid, client.playlist)
+            elif (pr.getStatus() == 'initialsliderequest'):
                 self.send_initial_slides(dispatch, jid, client.all_slides())
             ca = client.activity
             ca.active = (typ != 'unavailable')
@@ -118,10 +120,14 @@ class DDSHandler(object):
         logging.info('%s : sending initial slides.' % jid)
         for slide in slides:
             self.add_slide(dispatch, jid, slide)
-        else:
-            # The client is unregistered, send it a slide to that effect
-            # TODO: Make this happen
-            pass
+
+    def send_playlist(self, dispatch, jid, playlist):
+        """Sends the initial slides to the Jabber id."""
+        logging.info('%s : sending playlist' % jid)
+        request = generate_request((playlist.packet(),),
+                                   methodname='setPlaylist')
+        dispatch.send(self.get_iq(jid, 'set', request))
+        logging.info('%s : sent playlist' % jid)
 
     @classmethod
     def get_iq(cls, jid, typ, request):

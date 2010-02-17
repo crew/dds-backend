@@ -106,6 +106,38 @@ class Location(models.Model):
         return '%s' % self.name
 
 
+class Playlist(models.Model):
+    name = models.CharField(max_length=200, null=True, blank=True, unique=True)
+
+    def __unicode__(self):
+        return '%s' % self.name
+
+    @classmethod
+    def get_default(cls):
+        defaultname = 'Unconfigured Clients'
+        try:
+            obj = cls.objects.get(name=defaultname)
+        except Playlist.DoesNotExist:
+            obj = cls(name=defaultname)
+            obj.save()
+        return obj
+
+    def packet(self):
+        """Get this playlist in dict form."""
+        output = []
+        for x in self.playlistitem_set.order_by('position'):
+            output.append(x.subitem().asdict())
+        return {'playlist':output}
+
+    def requiredslideids(self):
+        ids = []
+        for x in self.playlistitem_set.order_by('position'):
+            for id in x.subitem().slideids():
+                if id not in ids:
+                    ids.append(id)
+        return ids
+
+
 class Client(models.Model):
     """Represents a DDS Jabber client."""
     name = models.CharField(max_length=100, default='Unnamed')
@@ -113,7 +145,7 @@ class Client(models.Model):
     location = models.ForeignKey(Location, null=True, related_name='clients')
     groups = models.ManyToManyField(Group, through='ClientToGroup',
                                     related_name='clients')
-    playlist = models.ForeignKey('Playlist', null=True, blank=True)
+    playlist = models.ForeignKey('Playlist', default=Playlist.get_default)
 
     def jid(self):
         """The jabber id of the client."""
@@ -147,10 +179,7 @@ class Client(models.Model):
 
     def all_slides(self):
         """Return all the Slides allowed."""
-        slide_list = set()
-        for g in self.groups.all():
-            slide_list.update(g.slides.all())
-        return slide_list
+        return Slide.objects.filter(id__in=self.playlist.requiredslideids())
 
     def active(self):
         try:
@@ -259,25 +288,6 @@ class ClientActivity(models.Model):
     class Meta:
         verbose_name = 'activity'
         verbose_name_plural = 'activities'
-
-class Playlist(models.Model):
-    name = models.CharField(max_length=200, null=True, blank=True)
-
-    def json(self):
-        """Get this playlist in json form."""
-        output = []
-        for x in self.playlistitem_set.order_by('position'):
-            output.append(x.subitem().asdict())
-        return json.dumps(output)
-
-    def requiredslideids(self):
-        ids = []
-        for x in self.playlistitem_set.order_by('position'):
-            for id in x.subitem().slideids():
-                if id not in ids:
-                    ids.append(id)
-        return ids
-
 
 class PlaylistItem(models.Model):
     position = models.PositiveIntegerField()
