@@ -144,6 +144,11 @@ class Playlist(models.Model):
         """Return all the Slide objects used in this playlist."""
         return Slide.objects.filter(id__in=self.requiredslideids())
 
+# Signals for Playlist
+register_signals(Playlist, pre_save=signalhandlers.playlist_m_pre_save,
+                           post_save=signalhandlers.playlist_m_post_save,
+                           pre_delete=signalhandlers.playlist_m_pre_delete)
+
 class Client(models.Model):
     """Represents a DDS Jabber client."""
     name = models.CharField(max_length=100, default='Unnamed')
@@ -248,11 +253,6 @@ class ClientToGroup(models.Model):
     class Meta:
         unique_together = ['client', 'group']
 
-
-register_signals(ClientToGroup,
-                 pre_save=signalhandlers.client_to_group_pre_save,
-                 post_save=signalhandlers.client_to_group_post_save,
-                 pre_delete=signalhandlers.client_to_group_pre_delete)
 
 class Template(models.Model):
     bundle = models.FileField(max_length=300, upload_to="template/%Y%H%M%S",

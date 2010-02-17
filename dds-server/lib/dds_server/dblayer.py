@@ -4,7 +4,7 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'dds.settings'
 import xmpp
 import xmlrpclib
 from django.contrib.auth.models import Group
-from dds.orwell.models import Location, Client, ClientActivity, Slide, Message
+from dds.orwell.models import Location, Client, ClientActivity, Slide, Message,Playlist
 
 __author__ = 'Alex Lee <lee@ccs.neu.edu>'
 
@@ -47,6 +47,14 @@ def get_slide(pk):
     except:
         return None
     return slide
+
+
+def get_playlist(pk):
+    try:
+        playlist = Playlist.objects.get(pk=pk)
+    except:
+        return None
+    return playlist
 
 
 def get_activity(jid):

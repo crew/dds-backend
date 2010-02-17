@@ -30,8 +30,23 @@ class Combine(threading.Thread):
             # The message is deleted.
             m.delete()
 
+    def send_playlist(self, message, obj):
+        pl = dblayer.get_playlist(obj['playlist'])
+        tos = [c.jid() for c in pl.all_clients()]
+        packet = pl.packet()
+        packet['slides'] = []
+        for slide in pl.slides():
+            packet['slides'].append(slide.parse())
+        request = generate_request((packet,), methodname='setPlaylist')
+        for to in tos:
+            logging.info('Sending to %s' % to)
+            self.jabber.send(DDSHandler.get_iq(to, 'set', request))
+
     def send_message(self, message):
         obj = json.loads(message.message)
+        if obj['playlist'] == 'playlist':
+            self.send_playlist(message, obj)
+            return
         # Get the slide.
         slide = dblayer.get_slide(obj['slide'])
         # Get the recipient
