@@ -128,7 +128,7 @@ class DDSHandler(object):
         packet['slides'] = []
         for slide in playlist.slides():
             packet['slides'].append(slide.parse())
-        request = generate_request((playlist.packet(),),
+        request = generate_request((packet,),
                                    methodname='setPlaylist')
         dispatch.send(self.get_iq(jid, 'set', request))
         logging.info('%s : sent playlist' % jid)
