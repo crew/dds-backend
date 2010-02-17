@@ -124,6 +124,10 @@ class DDSHandler(object):
     def send_playlist(self, dispatch, jid, playlist):
         """Sends the initial slides to the Jabber id."""
         logging.info('%s : sending playlist' % jid)
+        packet = playlist.packet()
+        packet['slides'] = []
+        for slide in playlist.slides():
+            packet['slides'].append(slide.parse())
         request = generate_request((playlist.packet(),),
                                    methodname='setPlaylist')
         dispatch.send(self.get_iq(jid, 'set', request))

@@ -57,7 +57,10 @@ class Slide(models.Model):
         slide = { 'id'              : self.id,
                   'url'             : self.bundle.url,
                   'priority'        : self.priority,
-                  'duration'        : self.duration }
+                  'duration'        : self.duration,
+                  'modified'        : time.mktime(self.last_update.timetuple()),
+
+                }
 
         return slide
 
@@ -137,6 +140,9 @@ class Playlist(models.Model):
                     ids.append(id)
         return ids
 
+    def slides(self):
+        """Return all the Slide objects used in this playlist."""
+        return Slide.objects.filter(id__in=self.requiredslideids())
 
 class Client(models.Model):
     """Represents a DDS Jabber client."""
@@ -179,7 +185,7 @@ class Client(models.Model):
 
     def all_slides(self):
         """Return all the Slides allowed."""
-        return Slide.objects.filter(id__in=self.playlist.requiredslideids())
+        return self.playlist.slides()
 
     def active(self):
         try:
