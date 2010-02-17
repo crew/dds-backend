@@ -11,6 +11,7 @@ import shutil
 import os
 import json
 from datetime import datetime, timedelta
+import time
 
 class RecentManager(models.Manager):
 
@@ -59,7 +60,6 @@ class Slide(models.Model):
                   'priority'        : self.priority,
                   'duration'        : self.duration,
                   'modified'        : time.mktime(self.last_update.timetuple()),
-
                 }
 
         return slide
