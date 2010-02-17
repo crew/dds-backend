@@ -15,16 +15,8 @@ class SlideAdmin(admin.ModelAdmin):
         }),
     )
 
-
-class ClientToGroupInline(admin.TabularInline):
-    model = ClientToGroup
-    extra = 5
-
 class ClientAdmin(admin.ModelAdmin):
     list_display = ('name', 'pk', 'playlist', 'location', 'last_contact')
-    inlines = [
-        ClientToGroupInline,
-    ]
 
 class PlaylistItemSlideInline(admin.TabularInline):
     model = PlaylistItemSlide
