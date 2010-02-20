@@ -20,15 +20,9 @@ import tarfile
 import time
 
 def index(request):
-    activities = ClientActivity.objects.filter(active=True)
-    client_pairs = []
-
-    for activity in activities:
-        client_pairs.append({ 'client' : activity.client,
-                              'current' : activity.current_slide })
-
-    return render_to_response('orwell/info-index.html',
-                              { 'client_pairs' : client_pairs },
+    data = {'numslides' : len(Slide.objects.all()),
+            'numclients': len(Client.objects.filter(activity__active=True))}
+    return render_to_response('orwell/info-index.html', data,
                               context_instance=RequestContext(request));
 
 @login_required
