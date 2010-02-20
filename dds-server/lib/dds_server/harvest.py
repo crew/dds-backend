@@ -42,10 +42,26 @@ class Combine(threading.Thread):
             logging.info('Sending to %s' % to)
             self.jabber.send(DDSHandler.get_iq(to, 'set', request))
 
+    def send_displaycontrol(self, message, obj):
+        pl = dblayer.get_playlist(obj['playlist'])
+        tos = [obj['to']]
+        packet = {}
+        if 'setpower' in obj:
+            packet['setpower'] = obj['setpower']
+        if 'cmd' in obj:
+            packet['cmd'] = obj['cmd']
+        request = generate_request((packet,), methodname='dplyControl')
+        for to in tos:
+            logging.info('Sending to %s' % to)
+            self.jabber.send(DDSHandler.get_iq(to, 'set', request))
+
     def send_message(self, message):
         obj = json.loads(message.message)
-        if obj['playlist'] == 'playlist':
+        if obj['method'] == 'playlist':
             self.send_playlist(message, obj)
+            return
+        elif obj['method'] == 'displaycontrol':
+            self.send_displaycontrol(message, obj)
             return
         # Get the slide.
         slide = dblayer.get_slide(obj['slide'])
