@@ -45,11 +45,14 @@ class Combine(threading.Thread):
     def send_displaycontrol(self, message, obj):
         tos = [obj['to']]
         packet = {}
-        if 'setpower' in obj:
-            packet['setpower'] = obj['setpower']
-        if 'cmd' in obj:
-            packet['cmd'] = obj['cmd']
-        request = generate_request((packet,), methodname='dplyControl')
+        if obj['method'] == 'killDDS':
+            request = generate_request((packet,), methodname='killDDS')
+        else:
+            if 'setpower' in obj:
+                packet['setpower'] = obj['setpower']
+            if 'cmd' in obj:
+                packet['cmd'] = obj['cmd']
+            request = generate_request((packet,), methodname='dplyControl')
         for to in tos:
             logging.info('Sending to %s' % to)
             self.jabber.send(DDSHandler.get_iq(to, 'set', request))
@@ -59,7 +62,7 @@ class Combine(threading.Thread):
         if obj['method'] == 'playlist':
             self.send_playlist(message, obj)
             return
-        elif obj['method'] == 'displaycontrol':
+        elif obj['method'] == 'displaycontrol' or obj['method'] == 'killDDS':
             self.send_displaycontrol(message, obj)
             return
         # Get the slide.

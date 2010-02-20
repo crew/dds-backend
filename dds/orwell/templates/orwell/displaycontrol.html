@@ -17,6 +17,7 @@
     }
   }
   function poweroff() { senddata({setpower:'off'}); }
+  function kill() { senddata({setpower:'kill'}); }
   function poweron() { senddata({setpower:'on'}); }
   function setvolume() {
     vol = $('#volumeslide').slider('value');
@@ -28,6 +29,7 @@
   $(function() {
       $('#poweroff').click(poweroff);
       $('#poweron').click(poweron);
+      $('#kill').click(kill);
       $('#volumeslide').slider({min:0, max:60});
       $('#volumeslide').bind('slidestop', function(event, ui) {
         senddata({cmd:'VOLM', val:ui.value});
@@ -56,6 +58,8 @@
        id="poweron" value="Power On">
 <input class="fg-button ui-state-default" type="button"
        id="poweroff" value="Power Off">
+<input class="fg-button ui-state-default" type="button"
+       id="kill" value="Kill DDS">
 <br><br>
 <div id="volumeslide" style="width:30%"></div>
 <input class="fg-button ui-state-default" type="button"
