@@ -259,7 +259,7 @@ def displaycontrol(request):
         packet = {'to':client.jid(), 'method':'displaycontrol'}
         if setpower in ['on', 'off']:
             packet['setpower'] = setpower == 'on'
-        elif cmd and arg:
+        elif cmd != '' and arg != '':
             packet['cmd'] = {'cmd':cmd, 'arg':arg}
         if 'setpower' in packet or 'cmd' in packet:
             m = Message(message=json.dumps(packet))
