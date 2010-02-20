@@ -48,7 +48,7 @@
 <select id="client">
   <option value="">--Client--</option>
   {% for client in clients %}
-  <option value="{{client.client_id}}">{{client}}</option>
+  <option value="{{client.client_id}}">{{client.name}}</option>
   {% endfor %}
 </select>
 <br>
