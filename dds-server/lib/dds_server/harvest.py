@@ -43,7 +43,6 @@ class Combine(threading.Thread):
             self.jabber.send(DDSHandler.get_iq(to, 'set', request))
 
     def send_displaycontrol(self, message, obj):
-        pl = dblayer.get_playlist(obj['playlist'])
         tos = [obj['to']]
         packet = {}
         if 'setpower' in obj:
