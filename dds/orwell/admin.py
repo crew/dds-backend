@@ -1,5 +1,5 @@
 # vim: set shiftwidth=4 tabstop=4 softtabstop=4 :
-from models import Slide, Client, ClientActivity, ClientToGroup, Location, Playlist, PlaylistItemSlide, PlaylistItemGroup, Template
+from models import Slide, Client, ClientActivity, Location, Playlist, PlaylistItemSlide, PlaylistItemGroup, Template
 from django.contrib import admin
 
 class SlideAdmin(admin.ModelAdmin):
