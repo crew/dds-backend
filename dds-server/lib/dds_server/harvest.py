@@ -79,7 +79,8 @@ class Combine(threading.Thread):
             slide.parse = lambda: slide.pk
         # Determine the request
         if obj['method'] == 'add':
-            request = generate_request((slide.parse(), ), methodname='addSlide')
+            request = generate_request((slide.parse(), ),
+                                       methodname='addSlide')
         elif obj['method'] == 'delete':
             request = generate_request((slide.pk, ), methodname='removeSlide')
         # Send.

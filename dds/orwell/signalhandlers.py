@@ -2,11 +2,11 @@
 import datetime
 import json
 
-import models
 
 
 def write_message(message):
-    # XXX There is some weird import issue
+    # We import models here because of a circular dependency
+    import models
     m = json.dumps(message)
     msgs = models.Message.objects.filter(message=m)
     if not msgs:
@@ -16,6 +16,8 @@ def write_message(message):
         msg.timestamp = datetime.datetime.now()
         msg.save()
 
+def notify_playlist_change(playlist)
+    write_message({'method': 'playlist', 'playlist':playlist.pk})
 
 def slide_m_pre_save(sender, instance, **kwargs):
     try:
@@ -54,6 +56,7 @@ def playlist_m_post_save(sender, instance, created, **kwargs):
 
 def playlist_m_pre_delete(sender, instance, **kwargs):
     pass
+
 
 def ctg_write_message(instance, method):
     for s in instance.group.slides.all():

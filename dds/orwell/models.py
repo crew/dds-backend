@@ -14,7 +14,6 @@ from datetime import datetime, timedelta
 import time
 
 class RecentManager(models.Manager):
-
     def get_query_set(self):
         qs = super(self.__class__, self).get_query_set()
         five_minutes_ago = datetime.now() - timedelta(seconds=60 * 5)
@@ -34,6 +33,7 @@ class Message(models.Model):
     def __unicode__(self):
         return str(self.tuple())
 
+
 class Slide(models.Model):
     title = models.CharField(max_length=512)
     user = models.ForeignKey(User, related_name='slides')
@@ -46,10 +46,6 @@ class Slide(models.Model):
                                   null=True)
     bundle = models.FileField(max_length=300, upload_to="slides/%Y%H%M%S",
                               null=True)
-
-    def all_clients(self):
-        """Return the list of Clients allowed to display this Slide."""
-        return self.group.clients.all()
 
     def parse(self):
         """Returns slide metadata as a dictionary of its id, bundle url,
@@ -80,7 +76,7 @@ class Slide(models.Model):
 
     def thumbnailurl(self):
         return self.thumbnail.url
-    
+
     def populate_from_bundle(self, bundle, tarfileobj):
         manifest = json.load(tarfileobj.extractfile('manifest.js'))
         if 'priority' in manifest:
@@ -95,6 +91,19 @@ class Slide(models.Model):
                                 ContentFile(tarfileobj.extractfile(p).read()))
         self.bundle.save('bundle.tar.gz', bundle)
         self.save()
+
+    def playlists(self):
+        """Get the playlists associated with this slide."""
+        playlists = []
+        s = []
+        for related in ['playlistitemslide_set', 'playlistitemgroup_set']:
+            if hasattr(self, related):
+                s.update(getattr(self, related).all())
+        for playlistitem in s:
+            if playlistitem.playlist not in playlists:
+                playlists.append(playlistitem.playlist)
+        return playlists
+
 
 # Signals for Slide
 register_signals(Slide, pre_save=signalhandlers.slide_m_pre_save,
@@ -154,22 +163,12 @@ class Client(models.Model):
     name = models.CharField(max_length=100, default='Unnamed')
     client_id = models.EmailField(max_length=128, primary_key=True)
     location = models.ForeignKey(Location, null=True, related_name='clients')
-    groups = models.ManyToManyField(Group, through='ClientToGroup',
-                                    related_name='clients')
+    groups = models.ManyToManyField(Group, related_name='clients')
     playlist = models.ForeignKey('Playlist', default=Playlist.get_default)
 
     def jid(self):
         """The jabber id of the client."""
         return '%s/%s' % (self.pk, settings.J_CLIENT_RESOURCE)
-
-    # XXX hack, the add function should wait till Client's save
-    #     to do the actual save.
-    def __getattribute__(self, name):
-        if name == 'groups':
-            gs = object.__getattribute__(self, name)
-            gs.add = self.add_groups
-            return gs
-        return models.Model.__getattribute__(self, name)
 
     def last_contact(self):
         try:
@@ -231,27 +230,8 @@ class Client(models.Model):
     def slidecaption(self):
         return self.slideinfo()[1]
 
-    def add_group(self, group):
-        c_to_g = ClientToGroup(client=self, group=group)
-        try:
-            c_to_g.save()
-        except:
-            pass
-
-    def add_groups(self, *groups):
-        for g in groups:
-            self.add_group(g)
-
     def __unicode__(self):
         return '%s@%s' % (self.pk, self.location)
-
-
-class ClientToGroup(models.Model):
-    client = models.ForeignKey(Client, related_name='client_and_groups')
-    group = models.ForeignKey(Group, related_name='client_and_groups')
-
-    class Meta:
-        unique_together = ['client', 'group']
 
 
 class Template(models.Model):
