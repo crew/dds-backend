@@ -32,7 +32,7 @@
       $('#kill').click(kill);
       $('#volumeslide').slider({min:0, max:60});
       $('#volumeslide').bind('slidestop', function(event, ui) {
-        senddata({cmd:'VOLM', val:ui.value});
+        senddata({cmd:'VOLM', arg:ui.value});
         $('#setvol').attr('value', 'Set Volume ('+ui.value+')');
           });
       $('#setvol').click(setvolume);
