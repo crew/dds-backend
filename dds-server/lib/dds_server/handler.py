@@ -49,8 +49,6 @@ class DDSHandler(object):
         if client:
             if (pr.getStatus() == 'playlistrequest'):
                 self.send_playlist(dispatch, jid, client.playlist)
-            elif (pr.getStatus() == 'initialsliderequest'):
-                self.send_initial_slides(dispatch, jid, client.all_slides())
             ca = client.activity
             ca.active = (typ != 'unavailable')
             ca.current_slide = dblayer.get_slide(pr.getStatus())
@@ -82,45 +80,6 @@ class DDSHandler(object):
 
             raise xmpp.NodeProcessed
 
-    def get_slide(self, dispatch, iq):
-        # Sample method call:
-        #
-        # <methodCall>
-        #   <methodName>getSlide</methodName>
-        #   <params>
-        #     <param>
-        #       <value><int>1</int></value>
-        #     </param>
-        #   </params>
-        # </methodCall>
-        jid = iq.getFrom()
-        reply = iq.buildReply(typ='result')
-        reply.setQueryNS(iq.getQueryNS())
-
-        # parse the xml find the slide
-        request = xmlrpclib.loads(str(iq))
-        slide_id = request[0][0]
-        slide = Slide.objects.get(pk=slide_id)
-
-        # Check ACL
-        client = self.get_client(jid.getStripped())
-        if (client is None) or (client not in slide.all_clients()):
-            raise Exception('%s is not allowed.' % jid)
-
-        # Prepare the result
-        result = xmlrpclib.dumps(slide.parse())
-        payload = [xmpp.simplexml.NodeBuilder(result).getDom()]
-        reply.setQueryPayload(payload)
-        logging.info('%s : sending getSlide %d reply.' % (jid, slide.pk))
-        dispatch.send(reply)
-        logging.info('%s : sent getSlide %d reply.' % (jid, slide.pk))
-
-    def send_initial_slides(self, dispatch, jid, slides):
-        """Sends the initial slides to the Jabber id."""
-        logging.info('%s : sending initial slides.' % jid)
-        for slide in slides:
-            self.add_slide(dispatch, jid, slide)
-
     def send_playlist(self, dispatch, jid, playlist):
         """Sends the initial slides to the Jabber id."""
         logging.info('%s : sending playlist' % jid)
@@ -139,13 +98,6 @@ class DDSHandler(object):
         iq.setQueryNS(xmpp.NS_RPC)
         iq.setQueryPayload(request)
         return iq
-
-    def add_slide(self, dispatch, jid, slide, method_name='addSlide'):
-        """Sends a parsed Slide object to the Jabber id."""
-        logging.info('%s : sending slide %d.' % (jid, slide.pk))
-        request = generate_request((slide.parse(), ), methodname=method_name)
-        dispatch.send(self.get_iq(jid, 'set', request))
-        logging.info('%s : sent slide %d.' % (jid, slide.pk))
 
     def send_error(self, dispatch, jid, payload=('error', )):
         """Sends an error."""
