@@ -98,7 +98,7 @@ class Slide(models.Model):
         s = []
         for related in ['playlistitemslide_set', 'playlistitemgroup_set']:
             if hasattr(self, related):
-                s.update(getattr(self, related).all())
+                s += list(getattr(self, related).all())
         for playlistitem in s:
             if playlistitem.playlist not in playlists:
                 playlists.append(playlistitem.playlist)
