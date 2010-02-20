@@ -31,7 +31,7 @@ class Combine(threading.Thread):
 
     def send_playlist(self, message, obj):
         pl = dblayer.get_playlist(obj['playlist'])
-        tos = [c.jid() for c in pl.all_clients()]
+        tos = [c.jid() for c in pl.client_set.all()]
         packet = pl.packet()
         packet['slides'] = []
         for slide in pl.slides():
