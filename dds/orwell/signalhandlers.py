@@ -16,7 +16,7 @@ def write_message(message):
         msg.timestamp = datetime.datetime.now()
         msg.save()
 
-def notify_playlist_change(playlist)
+def notify_playlist_change(playlist):
     write_message({'method': 'playlist', 'playlist':playlist.pk})
 
 def slide_m_pre_save(sender, instance, **kwargs):
