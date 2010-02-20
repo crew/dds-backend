@@ -24,10 +24,9 @@ class Combine(threading.Thread):
             try:
                 self.send_message(m)
             except KeyError, e:
-                logging.error('Failed to parse.')
+                logging.exception('Failed to parse.')
             except Exception, e:
-                logging.error(str(e))
-            # The message is deleted.
+                logging.exception('Error while sending message')
             m.delete()
 
     def send_playlist(self, message, obj):
