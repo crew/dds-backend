@@ -192,7 +192,7 @@ def web_form_slide_customize(request, uid) :
                                   context_instance=RequestContext(request))
     if request.method == 'POST':
         formData = request.POST
-        
+
         fo = StringIO.StringIO()
 
         bundle = tarfile.open(fileobj=Template.objects.get(id=uid).bundle)

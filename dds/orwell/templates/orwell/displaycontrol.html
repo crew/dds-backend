@@ -48,7 +48,9 @@
 <select id="client">
   <option value="">--Client--</option>
   {% for client in clients %}
+  {% if client.active %}
   <option value="{{client.client_id}}">{{client.name}}</option>
+  {% endif %}
   {% endfor %}
 </select>
 <br>
