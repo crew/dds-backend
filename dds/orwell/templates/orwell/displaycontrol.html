@@ -19,12 +19,12 @@
   function poweroff() { senddata({setpower:'off'}); }
   function poweron() { senddata({setpower:'on'}); }
   function setvolume() {
-    vol = $('#volumeslide').slider('values', index);
-    senddata({cmd:'VOLM', val:vol});
+    vol = $('#volumeslide').slider('value');
+    senddata({cmd:'VOLM', arg:vol});
   }
-  function chup() { senddata({cmd:'CHUP', val:0}); }
-  function chdw() { senddata({cmd:'CHDW', val:0}); }
-  function hdmi() { senddata({cmd:'IAVD', val:6}); }
+  function chup() { senddata({cmd:'CHUP', arg:0}); }
+  function chdw() { senddata({cmd:'CHDW', arg:0}); }
+  function hdmi() { senddata({cmd:'IAVD', arg:6}); }
   $(function() {
       $('#poweroff').click(poweroff);
       $('#poweron').click(poweron);
