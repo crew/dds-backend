@@ -3,7 +3,7 @@ from django.core import serializers
 from django.core.files.base import ContentFile
 from django.http import (HttpResponse, HttpResponseRedirect,
                          HttpResponseBadRequest, HttpResponseNotAllowed)
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.contrib.auth.models import User
@@ -14,7 +14,7 @@ import json
 import os
 import shutil
 
-from models import Slide, Client, ClientActivity, Location, Group, Template
+from models import Slide, Client, ClientActivity, Location, Group, Template, Message
 from forms import CreateSlideForm
 import tarfile
 import time
@@ -188,7 +188,8 @@ def web_form_slide_customize(request, uid) :
         template = Template.objects.get(id=uid)
         data = json.JSONDecoder().decode(template.json.read())
         return render_to_response('orwell/web-form-slide-customize.html',
-                                  {"template": data, "groups": Group.objects.all() },
+                                  {"template": data,
+                                   "groups": Group.objects.all() },
                                   context_instance=RequestContext(request))
     if request.method == 'POST':
         formData = request.POST
@@ -239,7 +240,28 @@ def web_form_slide_customize(request, uid) :
         cf = ContentFile(fo.read())
 
         s.populate_from_bundle(cf, tarfile.open(fileobj=cf))
-        return render_to_response('orwell/web-form-slide-customize-success.html',
-                                  {"yay":"yay"},
+        templatefile = 'orwell/web-form-slide-customize-success.html'
+        return render_to_response(templatefile, {"yay":"yay"},
                                   context_instance=RequestContext(request))
 
+@login_required
+def displaycontrol(request):
+    if request.method == 'GET':
+        return render_to_response('orwell/displaycontrol.html',
+                                  {"clients":Client.objects.all()},
+                                  context_instance=RequestContext(request))
+    else:
+        clientid = request.POST.get('client', '')
+        client = get_object_or_404(Client, client_id=clientid)
+        setpower = request.POST.get('setpower', '')
+        cmd = request.POST.get('cmd', '')
+        arg = request.POST.get('arg', '')
+        packet = {'to':client.jid(), 'method':'displaycontrol'}
+        if setpower in ['on', 'off']:
+            packet['setpower'] = setpower == 'on'
+        elif cmd and arg:
+            packet['cmd'] = {'cmd':cmd, 'arg':arg}
+        if 'setpower' in packet or 'cmd' in packet:
+            m = Message(message=json.dumps(packet))
+            m.save()
+        return HttpResponse('')

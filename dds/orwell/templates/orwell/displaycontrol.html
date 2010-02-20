@@ -1,0 +1,73 @@
+{% extends "orwell/base-index.html" %}
+{% block title %}Display Control{% endblock %}
+{% block scripts %}
+<script type="text/javascript">
+  function clientid() {
+    return $('#client').val();
+  }
+  function senddata(data) {
+    client = clientid();
+    if (client == '') {
+      alert('Please select a client!');
+      return;
+    }
+    else {
+      data.client = client;
+      $.ajax({type:'POST', data:data});
+    }
+  }
+  function poweroff() { senddata({setpower:'off'}); }
+  function poweron() { senddata({setpower:'on'}); }
+  function setvolume() {
+    vol = $('#volumeslide').slider('values', index);
+    senddata({cmd:'VOLM', val:vol});
+  }
+  function chup() { senddata({cmd:'CHUP', val:0}); }
+  function chdw() { senddata({cmd:'CHDW', val:0}); }
+  function hdmi() { senddata({cmd:'IAVD', val:6}); }
+  $(function() {
+      $('#poweroff').click(poweroff);
+      $('#poweron').click(poweron);
+      $('#volumeslide').slider({min:0, max:60});
+      $('#volumeslide').bind('slidestop', function(event, ui) {
+        senddata({cmd:'VOLM', val:ui.value});
+        $('#setvol').attr('value', 'Set Volume ('+ui.value+')');
+          });
+      $('#setvol').click(setvolume);
+      $('#chup').click(chup);
+      $('#chdw').click(chdw);
+      $('#hdmi').click(hdmi);
+    });
+</script>
+{% endblock %}
+
+{% block content %}
+<h1>Frontend Display Control</h1>
+<select id="client">
+  <option value="">--Client--</option>
+  {% for client in clients %}
+  <option value="{{client.client_id}}">{{client}}</option>
+  {% endfor %}
+</select>
+<br>
+<br>
+<div>
+<input class="fg-button ui-state-default" type="button"
+       id="poweron" value="Power On">
+<input class="fg-button ui-state-default" type="button"
+       id="poweroff" value="Power Off">
+<br><br>
+<div id="volumeslide" style="width:30%"></div>
+<input class="fg-button ui-state-default" type="button"
+       id="setvol" value="Set Volume (0)">
+<br><br>
+<input class="fg-button ui-state-default" type="button"
+       id="chup" value="Channel Up">
+<input class="fg-button ui-state-default" type="button"
+       id="chdw" value="Channel Down">
+<br><br>
+<input class="fg-button ui-state-default" type="button"
+       id="hdmi" value="HDMI Input">
+</div>
+</div>
+{% endblock %}
