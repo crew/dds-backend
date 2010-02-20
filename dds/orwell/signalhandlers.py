@@ -19,48 +19,23 @@ def write_message(message):
 def notify_playlist_change(playlist):
     write_message({'method': 'playlist', 'playlist':playlist.pk})
 
-def slide_m_pre_save(sender, instance, **kwargs):
-    try:
-        sender.objects.get(pk=instance.pk)
-    except:
-        return
-    message = {'method': 'add', 'slide': instance.pk}
-    write_message(message)
-
-
 def slide_m_post_save(sender, instance, created, **kwargs):
-    if created:
-        message = {'method': 'add', 'slide': instance.pk }
-        write_message(message)
-
+    for playlist in instance.playlists():
+        notify_playlist_change(playlist)
 
 def slide_m_pre_delete(sender, instance, **kwargs):
-    message = {'method': 'delete', 'slide': instance.pk}
-    write_message(message)
+    for playlist in instance.playlists():
+        notify_playlist_change(playlist)
 
+def playlist_m_post_save(sender, instance, **kwargs):
+    notify_playlist_change(instance)
 
-def playlist_m_pre_save(sender, instance, **kwargs):
-    try:
-        sender.objects.get(pk=instance.pk)
-    except:
-        return
-    message = {'method': 'playlist', 'playlist':instance.pk}
-    write_message(message)
+def client_m_post_save(sender, instance, **kwargs):
+    notify_playlist_change(instance.playlist)
 
+def pis_m_post_save(sender, instance, **kwargs):
+    notify_playlist_change(instance.playlist)
 
-def playlist_m_post_save(sender, instance, created, **kwargs):
-    if created:
-        message = {'method': 'playlist', 'playlist':instance.pk}
-        write_message(message)
-
-
-def playlist_m_pre_delete(sender, instance, **kwargs):
-    pass
-
-
-def ctg_write_message(instance, method):
-    for s in instance.group.slides.all():
-        message = {'method': method, 'slide': s.pk,
-                   'to': instance.client.jid()}
-        write_message(message)
-
+pis_m_pre_delete = pis_m_post_save
+pig_m_post_save = pis_m_post_save
+pig_m_pre_delete = pis_m_pre_delete

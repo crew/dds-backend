@@ -106,8 +106,7 @@ class Slide(models.Model):
 
 
 # Signals for Slide
-register_signals(Slide, pre_save=signalhandlers.slide_m_pre_save,
-                        post_save=signalhandlers.slide_m_post_save,
+register_signals(Slide, post_save=signalhandlers.slide_m_post_save,
                         pre_delete=signalhandlers.slide_m_pre_delete)
 
 
@@ -119,7 +118,8 @@ class Location(models.Model):
 
 
 class Playlist(models.Model):
-    name = models.CharField(max_length=200, null=True, blank=True, unique=True)
+    name = models.CharField(max_length=200, null=True, blank=True,
+                            unique=True)
 
     def __unicode__(self):
         return '%s' % self.name
@@ -154,9 +154,7 @@ class Playlist(models.Model):
         return Slide.objects.filter(id__in=self.requiredslideids())
 
 # Signals for Playlist
-register_signals(Playlist, pre_save=signalhandlers.playlist_m_pre_save,
-                           post_save=signalhandlers.playlist_m_post_save,
-                           pre_delete=signalhandlers.playlist_m_pre_delete)
+register_signals(Playlist, post_save=signalhandlers.playlist_m_post_save)
 
 class Client(models.Model):
     """Represents a DDS Jabber client."""
@@ -233,6 +231,8 @@ class Client(models.Model):
     def __unicode__(self):
         return '%s@%s' % (self.pk, self.location)
 
+# Signals for Client
+register_signals(Client, post_save=signalhandlers.client_m_post_save)
 
 class Template(models.Model):
     bundle = models.FileField(max_length=300, upload_to="template/%Y%H%M%S",
@@ -317,6 +317,7 @@ class PlaylistItemSlide(PlaylistItem):
     def slideweights(self):
         return [self.slide.priority]
 
+
 class PlaylistItemGroup(PlaylistItem):
     groups   = models.ManyToManyField(Group)
     weighted = models.BooleanField()
@@ -343,3 +344,11 @@ class PlaylistItemGroup(PlaylistItem):
             return 'weighted'
         else:
             return 'random'
+
+
+register_signals(PlaylistItemSlide,
+                 post_save=signalhandlers.pis_m_post_save,
+                 pre_delete=signalhandlers.pis_m_pre_delete)
+register_signals(PlaylistItemGroup,
+                 post_save=signalhandlers.pig_m_post_save,
+                 pre_delete=signalhandlers.pig_m_pre_delete)
