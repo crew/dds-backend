@@ -105,6 +105,11 @@ class Slide(models.Model):
         return playlists
 
 
+
+class TemplateSlide(Slide):
+    template = models.ForeignKey('Template', related_name='slides')
+
+
 # Signals for Slide
 register_signals(Slide, post_save=signalhandlers.slide_m_post_save,
                         pre_delete=signalhandlers.slide_m_pre_delete)
