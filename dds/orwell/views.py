@@ -14,7 +14,7 @@ import json
 import os
 import shutil
 
-from models import Slide, Client, ClientActivity, Location, Group, Template, Message
+from models import Slide, Client, ClientActivity, Location, Group, Template, Message, TemplateSlide
 from forms import CreateSlideForm
 import tarfile
 import time
@@ -127,7 +127,6 @@ def web_form_slide_customize(request, uid) :
         formData = request.POST
 
         fo = StringIO.StringIO()
-
         bundle = tarfile.open(fileobj=Template.objects.get(id=uid).bundle)
         tf = tarfile.open(fileobj=fo, mode='w:gz')
 
@@ -160,17 +159,17 @@ def web_form_slide_customize(request, uid) :
                     'priority': 3,
                    }
         addjson(manifest, 'manifest.js')
-        s = Slide(user=request.user,
-                  group=Group.objects.get(id=formData.get('group')),
-                  title=formData.get('name', 'no-name'),
-                  priority=-1,
-                  duration=-1)
+        s = TemplateSlide(user=request.user,
+                          group=Group.objects.get(id=formData.get('group')),
+                          title=formData.get('name', 'no-name'),
+                          priority=-1,
+                          duration=-1)
         print tf.getnames()
-
+        
         tf.close()
         fo.seek(0)
         cf = ContentFile(fo.read())
-
+        s.template = Template.objects.get(id=uid)
         s.populate_from_bundle(cf, tarfile.open(fileobj=cf))
         templatefile = 'orwell/web-form-slide-customize-success.html'
         return render_to_response(templatefile, {"yay":"yay"},
