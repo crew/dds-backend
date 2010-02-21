@@ -10,7 +10,7 @@ class SlideAdmin(admin.ModelAdmin):
             'fields': ('title', 'user', 'group')
         }),
         (None, {
-            'fields': ('priority', 'duration', 'expires_at', 'thumbnail',
+            'fields': ('priority', 'expires_at', 'thumbnail',
                        'bundle'),
         }),
     )
