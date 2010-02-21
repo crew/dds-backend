@@ -110,67 +110,6 @@ def cli_list_slides(request):
     return HttpResponseNotAllowed(['GET'])
 
 
-# This allows you to create new slides based on a precreated template
-@login_required
-def web_formy_thing(request):
-    def wft_response(response, request):
-        return render_to_response('orwell/web-formy-thing-response.html',
-                                  { 'msg' : response },
-                                  context_instance=RequestContext(request))
-
-    if request.method == 'GET':
-        return render_to_response('orwell/web-formy-thing.html',
-                                  {"groups":Group.objects.all() },
-                                  context_instance=RequestContext(request))
-
-    elif request.method == 'POST':
-        formData = request.POST
-
-        fo = StringIO.StringIO()
-        tf = tarfile.open(fileobj=fo, mode='w:gz')
-
-        def addjson(data, filename):
-            sio = StringIO.StringIO()
-            sio.write(json.dumps(data))
-            sio.seek(0)
-            ari = tarfile.TarInfo(name=filename)
-            ari.size = len(sio.buf)
-            ari.mtime = time.time()
-            tf.addfile(ari, sio)
-
-        basepath = os.path.join(os.path.dirname(__file__), 'web-form-slides',
-                                'default-slide')
-        for x in ['_thumb.png', 'nuacmlogo.png', 'skyline_blue.png',
-                  'sunbeams.png', 'skyline.png', 'layout.py']:
-            tf.add(os.path.join(basepath, x), arcname=x)
-
-        datadict = {}
-        rawformdata = dict(formData)
-        for k in rawformdata:
-            datadict[k] = rawformdata[k][0]
-        addjson(datadict, 'data.js')
-
-        manifest = {'title':formData.get('name', 'no-name'),
-                    'transition':'fade',
-                    'mode':'module',
-                    'thumbnail_img': '_thumb.png',
-                    'duration': 10,
-                    'priority': 3,
-                   }
-        addjson(manifest, 'manifest.js')
-        s = Slide(user=request.user,
-                  group=Group.objects.get(id=formData.get('group')),
-                  title=formData.get('name', 'no-name'),
-                  priority=-1,
-                  duration=-1)
-        tf.close()
-        fo.seek(0)
-
-        cf = ContentFile(fo.read())
-        s.populate_from_bundle(cf, tarfile.open(fileobj=cf))
-
-        return wft_response('Success!', request)
-
 def web_form_slide_select(request) :
     return render_to_response('orwell/web-form-slide-select.html',
                               {"templates": Template.objects.all() },
@@ -210,7 +149,7 @@ def web_form_slide_customize(request, uid) :
         rawformdata = dict(formData)
         for k in rawformdata:
             datadict[k] = rawformdata[k][0]
-        
+
         addjson(datadict, 'data.js')
 
         manifest = {'title':formData.get('name', 'no-name'),
