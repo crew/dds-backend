@@ -14,7 +14,8 @@ urlpatterns = patterns('%s.orwell.views' % settings.MODULE,
     url(r'^web-form/slide-select/$', 'web_form_slide_select',
         name='web-form-slide-select'),
     url(r'^web-form/slide-customize/(\d+)/$', 'web_form_slide_customize',
-        name='web-form-slide-customize')
+        name='web-form-slide-customize'),
+    url(r'^templates/$', 'template_select', name='template-select')
 )
 
 # The JSON API

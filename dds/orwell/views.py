@@ -199,3 +199,8 @@ def displaycontrol(request):
             m = Message(message=json.dumps(packet))
             m.save()
         return HttpResponse('')
+
+def template_select(request):
+    return render_to_response('orwell/template-select.html',
+                              {"templates":Template.objects.all()},
+                              context_instance=RequestContext(request))
