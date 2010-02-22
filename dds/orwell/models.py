@@ -39,7 +39,7 @@ class Slide(models.Model):
     user = models.ForeignKey(User, related_name='slides')
     group = models.ForeignKey(Group, related_name='slides')
     priority = models.IntegerField()
-    duration = models.IntegerField()
+    duration = models.IntegerField(default=10)
     expires_at = models.DateTimeField(null=True, default=None, blank=True)
     last_update = models.DateTimeField(auto_now=True)
     thumbnail = models.ImageField(max_length=300, upload_to="thumbs/%Y%H%M%S",
