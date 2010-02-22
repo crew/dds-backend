@@ -27,7 +27,7 @@ def get_default_location():
 
 
 def get_default_group():
-    group, _ = Group.objects.get_or_create(name='Unregistered clients')
+    group, _ = Group.objects.get_or_create(name='Unknown')
     return group
 
 
