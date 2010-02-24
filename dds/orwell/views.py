@@ -42,8 +42,8 @@ def slide_index(request):
                     return HttpResponse('OK')
                 else:
                     return HttpResponse(status=403)
-            except:
-                return HttpResponse(status=400)
+            except Exception, e:
+                return HttpResponse(str(e), status=400)
         else:
             return HttpResponse(status=400)
 

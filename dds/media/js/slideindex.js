@@ -23,6 +23,23 @@ function resetfilterform() {
 }
 
 function handledelete(slidebox, source) {
+  $(source).dialog("close");
+  confirmbox = $('<div>');
+  confirmbox.html('Are you sure you wish to delete this slide?');
+  confirmbox.dialog({modal:true,autoOpen:true,
+                        resizable:false,draggable:false,
+                        buttons:{"Yes, Delete!":function() {
+                                   confirmbox.remove();
+                                   dodelete(slidebox, source);
+                                   },
+                                 "Cancel":function() {
+                                   $(source).dialog("open");
+                                   $(this).dialog("close");
+                                   confirmbox.remove();
+                                  }}});
+}
+
+function dodelete(slidebox, source) {
   source = $(source);
   console.log('u');
   removalid = slidebox.attr('id');
@@ -31,6 +48,7 @@ function handledelete(slidebox, source) {
           success:function(data) {
             source.dialog("close");
             slidebox.fadeOut('slow', function() {
+              slidebox.children('.infopopup').dialog('destroy');
               slidebox.remove();
             });
           },
