@@ -35,7 +35,11 @@ function powercontroldialog(id) {
     t.find('#powerctlclient').val(id);
   });
   t.dialog({modal:true,autoOpen:true,title:"Client Power Control",
-            width:350,resizable:false,draggable:true});
+            width:350,resizable:false,draggable:true,
+            close:function(event, ui) {
+            t.remove();
+            }
+  });
 }
 
 function setupdialogs() {
