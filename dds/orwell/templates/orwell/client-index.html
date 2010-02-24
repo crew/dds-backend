@@ -37,13 +37,14 @@
   <div class="infopopup" title="{{client.client_id}}"
     id="infobox-{{ client.id_hash }}">
     <div class="keyval">
-      Location: <span id="kv-location">{{ client.location }}</span>
+      Location: <span class="kv-location">{{ client.location }}</span>
     </div>
     <div class="keyval">
-      Groups: <span id="kv-groups">{{ client.groups.all|join:", " }}
+      Groups: <span class="kv-groups">{{ client.groups.all|join:", " }}
     </div>
     <div class="keyval">
-      Last Contact: <span id="kv-lastcontact">{{ client.last_contact }}</span>
+      Last Contact: <span class="kv-lastcontact">{{ client.last_contact }}
+      </span>
     </div>
     <div id="save-{{ client.id_hash }}" class="ui-state-default ui-corner-all"
       title="Save">
