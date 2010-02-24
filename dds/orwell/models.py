@@ -65,7 +65,7 @@ class Slide(models.Model):
         return 'slide-group-%d' % self.group.id
 
     def allowed(self, user):
-        return self.group in user.groups.all() or user.is_staff
+        return self.group in user.groups.all() or user.is_admin
 
     @models.permalink
     def get_absolute_url(self):

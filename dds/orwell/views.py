@@ -33,24 +33,26 @@ def slide_index(request):
                                     'groups' : Group.objects.all()},
                                   context_instance=RequestContext(request))
     else:
-        formData = request.POST
-        # see if this is a remove operation
-        try:
-            remdata = formData['remove'][12:]
-            Slide.objects.get(pk=remdata).delete()
-        except (Error):
-            pass
+        if 'remove' in request.POST:
+            try:
+                slide = get_object_or_404(Slide,
+                                          pk=request.POST['remove'])
+                if slide.allowed(request.user):
+                    slide.delete()
+                    return HttpResponse('OK')
+                else:
+                    return HttpResponse(status=403)
+            except:
+                return HttpResponse(status=400)
+        else:
+            return HttpResponse(status=400)
 
 def slide_add(request):
     if request.method == 'POST':
         return HTTPResponse()
 
 def slide_bundle(request, slide_id):
-    try:
-        slide = Slide.objects.get(pk=slide_id)
-    except Slide.DoesNotExist:
-        return HttpResponse(status=404)
-
+    slide = get_object_or_404(Slide, pk=slide_id)
     return redirect(slide.bundle.url)
 
 def client_index(request):
