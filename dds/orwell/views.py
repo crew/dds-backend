@@ -164,8 +164,7 @@ def web_form_slide_customize(request, uid) :
                           title=formData.get('name', 'no-name'),
                           priority=-1,
                           duration=-1)
-        print tf.getnames()
-        
+
         tf.close()
         fo.seek(0)
         cf = ContentFile(fo.read())
@@ -175,13 +174,14 @@ def web_form_slide_customize(request, uid) :
         return render_to_response(templatefile, {"yay":"yay"},
                                   context_instance=RequestContext(request))
 
-@login_required
 def displaycontrol(request):
     if request.method == 'GET':
         return render_to_response('orwell/displaycontrol.html',
-                                  {"clients":Client.objects.all()},
+                                  {},
                                   context_instance=RequestContext(request))
     else:
+        if not request.user.is_staff:
+            return HttpResponse('DISALLOWED')
         clientid = request.POST.get('client', '')
         client = get_object_or_404(Client, client_id=clientid)
         setpower = request.POST.get('setpower', '')
@@ -198,7 +198,7 @@ def displaycontrol(request):
             or (packet['method'] == 'killDDS')):
             m = Message(message=json.dumps(packet))
             m.save()
-        return HttpResponse('')
+        return HttpResponse('OK')
 
 def template_select(request):
     return render_to_response('orwell/template-select.html',

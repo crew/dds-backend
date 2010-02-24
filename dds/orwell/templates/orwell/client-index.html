@@ -4,6 +4,7 @@
 <script type="text/javascript" src="/media/js/clientindex.js"></script>
 <script type="text/javascript">
   var jsonupdateurl = "{% url orwell-json-activity-all %}";
+  var clientpowerurl = "{% url orwell-displaycontrol %}";
 </script>
 {% endblock %}
 
@@ -36,6 +37,8 @@
   {{ client.displayname }}
   <div class="infopopup" title="{{client.client_id}}"
     id="infobox-{{ client.id_hash }}">
+    <input type="hidden" id="clientid-{{ client.id_hash }}"
+           class="clientid" value="{{client.client_id}}">
     <div class="keyval">
       Location: <span class="kv-location">{{ client.location }}</span>
     </div>
@@ -46,9 +49,6 @@
       Last Contact: <span class="kv-lastcontact">{{ client.last_contact }}
       </span>
     </div>
-    <div id="save-{{ client.id_hash }}" class="ui-state-default ui-corner-all"
-      title="Save">
-      <span class="ui-icon ui-icon-disk">Save</span></div>
   </div>
 </div>
 {% endfor %}

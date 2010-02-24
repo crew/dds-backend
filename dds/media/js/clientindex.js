@@ -24,15 +24,37 @@ function filtergrouplocation() {
 }
 
 function resetfilterform() {
+  //Ugh, this should be done with jquery...
   document.getElementById('clientfilterform').reset();
   filtergrouplocation();
+}
+
+function powercontroldialog(id) {
+  t = $('<div>').attr('class', 'powercontroldialogcontent');
+  t.load(clientpowerurl, function(){
+    t.find('#powerctlclient').val(id);
+  });
+  t.dialog({modal:true,autoOpen:true,title:"Client Power Control",
+            width:350,resizable:false,draggable:true});
 }
 
 function setupdialogs() {
   $('.slidebox').each(function() {
       var id = $(this).children('.infopopup').attr('id');
       $('#'+id).dialog({modal:true,autoOpen:false,
-                        resizable:false,draggable:false});
+                        resizable:false,draggable:false,
+                        buttons:{
+                        "Power": function() {
+                          $(this).dialog("close");
+                          powercontroldialog($('#'+id+' > .clientid').val());
+                        },
+                        "Ok": function() {
+                          $(this).dialog("close");
+                        },
+                        "Cancel": function() {
+                          $(this).dialog("close");
+                        },
+                        }});
       $(this).click(function() {
         $('#'+id).dialog('open');});
       });

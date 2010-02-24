@@ -1,9 +1,7 @@
-{% extends "orwell/base-index.html" %}
-{% block title %}Display Control{% endblock %}
-{% block scripts %}
+{% if user.is_staff %}
 <script type="text/javascript">
   function clientid() {
-    return $('#client').val();
+    return $('#powerctlclient').val();
   }
   function senddata(data) {
     client = clientid();
@@ -13,7 +11,7 @@
     }
     else {
       data.client = client;
-      $.ajax({type:'POST', data:data});
+      $.ajax({type:'POST', data:data, url:"{% url orwell-displaycontrol %}"});
     }
   }
   function poweroff() { senddata({setpower:'off'}); }
@@ -26,36 +24,34 @@
   function chup() { senddata({cmd:'CHUP', arg:0}); }
   function chdw() { senddata({cmd:'CHDW', arg:0}); }
   function hdmi() { senddata({cmd:'IAVD', arg:6}); }
+  function setsliderbutton(val) {
+    val = val+'';
+    if (val.length < 2) {
+      val = '0'+val;
+    }
+    $('#setvol').attr('value', 'Set Volume ('+val+')');
+  }
+
   $(function() {
       $('#poweroff').click(poweroff);
       $('#poweron').click(poweron);
       $('#kill').click(kill);
-      $('#volumeslide').slider({min:0, max:60});
+      $('#volumeslide').slider({min:0, max:60, animate: true});
       $('#volumeslide').bind('slidestop', function(event, ui) {
         senddata({cmd:'VOLM', arg:ui.value});
-        $('#setvol').attr('value', 'Set Volume ('+ui.value+')');
-          });
+        setsliderbutton(ui.value);
+      });
+      $('#volumeslide').bind('slide', function(event, ui) {
+        setsliderbutton(ui.value);
+      });
       $('#setvol').click(setvolume);
       $('#chup').click(chup);
       $('#chdw').click(chdw);
       $('#hdmi').click(hdmi);
     });
 </script>
-{% endblock %}
-
-{% block content %}
-<h1>Frontend Display Control</h1>
-<select id="client">
-  <option value="">--Client--</option>
-  {% for client in clients %}
-  {% if client.active %}
-  <option value="{{client.client_id}}">{{client.name}}</option>
-  {% endif %}
-  {% endfor %}
-</select>
-<br>
-<br>
 <div>
+<input type="hidden" id="powerctlclient">
 <input class="fg-button ui-state-default" type="button"
        id="poweron" value="Power On">
 <input class="fg-button ui-state-default" type="button"
@@ -63,17 +59,19 @@
 <input class="fg-button ui-state-default" type="button"
        id="kill" value="Kill DDS">
 <br><br>
-<div id="volumeslide" style="width:30%"></div>
+<div id="volumeslide"></div>
+<br>
 <input class="fg-button ui-state-default" type="button"
-       id="setvol" value="Set Volume (0)">
+       id="setvol" value="Set Volume (00)">
+<input class="fg-button ui-state-default" type="button"
+       id="hdmi" value="HDMI Input">
 <br><br>
 <input class="fg-button ui-state-default" type="button"
        id="chup" value="Channel Up">
 <input class="fg-button ui-state-default" type="button"
        id="chdw" value="Channel Down">
-<br><br>
-<input class="fg-button ui-state-default" type="button"
-       id="hdmi" value="HDMI Input">
 </div>
 </div>
-{% endblock %}
+{% else %}
+<div>Sorry, you must be logged in as staff to use power control features!</div>
+{% endif %}
