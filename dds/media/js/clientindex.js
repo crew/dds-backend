@@ -44,21 +44,17 @@ function powercontroldialog(id) {
 
 function setupdialogs() {
   $('.slidebox').each(function() {
+      buttons = {"Ok": function() { $(this).dialog("close"); },
+                 "Cancel": function() { $(this).dialog("close"); }};
+      if (is_staff == "True") {
+        buttons.Power = function() {
+                          $(this).dialog("close");
+                          powercontroldialog($('#'+id+' > .clientid').val());};
+      }
       var id = $(this).children('.infopopup').attr('id');
       $('#'+id).dialog({modal:true,autoOpen:false,
                         resizable:false,draggable:false,
-                        buttons:{
-                        "Power": function() {
-                          $(this).dialog("close");
-                          powercontroldialog($('#'+id+' > .clientid').val());
-                        },
-                        "Ok": function() {
-                          $(this).dialog("close");
-                        },
-                        "Cancel": function() {
-                          $(this).dialog("close");
-                        },
-                        }});
+                        buttons:buttons});
       $(this).click(function() {
         $('#'+id).dialog('open');});
       });

@@ -5,6 +5,7 @@
 <script type="text/javascript">
   var jsonupdateurl = "{% url orwell-json-activity-all %}";
   var clientpowerurl = "{% url orwell-displaycontrol %}";
+  var is_staff = "{{ user.is_staff }}";
 </script>
 {% endblock %}
 
