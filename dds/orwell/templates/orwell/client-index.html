@@ -41,10 +41,13 @@
     <input type="hidden" id="clientid-{{ client.id_hash }}"
            class="clientid" value="{{client.client_id}}">
     <div class="keyval">
+      Playlist: <span class="kv-playlist">{{ client.playlist.name }}</span>
+    </div>
+    <div class="keyval">
       Location: <span class="kv-location">{{ client.location }}</span>
     </div>
     <div class="keyval">
-      Groups: <span class="kv-groups">{{ client.groups.all|join:", " }}
+      Groups: <span class="kv-groups">{{ client.groups.all|join:", " }}</span>
     </div>
     <div class="keyval">
       Last Contact: <span class="kv-lastcontact">{{ client.last_contact }}
