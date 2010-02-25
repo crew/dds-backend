@@ -41,7 +41,6 @@ function handledelete(slidebox, source) {
 
 function dodelete(slidebox, source) {
   source = $(source);
-  console.log('u');
   removalid = slidebox.attr('id');
   removalid = removalid.replace('slide-','');
   $.ajax({type:'POST', data:{remove:removalid},
@@ -71,9 +70,10 @@ function dodelete(slidebox, source) {
 
 function setupdialogs() {
   $('.slidebox').each(function() {
-      slidebox = $(this);
-      var id = slidebox.children('.infopopup').attr('id');
-      $('#'+id).dialog({modal:true,autoOpen:false,
+      var slidebox = $(this);
+      var ch = slidebox.children('.infopopup')
+      removalid = slidebox.attr('id');
+      ch.dialog({modal:true,autoOpen:false,
                         resizable:false,draggable:false,
                         buttons:{"Save":function() {alert('Not implemented');},
                                  "Delete":function() {
@@ -83,7 +83,7 @@ function setupdialogs() {
                                    $(this).dialog("close");
                                   }}});
       $(this).click(function() {
-        $('#'+id).dialog('open');});
+        ch.dialog('open');});
       });
 }
 
