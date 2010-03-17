@@ -16,9 +16,10 @@ urlpatterns = patterns('%s.orwell.views' % settings.MODULE,
         name='web-form-slide-select'),
     url(r'^web-form/slide-customize/(\d+)/$', 'web_form_slide_customize',
         name='web-form-slide-customize'),
-    url(r'^templates/$', 'template_select', name='template-select')
+    url(r'^templates/$', 'template_select', name='template-select'),
     url(r'^playlists/$', 'playlist_index', name="orwell-playlist-index"),
-		url(r'^playlists/(\d+)/$', 'playlist_detail', name='orwell-playlist-detail')
+		url(r'^playlists/(\d+)/$',
+  		  'playlist_detail', name='orwell-playlist-detail'),
 )
 
 # The JSON API
