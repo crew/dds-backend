@@ -14,7 +14,7 @@ import json
 import os
 import shutil
 
-from models import Slide, Client, ClientActivity, Location, Group, Template, Message, TemplateSlide
+from models import Slide, Client, ClientActivity, Location, Group, Template, Message, Playlist, PlaylistItem, PlaylistItemSlide, PlaylistItemGroup, TemplateSlide
 from forms import CreateSlideForm
 import tarfile
 import time
@@ -206,3 +206,85 @@ def template_select(request):
     return render_to_response('orwell/template-select.html',
                               {"templates":Template.objects.all()},
                               context_instance=RequestContext(request))
+        return HttpResponse('')
+
+@login_required
+def playlist_index(request):
+    return render_to_response('orwell/playlist-index.html',
+                              { 'playlists' : Playlist.objects.all() },
+                              context_instance = RequestContext(request))
+
+@login_required
+def playlist_detail(request, playlist_id):
+    playlist = Playlist.objects.get(pk=playlist_id)
+    playlistitems = playlist.playlistitem_set.order_by('position')
+    items = []
+    # Return some simple dicts with PlaylistItem data for template consumption.
+    for item in playlistitems:
+        subitem = item.subitem()
+        if hasattr(subitem, 'weighted'):
+            # PlaylistItemGroup
+            items.append({ 'id' : item.pk,
+                           'groups' : subitem.groups.all(),
+                           'weighted' : subitem.weighted })
+        else:
+            # PlaylistItemSlide
+            items.append({ 'id' : item.pk,
+                           'slide' : subitem.slide })
+    if request.method == 'GET':
+	      return render_to_response('orwell/playlist-detail.html',
+	                                { 'playlist' : playlist,
+	                                  'items' : items,
+	                                  'slides' : Slide.objects.all(),
+	                                  'groups' : Group.objects.all() },
+	                                context_instance = RequestContext(request))
+    else:
+        plitems = request.POST.get('playlist', '')
+        i = 0
+        for item in plitems:
+	          # Update the playlist items with new position values.
+            playlist = PlaylistItem.objects.get(pk=item)
+            playlist.position = i
+            playlist.save()
+            i = i + 1
+        
+# Returns a JSON object containing playlist details.
+@login_required
+def playlist_json(request, playlist_id):
+    playlist = Playlist.objects.get(pk=playlist_id)
+    playlistitems = playlist.playlistitem_set.order_by('position')
+    items = []
+    # Return some simple dicts with PlaylistItem data for template consumption.
+    for item in playlistitems:
+        subitem = item.subitem()
+        if hasattr(subitem, 'weighted'):
+            # PlaylistItemGroup
+            groups = []
+            for x in subitem.groups.all():
+                groups.append(x.id)
+
+            items.append({ 'id' : item.pk,
+                           'groups' : groups,
+                           'weighted' : subitem.weighted })
+        else:
+            # PlaylistItemSlide
+            items.append({ 'id' : item.pk,
+                           'slide' : subitem.slide.id })
+    return HttpResponse(json.dumps(items))
+
+# Returns a JSON object containing slide details.
+@login_required
+def slide_json(request, slide_id):
+    slide = Slide.objects.get(pk=slide_id)
+    output = { 'id' : slide_id,
+               'title' : slide.title,
+               'thumbnail' : slide.thumbnailurl() }
+    return HttpResponse(json.dumps(output))
+
+# Returns a JSON object containing group deatils.
+@login_required
+def group_json(request, group_id):
+    group = Group.objects.get(pk=group_id)
+    output = { 'id' : group_id,
+               'name' : group.name }
+    return HttpResponse(json.dumps(output))      

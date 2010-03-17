@@ -1,0 +1,82 @@
+{% extends "orwell/base-index.html" %}
+{% block title %}Playlists{% endblock %}
+{% block scripts %}
+
+<script type="text/javascript" src="/media/js/slideindex.js"></script>
+
+<script type="text/javascript">
+
+$(document).ready(function(){
+  $("#playlist").sortable();
+	$(".plig_toolbox_item").draggable();
+	$(".plig").droppable( { accept: ".plig_toolbox_item",
+	                        hoverClass: "hover",
+	  											drop: function(id) {
+																	alert("Group " + id + " has been dropped.");
+																}} );
+																
+	 $(".plis_toolbox_item").draggable();
+	 $(".plis").droppable( { accept: ".plis_toolbox_item",
+	 											   hoverClass: "hover",
+	                         drop: function(id) {
+																	alert("Slide " + id.src + " has been dropped");
+																}})
+});
+
+
+</script>
+
+{% endblock %}
+
+{% block content %}
+
+<h1>Playlists</h1>
+<form id="slidefilterform">
+<select id="selplaylist">
+  <option value="">--Playlist--</option>
+  {% for pl in playlists %}
+  <option value="{{pl.id}}">{{pl}}</option>
+  {% endfor %}
+</select>
+
+<div class="left">
+
+<ul id="playlist">
+	{% for pi in items %}
+		{% if pi.groups %}
+			{# We're in a PlaylistItemGroup. #}
+			<li class="plig" id="{{ pi.id }}">
+				<p>Groups: {{ pi.groups|join:", " }}</p>
+			</li>
+		{% else %}
+			{# We're in a PlaylistItemSlide. #}
+			<li class="plis" id="{{ pi.id }}">
+				<p>Slide: {{ pi.slide.title }}</p>
+			</li>
+		{% endif %}
+	{% endfor %}
+</ul>
+
+</div>
+
+<div id="right">
+
+<div id="toolbox">
+	{% for slide in slides %}
+	<div id="slide{{slide.id}}" class="plis_toolbox_item">
+		<img src="{{slide.thumbnail.url}}">
+	</div>
+	{% endfor %}
+	{% for group in groups %}
+	<div id="group{{group.id}}" class="plig_toolbox_item">
+		{{group}}
+	</div>
+	{% endfor %}
+</div>
+
+</div>
+
+<input type="submit"></input>
+
+</form>
+{% endblock %}

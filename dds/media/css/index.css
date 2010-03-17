@@ -89,3 +89,73 @@ clear:both;
 .infopopup {
   display:none;
 }
+
+/* Playlist Control */
+
+.left {
+	float: left;
+	width: 750px;
+}
+
+.right {
+	float: right;
+	width: 470px;
+}
+
+#toolbox {
+	background: white;
+	color: #000;
+	width: 470px;
+	height: 300px;
+	float: right;
+	overflow: auto;
+}
+
+.plig_toolbox_item {
+	border: 1px solid #666;
+	float: left;
+	display: inline;
+	height: 113px;
+	width: 200px;
+	padding: 3px;
+	margin: 10px;
+}
+
+.plis_toolbox_item {
+	border: 1px solid #666;
+	float: left;
+	display: inline;
+	height: 113px;
+	width: 200px;
+	padding: 3px;
+	margin: 10px;
+}
+
+
+#playlist {
+	
+}
+
+#playlist ul {
+	list-style: none;
+}
+
+#playlist li {
+	list-style: none;
+	clear: both;
+	height: 20px;
+	margin-top: 10px;
+	padding: 10px;
+}
+
+#playlist li.plis {
+	background: #666;
+}
+
+#playlist li.plig {
+	background: #444;
+}
+
+#playlist li.hover {
+	background: #ffcc00;
+}
