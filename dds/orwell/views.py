@@ -206,7 +206,6 @@ def template_select(request):
     return render_to_response('orwell/template-select.html',
                               {"templates":Template.objects.all()},
                               context_instance=RequestContext(request))
-        return HttpResponse('')
 
 @login_required
 def playlist_index(request):
@@ -247,7 +246,8 @@ def playlist_detail(request, playlist_id):
             playlist.position = i
             playlist.save()
             i = i + 1
-        
+        return HttpResponse('')
+
 # Returns a JSON object containing playlist details.
 @login_required
 def playlist_json(request, playlist_id):
