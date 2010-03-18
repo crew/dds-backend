@@ -230,13 +230,24 @@ def playlist_detail(request, playlist_id):
             # PlaylistItemSlide
             items.append({ 'id' : item.pk,
                            'slide' : subitem.slide })
-            return render_to_response('orwell/playlist-detail.html',
-	                                  { 'playlist' : playlist,
-	                                    'items' : items,
-	                                    'slides' : Slide.objects.all(),
-	                                    'groups' : Group.objects.all(),
-                                        'plid' : playlist.id },
-	                                    context_instance = RequestContext(request))
+    if request.method == 'GET':
+	      return render_to_response('orwell/playlist-detail.html',
+	                                { 'playlist' : playlist,
+	                                  'items' : items,
+	                                  'slides' : Slide.objects.all(),
+	                                  'groups' : Group.objects.all(),
+                                          'plid'   : playlist.id},
+	                                context_instance = RequestContext(request))
+    else:
+        plitems = request.POST.get('playlist', '')
+        i = 0
+        for item in plitems:
+	          # Update the playlist items with new position values.
+            playlist = PlaylistItem.objects.get(pk=item)
+            playlist.position = i
+            playlist.save()
+            i = i + 1
+        return HttpResponse('')
 
 # Returns a JSON object containing playlist details.
 @login_required
@@ -251,8 +262,7 @@ def playlist_json(request, playlist_id):
             # PlaylistItemGroup
             groups = []
             for x in subitem.groups.all():
-                groups.append({ 'id' : x.id,
-                                'name' : x.name })
+                groups.append(x.id)
 
             items.append({ 'id' : item.pk,
                            'groups' : groups,
@@ -260,9 +270,7 @@ def playlist_json(request, playlist_id):
         else:
             # PlaylistItemSlide
             items.append({ 'id' : item.pk,
-                           'slide' : { 'id' : subitem.slide.id,
-                                       'title' : subitem.slide.title,
-                                       'thumbnail' : subitem.slide.thumbnailurl() }})
+                           'slide' : subitem.slide.id })
     return HttpResponse(json.dumps(items))
 
 # Returns a JSON object containing slide details.

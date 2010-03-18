@@ -7,45 +7,46 @@
 <script type="text/javascript">
 
 function build_playlist(data) {
-    $.getJSON('../../json/')
-    for (var x in data) {
+    for (var datum in data) {
         plitem = $('<li>');
         
-        // Is this a PlaylistItemSlide or PlaylistItemGroup?
-        if (x.weighted) {
-            // PLIG
-            
-        }
+        if (typeof datum.groups === 'undefined') {
+	  // PlaylistItemSlide
+          plitem.addClass("plis");
+	  plitem.text(datum.slide.name);
+	} else {
+	  // PlaylistItemGroup
+	  plitem.addClass("plig");
+	  plitem.text(datum.slide.name);
+	}
         
-    	plitem = $('<li>');
-    	plitem.attr('id', x.id);
-    	plitem.addClass("plis");
-        plitem.html(x.)
-    	$('#playlist').append(plitem);
     }  
+  Window.data = data; // for debug
 }
 
 $(function() {
 
-$.getJSON('../../json/playlists/1/', build_playlist);
+  $.getJSON('{% url orwell-json-playlist-detail plid %}', build_playlist);
 
 });
+
 $(document).ready(function(){
   $("#playlist").sortable();
-	$(".plig_toolbox_item").draggable();
-	$(".plig").droppable( { accept: ".plig_toolbox_item",
-	                        hoverClass: "hover",
-	  											drop: function(id) {
-																	alert("Group " + id + " has been dropped.");
-																}} );
-																
-	 $(".plis_toolbox_item").draggable();
-	 $(".plis").droppable( { accept: ".plis_toolbox_item",
-	 											   hoverClass: "hover",
-	                         drop: function(id) {
-																	alert("Slide " + id.src + " has been dropped");
-																}})
+  $(".plig_toolbox_item").draggable();
+  $(".plig").droppable( { accept: ".plig_toolbox_item",
+	                  hoverClass: "hover",
+	  		  drop: function(id) {
+			    alert("Group " + id + " has been dropped.");
+			  }} );
+  
+  $(".plis_toolbox_item").draggable();
+  $(".plis").droppable( { accept: ".plis_toolbox_item",
+	 		  hoverClass: "hover",
+	                  drop: function(id) {
+			    alert("Slide " + id.src + " has been dropped");
+			  }})
 });
+
 
 
 </script>
