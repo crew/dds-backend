@@ -7,8 +7,8 @@
 <script type="text/javascript">
 
 function build_playlist(data) {
+  Window.data = data; // debug
   for each (var datum in data) {
-    alert(datum);
     plitem = $('<li>');
     
     if (datum.type === 'PlaylistItemSlide') {
@@ -16,19 +16,23 @@ function build_playlist(data) {
       plitem.addClass("plis");
       plitem.attr('id', datum.id);
       plitem.text(datum.slide.title);
-      plitem.children.add($('<img>').attr('src', datum.slide.thumbnail));
+      plitem.append($('<img>').attr('src', datum.slide.thumbnail));
     } else {
       // PlaylistItemGroup
       plitem.addClass("plig");
       plitem.attr('id', datum.id);
+/*      for each (var group in groups) {
+	$('<span>').attr('id', group.name)
+      }*/
       plitem.text(datum.groups.map(function(group) {
 	return group.name;
       }).join(", "));
-
+      plitem.append($('<input>')
+		    .attr('type', 'checkbox')
+		    .attr('checked', datum.weighted));
     }
-    
-  }  
-  Window.data = data; // for debug
+    $("#playlist").append(plitem);
+  }
 }
 
 $(function() {
@@ -96,7 +100,8 @@ $(document).ready(function(){
 
 </div>
 
-<input type="submit"></input>
-
 </form>
+
+<input type="submit" ></input>
+
 {% endblock %}
