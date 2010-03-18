@@ -7,26 +7,27 @@
 <script type="text/javascript">
 
 function build_playlist(data) {
-    for (var datum in data) {
-        plitem = $('<li>');
-        
-        if (datum.type === 'PlaylistItemSlide') {
-	  // PlaylistItemSlide
-          plitem.addClass("plis");
-	  plitem.attr('id', datum.id);
-	  plitem.text(datum.slide.title);
-	  plitem.children.add($('<img>').attr('src', datum.slide.thumbnail));
-	} else {
-	  // PlaylistItemGroup
-	  plitem.addClass("plig");
-	  plitem.attr('id', datum.id);
-	  plitem.text(datum.groups.map(function(group) {
-	    return group.name;
-	  }).join(", "));
+  for each (var datum in data) {
+    alert(datum);
+    plitem = $('<li>');
+    
+    if (datum.type === 'PlaylistItemSlide') {
+      // PlaylistItemSlide
+      plitem.addClass("plis");
+      plitem.attr('id', datum.id);
+      plitem.text(datum.slide.title);
+      plitem.children.add($('<img>').attr('src', datum.slide.thumbnail));
+    } else {
+      // PlaylistItemGroup
+      plitem.addClass("plig");
+      plitem.attr('id', datum.id);
+      plitem.text(datum.groups.map(function(group) {
+	return group.name;
+      }).join(", "));
 
-	}
-        
-    }  
+    }
+    
+  }  
   Window.data = data; // for debug
 }
 
