@@ -246,23 +246,23 @@ def playlist_json(request, playlist_id):
     items = []
     # Return some simple dicts with PlaylistItem data for template consumption.
     for item in playlistitems:
-        subitem = item.subitem()
-        if hasattr(subitem, 'weighted'):
+        item = item.subitem()
+        if type(item) == PlaylistItemGroup:
             # PlaylistItemGroup
             groups = []
-            for x in subitem.groups.all():
+            for x in item.groups.all():
                 groups.append({ 'id' : x.id,
                                 'name' : x.name })
 
-            items.append({ 'id' : item.pk,
+            items.append({ 'type' : 'PlaylistItemGroup',
                            'groups' : groups,
-                           'weighted' : subitem.weighted })
+                           'weighted' : item.weighted })
         else:
             # PlaylistItemSlide
-            items.append({ 'id' : item.pk,
-                           'slide' : { 'id' : subitem.slide.id,
-                                       'title' : subitem.slide.title,
-                                       'thumbnail' : subitem.slide.thumbnailurl() }})
+            items.append({ 'type' : 'PlaylistItemSlide',
+                           'slide' : { 'id' : item.slide.id,
+                                       'title' : item.slide.title,
+                                       'thumbnail' : item.slide.thumbnailurl() }})
     return HttpResponse(json.dumps(items))
 
 # Returns a JSON object containing slide details.
