@@ -6,6 +6,30 @@
 
 <script type="text/javascript">
 
+function build_playlist(data) {
+    $.getJSON('../../json/')
+    for (var x in data) {
+        plitem = $('<li>');
+        
+        // Is this a PlaylistItemSlide or PlaylistItemGroup?
+        if (x.weighted) {
+            // PLIG
+            
+        }
+        
+    	plitem = $('<li>');
+    	plitem.attr('id', x.id);
+    	plitem.addClass("plis");
+        plitem.html(x.)
+    	$('#playlist').append(plitem);
+    }  
+}
+
+$(function() {
+
+$.getJSON('../../json/playlists/1/', build_playlist);
+
+});
 $(document).ready(function(){
   $("#playlist").sortable();
 	$(".plig_toolbox_item").draggable();
@@ -42,19 +66,7 @@ $(document).ready(function(){
 <div class="left">
 
 <ul id="playlist">
-	{% for pi in items %}
-		{% if pi.groups %}
-			{# We're in a PlaylistItemGroup. #}
-			<li class="plig" id="{{ pi.id }}">
-				<p>Groups: {{ pi.groups|join:", " }}</p>
-			</li>
-		{% else %}
-			{# We're in a PlaylistItemSlide. #}
-			<li class="plis" id="{{ pi.id }}">
-				<p>Slide: {{ pi.slide.title }}</p>
-			</li>
-		{% endif %}
-	{% endfor %}
+
 </ul>
 
 </div>
