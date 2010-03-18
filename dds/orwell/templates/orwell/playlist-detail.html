@@ -10,14 +10,20 @@ function build_playlist(data) {
     for (var datum in data) {
         plitem = $('<li>');
         
-        if (typeof datum.groups === 'undefined') {
+        if (datum.type === 'PlaylistItemSlide') {
 	  // PlaylistItemSlide
           plitem.addClass("plis");
-	  plitem.text(datum.slide.name);
+	  plitem.attr('id', datum.id);
+	  plitem.text(datum.slide.title);
+	  plitem.children.add($('<img>').attr('src', datum.slide.thumbnail));
 	} else {
 	  // PlaylistItemGroup
 	  plitem.addClass("plig");
-	  plitem.text(datum.slide.name);
+	  plitem.attr('id', datum.id);
+	  plitem.text(datum.groups.map(function(group) {
+	    return group.name;
+	  }).join(", "));
+
 	}
         
     }  
