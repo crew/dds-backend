@@ -22,7 +22,7 @@ import time
 def index(request):
     data = {'numslides' : len(Slide.objects.all()),
             'numclients': len(Client.objects.filter(activity__active=True))}
-    return render_to_response('orwell/info-index.html', data,
+    return render_to_response('orwell/landing-page.html', data,
                               context_instance=RequestContext(request));
 
 @login_required
