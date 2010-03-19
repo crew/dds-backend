@@ -7,27 +7,27 @@
 <script type="text/javascript">
 
 function build_playlist(data) {
-  Window.data = data; // debug
-  for each (var datum in data) {
-    plitem = $('<li>');
-    
-    if (datum.type === 'PlaylistItemSlide') {
-      // PlaylistItemSlide
-      plitem.addClass("plis");
-      plitem.attr('id', datum.id);
-      plitem.text(datum.slide.title);
-      plitem.append($('<img>').attr('src', datum.slide.thumbnail));
-    } else {
-      // PlaylistItemGroup
-      plitem.addClass("plig");
-      plitem.attr('id', datum.id);
+Window.data = data; // debug
+for each (var datum in data) {
+  plitem = $('<li>');
+  
+  if (datum.type === 'PlaylistItemSlide') {
+    // PlaylistItemSlide
+    plitem.addClass("plis");
+    plitem.attr('id', datum.id);
+    plitem.text(datum.slide.title);
+    plitem.append($('<img>').attr('src', datum.slide.thumbnail));
+  } else {
+    // PlaylistItemGroup
+    plitem.addClass("plig");
+    plitem.attr('id', datum.id);
 /*      for each (var group in groups) {
-	$('<span>').attr('id', group.name)
-      }*/
-      plitem.text(datum.groups.map(function(group) {
-	return group.name;
-      }).join(", "));
-      plitem.append($('<input>')
+$('<span>').attr('id', group.name)
+    }*/
+    plitem.text(datum.groups.map(function(group) {
+return group.name;
+    }).join(", "));
+    plitem.append($('<input>')
 		    .attr('type', 'checkbox')
 		    .attr('checked', datum.weighted));
     }
@@ -102,6 +102,6 @@ $(document).ready(function(){
 
 </form>
 
-<input type="submit" ></input>
+<input type="submit" >
 
 {% endblock %}
