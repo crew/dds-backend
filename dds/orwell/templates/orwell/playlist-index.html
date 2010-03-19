@@ -2,7 +2,7 @@
 {% block title %}Playlists{% endblock %}
 {% block scripts %}
 
-<script type="text/javascript" src="/media/js/slideindex.js"></script>
+<script type="text/javascript" src="/media/js/playlistindex.js"></script>
 
 {% endblock %}
 
@@ -10,9 +10,9 @@
 <h1>Playlists</h1>
 <form id="slidefilterform">
 <select id="playlist">
-  <option value="">--Playlist--</option>
+  <option value="#">--Playlist--</option>
   {% for pl in playlists %}
-  <option value="{{pl.id}}">{{pl}}</option>
+  <option value="{% url orwell-playlist-detail pl.id %}">{{pl}}</option>
   {% endfor %}
 </select>
 </form>
