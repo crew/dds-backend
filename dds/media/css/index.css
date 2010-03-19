@@ -64,97 +64,121 @@
 
 
 #clientarea {
-padding:5px;
+    padding:5px;
 }
 
 #slidearea {
-padding:5px;
+    padding:5px;
 }
 
 .slidebox {
-display:block;
-float:left;
-padding:3px;
-text-align:center;
-background-color: #303030;
-border: 2px solid #222;
+    display:block;
+    float:left;
+    padding:3px;
+    text-align:center;
+    background-color: #303030;
+    border: 2px solid #222;
 }
 
 .slidepreview {
-display:block;
-float:none;
-clear:both;
+    display:block;
+    float:none;
+    clear:both;
 }
 
 .infopopup {
-  display:none;
+    display:none;
 }
 
 /* Playlist Control */
 
 .left {
-	float: left;
-	width: 750px;
+    float: left;
+    width: 750px;
 }
 
 .right {
-	float: right;
-	width: 470px;
+    float: right;
+    width: 470px;
 }
 
 #toolbox {
-	background: white;
-	color: #000;
-	width: 470px;
-	height: 300px;
-	float: right;
-	overflow: auto;
+    background: white;
+    color: #000;
+    width: 470px;
+    height: 300px;
+    float: right;
+    overflow: auto;
 }
 
 .plig_toolbox_item {
-	border: 1px solid #666;
-	float: left;
-	display: inline;
-	height: auto; 
-	width: 200px;
-	padding: 3px;
-	margin: 10px;
+    border: 1px solid #666;
+    float: left;
+    display: inline;
+    height: auto; 
+    width: 200px;
+    padding: 3px;
+    margin: 10px;
 }
 
 .plis_toolbox_item {
-	border: 1px solid #666;
-	float: left;
-	display: inline;
-	height: auto;
-	width: 200px;
-	padding: 3px;
-	margin: 10px;
+    border: 1px solid #666;
+    float: left;
+    display: inline;
+    height: auto;
+    width: 200px;
+    padding: 3px;
+    margin: 10px;
 }
 
 
 #playlist {
-	
+    
 }
 
 #playlist ul {
-	list-style: none;
+    list-style: none;
 }
 
 #playlist li {
-	list-style: none;
-	clear: both;
-	margin-top: 10px;
-	padding: 10px;
+    list-style: none;
+    clear: both;
+    margin-top: 10px;
+    padding: 10px;
 }
 
 #playlist li.plis {
-	background: #666;
+    background: #666;
 }
 
 #playlist li.plig {
-	background: #444;
+    background: #444;
 }
 
 #playlist li.hover {
-	background: #ffcc00;
+    background: #ffcc00;
+}
+
+span.removable-option {
+    border: 1px solid #000;
+    background: #666;
+    padding: .5em;
+    margin: .5em;
+}
+
+span.removable-option span.ro-button {
+    display:inline-block;
+    text-align: center;
+    vertical-align: center;
+    border: 1px solid #AAA;
+    background: #999;
+    margin: .3em;
+    width: 1em;
+    height: 1.2em;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+span.removable-option span.ro-button:hover {
+    background: #777;
 }

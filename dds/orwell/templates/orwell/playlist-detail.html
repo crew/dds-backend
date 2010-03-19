@@ -7,9 +7,10 @@
 <script type="text/javascript">
 
 function build_playlist(data) {
-  Window.data = data; // debug
-  for each (var datum in data) {
-    plitem = $('<li>');
+  window.data = data; // debug
+  $(data).each(function (dummy, datum) {
+    var plitem = $('<li>');
+
     
     if (datum.type === 'PlaylistItemSlide') {
       // PlaylistItemSlide
@@ -21,18 +22,26 @@ function build_playlist(data) {
       // PlaylistItemGroup
       plitem.addClass("plig");
       plitem.attr('id', datum.id);
-/*      for each (var group in groups) {
-	$('<span>').attr('id', group.name)
-      }*/
-      plitem.text(datum.groups.map(function(group) {
-	return group.name;
-      }).join(", "));
+      $(datum.groups).each(function(dummy, group) {
+	span = $('<span>').addClass('removable-option')
+	                  .attr('id', group.name)
+	                  .text(group.name);
+	span.append($('<span>').addClass('ro-button')
+                               .text('x')
+                               .click(function () {$(this).parent().remove()}));
+	plitem.append(span);
+      })
+      cb_id = datum.id + '-weighted';
+      plitem.append($('<label>')
+		    .attr('for', cb_id)
+		    .text('Weighted?'));
       plitem.append($('<input>')
+		    .attr('id', cb_id)
 		    .attr('type', 'checkbox')
 		    .attr('checked', datum.weighted));
-    }
+    }    
     $("#playlist").append(plitem);
-  }
+  })	
 }
 
 $(function() {
@@ -60,6 +69,44 @@ $(document).ready(function(){
 
 
 
+(function () {
+  /**
+   * This scope covers submitting values to the backend
+   */
+    
+  /**
+   * submit : -> False
+   * handles submitting back the modified playlist
+   **/
+  function submit() {
+    $.post('{% url orwell-playlist-detail plid %}',
+	   $("#playlist").each(li_to_json),
+	   function(data) { /* TODO: some error checking here! */ return;});
+    return false;
+  }
+  
+  /**
+   * li_to_json : [HTML LI] -> JSON
+   * reads an li element representing a PlaylistItem and returns json 
+   * representing it
+   **/
+  function li_to_json(dummy, li) {
+    li = $(li);
+    if (li.hasClass("plis")) {
+      // PlaylistItemSlide
+      return {"type":"plis",
+	      "id":li.attr('id')};
+    } else {
+      // PlaylistItemgroup
+      return {"type":"plig",
+	      "id":li.attr('id'),
+	      "checked":li.find('input').first().attr('checked')};
+    }
+  }
+
+  // (provide ...)
+  window.submit = submit;
+})()
 </script>
 
 {% endblock %}
@@ -100,8 +147,8 @@ $(document).ready(function(){
 
 </div>
 
-</form>
+<input type="submit" onclickevent="submit()" />
 
-<input type="submit" ></input>
+</form>
 
 {% endblock %}
