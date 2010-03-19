@@ -12,7 +12,7 @@
 <select id="playlist">
   <option value="#">--Playlist--</option>
   {% for pl in playlists %}
-  <option value="{% url orwell-playlist-detail id %}">{{pl}}</option>
+  <option value="{% url orwell-playlist-detail pl.id %}">{{pl}}</option>
   {% endfor %}
 </select>
 </form>
