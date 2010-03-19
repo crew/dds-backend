@@ -8,7 +8,7 @@
 
 function build_playlist(data) {
 Window.data = data; // debug
-for each (var datum in data) {
+for (var datum in data) {
   plitem = $('<li>');
   
   if (datum.type === 'PlaylistItemSlide') {
