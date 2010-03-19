@@ -69,7 +69,7 @@ $(document).ready(function(){
 
 
 
-(function () {
+$(function () {
   /**
    * This scope covers submitting values to the backend
    */
@@ -79,16 +79,19 @@ $(document).ready(function(){
    * handles submitting back the modified playlist
    **/
   function submit() {
+    var json = $("#playlist").find('li').map(li_to_json);
+    console.log('foo!');
+    console.log(json);
     $.post('{% url orwell-playlist-detail plid %}',
-	   $("#playlist").each(li_to_json),
+	   json,
 	   function(data) { /* TODO: some error checking here! */ return;});
     return false;
   }
   
   /**
    * li_to_json : [HTML LI] -> JSON
-   * reads an li element representing a PlaylistItem and returns json 
-   * representing it
+   * reads an li element representing a PlaylistItem and returns representative 
+   * json
    **/
   function li_to_json(dummy, li) {
     li = $(li);
@@ -97,16 +100,27 @@ $(document).ready(function(){
       return {"type":"plis",
 	      "id":li.attr('id')};
     } else {
-      // PlaylistItemgroup
+      // PlaylistItemGroup
       return {"type":"plig",
 	      "id":li.attr('id'),
-	      "checked":li.find('input').first().attr('checked')};
+	      "checked":li.find('input').first().attr('checked'),
+	      "groups":li.find('span.removeable-option').each(span_to_json)};
     }
+  }
+  
+  /**
+   * span_to_json : [HTML SPAN] -> JSON
+   * reads a span element representing a group in a PlaylistItemGroup and
+   * returns representative json
+   **/
+  function span_to_json(dummy, span) {
+    return $(span).attr('id');
   }
 
   // (provide ...)
-  window.submit = submit;
-})()
+  $('#submit').click(submit);
+  
+})
 </script>
 
 {% endblock %}
@@ -147,7 +161,7 @@ $(document).ready(function(){
 
 </div>
 
-<input type="submit" onclickevent="submit()" />
+<input type="submit" id="submit" />
 
 </form>
 
