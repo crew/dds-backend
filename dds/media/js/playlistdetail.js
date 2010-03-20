@@ -74,7 +74,7 @@ $(function () {
     var json = $("#playlist").find('li').map(li_to_json);
     console.log('foo!');
     console.log(json);
-    $.post('{% url orwell-playlist-detail plid %}',
+    $.post(playlistdatauri,
 	   json,
 	   function(data) { /* TODO: some error checking here! */ return;});
     return false;
