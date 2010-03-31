@@ -7,16 +7,15 @@ function build_playlist(data) {
     if (datum.type === 'PlaylistItemSlide') {
       // PlaylistItemSlide
       plitem.addClass("plis");
-      plitem.attr('id', datum.id);
+      plitem.attr('id', datum.slide.id);
       plitem.text(datum.slide.title);
       plitem.append($('<img>').attr('src', datum.slide.thumbnail));
     } else {
       // PlaylistItemGroup
       plitem.addClass("plig");
-      plitem.attr('id', datum.id);
       $(datum.groups).each(function(dummy, group) {
 	span = $('<span>').addClass('removable-option')
-	                  .attr('id', group.name)
+	                  .attr('id', group.id)
 	                  .text(group.name);
 	span.append($('<span>').addClass('ro-button')
                                .text('x')
@@ -28,6 +27,7 @@ function build_playlist(data) {
 		    .attr('for', cb_id)
 		    .text('Weighted?'));
       plitem.append($('<input>')
+		    .addClass('plig-weighted')
 		    .attr('id', cb_id)
 		    .attr('type', 'checkbox')
 		    .attr('checked', datum.weighted));
@@ -71,42 +71,40 @@ $(function () {
    * handles submitting back the modified playlist
    **/
   function submit() {
-    var json = $("#playlist").find('li').map(li_to_json);
-    console.log('foo!');
+    var json = $("#playlist").find('li').map(li_to_json).get();
     console.log(json);
     $.post(playlistdatauri,
-	   json,
+	   JSON.stringify(json),
 	   function(data) { /* TODO: some error checking here! */ return;});
     return false;
   }
   
   /**
-   * li_to_json : [HTML LI] -> JSON
+   * li_to_json : Number [HTML LI] -> JSON
    * reads an li element representing a PlaylistItem and returns representative 
    * json
    **/
   function li_to_json(dummy, li) {
-    li = $(li);
+    var li = $(li);
     if (li.hasClass("plis")) {
       // PlaylistItemSlide
-      return {"type":"plis",
-	      "id":li.attr('id')};
+      return {type:"plis",
+	      slide:{id:parseInt(li.attr('id'))}};
     } else {
       // PlaylistItemGroup
-      return {"type":"plig",
-	      "id":li.attr('id'),
-	      "checked":li.find('input').first().attr('checked'),
-	      "groups":li.find('span.removeable-option').each(span_to_json)};
+      return {type:"plig",
+	      weighted:li.find('.plig-weighted').first().attr('checked'),
+	      groups:li.find('span.removable-option').map(span_to_json).get()};
     }
   }
   
   /**
-   * span_to_json : [HTML SPAN] -> JSON
+   * span_to_json : Number [HTML SPAN] -> Float
    * reads a span element representing a group in a PlaylistItemGroup and
    * returns representative json
    **/
   function span_to_json(dummy, span) {
-    return $(span).attr('id');
+    return parseInt($(span).attr('id'));
   }
 
   // (provide ...)
