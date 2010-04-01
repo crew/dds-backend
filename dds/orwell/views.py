@@ -242,28 +242,48 @@ def playlist_detail(request, playlist_id):
 @login_required
 def playlist_json(request, playlist_id):
     playlist = Playlist.objects.get(pk=playlist_id)
-    playlistitems = playlist.playlistitem_set.order_by('position')
-    items = []
-    # Return some simple dicts with PlaylistItem data for template consumption.
-    for item in playlistitems:
-        item = item.subitem()
-        if type(item) == PlaylistItemGroup:
-            # PlaylistItemGroup
-            groups = []
-            for x in item.groups.all():
-                groups.append({'id' : x.id,
-                               'name' : x.name })
+    if (request.method == 'GET'):
+      playlistitems = playlist.playlistitem_set.order_by('position')
+      items = []
+      # Return some simple dicts with PlaylistItem data for template consumption.
+      for item in playlistitems:
+          item = item.subitem()
+          if type(item) == PlaylistItemGroup:
+              # PlaylistItemGroup
+              groups = []
+              for x in item.groups.all():
+                  groups.append({'id' : x.id,
+                                 'name' : x.name })
 
-            items.append({'type' : 'PlaylistItemGroup',
-                          'groups' : groups,
-                          'weighted' : item.weighted })
-        else:
-            # PlaylistItemSlide
-            items.append({'type': 'PlaylistItemSlide',
-                          'slide':{'id' : item.slide.id,
-                                   'title' : item.slide.title,
-                                   'thumbnail' : item.slide.thumbnailurl()}})
-    return HttpResponse(json.dumps(items))
+              items.append({'type' : 'PlaylistItemGroup',
+                            'groups' : groups,
+                            'weighted' : item.weighted })
+          else:
+              # PlaylistItemSlide
+              items.append({'type': 'PlaylistItemSlide',
+                            'slide':{'id' : item.slide.id,
+                                     'title' : item.slide.title,
+                                     'thumbnail' : item.slide.thumbnailurl()}})
+      return HttpResponse(json.dumps(items))
+    else:
+      # Truncate all PlaylistItems for this playlist
+      for item in playlist.playlistitem_set.all():
+        item.delete()
+      
+      data = json.loads(request.raw_post_data)
+      i = 0
+      
+      for x in data:
+          if x['type'] == "plis":
+              playlistitem = PlaylistItemSlide(playlist=playlist, position=i, slide=Slide.objects.get(pk=x['slide']['id']))
+              playlistitem.save()
+          else:
+              playlistitem = PlaylistItemGroup(playlist=playlist, position=i, weighted=x['weighted'])
+              playlistitem.save()
+              for grp in x['groups']:
+                 playlistitem.groups.add(Group.objects.get(pk=grp))
+          i = i + 1
+      return HttpResponse("Successfully updated this playlist")
 
 # Returns a JSON object containing slide details.
 @login_required
