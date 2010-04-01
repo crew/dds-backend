@@ -1,5 +1,5 @@
 function build_playlist(data) {
-  window.data = data; // debug
+  $("#playlist").html('');
   $(data).each(function (dummy, datum) {
     var plitem = $('<li>');
 
@@ -75,13 +75,16 @@ $(function () {
     console.log(json);
     $.post(playlistdatauri,
 	   JSON.stringify(json),
-	   function(data) { /* TODO: some error checking here! */ return;});
+     function(data) {
+       $.getJSON(playlistdatauri, build_playlist);
+       alert('Changes complete!');
+     });
     return false;
   }
 
   /**
    * li_to_json : Number [HTML LI] -> JSON
-   * reads an li element representing a PlaylistItem and returns representative 
+   * reads an li element representing a PlaylistItem and returns representative
    * json
    **/
   function li_to_json(dummy, li) {
