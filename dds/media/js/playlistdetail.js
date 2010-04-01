@@ -36,11 +36,9 @@ function build_playlist(data) {
   })
 }
 
-$(function() {
-
+function load_playlist_from_server() {
   $.getJSON(playlistdatauri, build_playlist);
-
-});
+}
 
 $(document).ready(function(){
   $("#playlist").sortable();
@@ -76,7 +74,7 @@ $(function () {
     $.post(playlistdatauri,
 	   JSON.stringify(json),
      function(data) {
-       $.getJSON(playlistdatauri, build_playlist);
+       load_playlist_from_server();
        alert('Changes complete!');
      });
     return false;
@@ -112,5 +110,7 @@ $(function () {
 
   // (provide ...)
   $('#playlist-save').click(submit);
+  $('#playlist-reset').click(load_playlist_from_server);
 
+  load_playlist_from_server();
 })
