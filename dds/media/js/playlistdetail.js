@@ -48,6 +48,7 @@ $(document).ready(function(){
   $(".plig").droppable( { accept: ".plig_toolbox_item",
 	                  hoverClass: "hover",
 	  		  drop: function(id) {
+			    console.log("YO, I'M HERE!");
 			    alert("Group " + id + " has been dropped.");
 			  }} );
   
@@ -55,6 +56,7 @@ $(document).ready(function(){
   $(".plis").droppable( { accept: ".plis_toolbox_item",
 	 		  hoverClass: "hover",
 	                  drop: function(id) {
+			    console.log("YO, I'M HERE!");
 			    alert("Slide " + id.src + " has been dropped");
 			  }})
 });
@@ -75,8 +77,17 @@ $(function () {
     console.log(json);
     $.post(playlistdatauri,
 	   JSON.stringify(json),
-	   function(data) { /* TODO: some error checking here! */ return;});
+	   post_reply_handler);
     return false;
+  }
+
+  /**
+   * post_reply_handler : String -> Void
+   * handle errors sent by jelly to the frontend
+   **/
+  function post_reply_handler(data) {
+    if(data=="error")
+      alert("OH SHIT!");
   }
   
   /**
