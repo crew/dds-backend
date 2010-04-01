@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.contrib.auth.models import User
 from django.db import transaction
+from django.core.urlresolvers import reverse
 
 import StringIO
 
@@ -208,11 +209,11 @@ def template_select(request):
                               {"templates":Template.objects.all()},
                               context_instance=RequestContext(request))
 
-@login_required
-def playlist_index(request):
-    return render_to_response('orwell/playlist-index.html',
-                              { 'playlists' : Playlist.objects.all() },
-                              context_instance = RequestContext(request))
+def playlist_list_json(request):
+    def formatplaylist(p):
+        return {'uri':reverse('orwell-playlist-detail', args=[p.id]), 'name':p.name}
+    return HttpResponse(json.dumps(map(formatplaylist, Playlist.objects.all())))
+
 
 @login_required
 def playlist_detail(request, playlist_id):
@@ -241,40 +242,58 @@ def playlist_detail(request, playlist_id):
 
 # Returns a JSON object containing playlist details.
 @login_required
-@transaction.commit_manually
+#@transaction.commit_manually
 def playlist_json(request, playlist_id):
     playlist = Playlist.objects.get(pk=playlist_id)
     if (request.method == 'GET'):
-        return HttpResponse(playlist.playlist_json())
-    else: # POSTed from JQuery
-        regenerate_playlist(playlist, request.raw_post_data)
-        return HttpResponse("Playlist updated successfully.")
+      playlistitems = playlist.playlistitem_set.order_by('position')
+      items = []
+      # Return some simple dicts with PlaylistItem data for template consumption.
+      for item in playlistitems:
+          item = item.subitem()
+          if type(item) == PlaylistItemGroup:
+              # PlaylistItemGroup
+              groups = []
+              for x in item.groups.all():
+                  groups.append({'id' : x.id,
+                                 'name' : x.name })
 
-# Updates the given playlist with the data provided.
-def regenerate_playlist(playlist, data):
-    try:
-        # Truncate all PlaylistItems for this playlist
-        for item in playlist.playlistitem_set.all():
-          item.delete()
-    
-        data = json.loads(data)
-        i = 0 # The "position" field for this PlaylistItem.
-    
-        for x in data:
-            if x['type'] == "plis":
-                playlistitem = PlaylistItemSlide(playlist=playlist, position=i, slide=Slide.objects.get(pk=x['slide']['id']))
-                playlistitem.save()
-            else:
-                playlistitem = PlaylistItemGroup(playlist=playlist, position=i, weighted=x['weighted'])
-                playlistitem.save()
-                for grp in x['groups']:
-                   playlistitem.groups.add(Group.objects.get(pk=grp))
-            i = i + 1 # Increment the position
-    except:
-        transaction.rollback()
+              items.append({'type' : 'PlaylistItemGroup',
+                            'groups' : groups,
+                            'weighted' : item.weighted })
+          else:
+              # PlaylistItemSlide
+              items.append({'type': 'PlaylistItemSlide',
+                            'slide':{'id' : item.slide.id,
+                                     'title' : item.slide.title,
+                                     'thumbnail' : item.slide.thumbnailurl()}})
+      return HttpResponse(json.dumps(items))
     else:
-        transaction.commit()
-    
+      try:
+          # Truncate all PlaylistItems for this playlist
+          for item in playlist.playlistitem_set.all():
+            item.delete()
+
+          data = json.loads(request.raw_post_data)
+          i = 0
+
+          for x in data:
+              if x['type'] == "plis":
+                  playlistitem = PlaylistItemSlide(playlist=playlist, position=i, slide=Slide.objects.get(pk=x['slide']['id']))
+                  playlistitem.save()
+              else:
+                  playlistitem = PlaylistItemGroup(playlist=playlist, position=i, weighted=x['weighted'])
+                  playlistitem.save()
+                  for grp in x['groups']:
+                     playlistitem.groups.add(Group.objects.get(pk=grp))
+              i = i + 1
+      except:
+            transaction.rollback()
+      else:
+            transaction.commit()
+
+      return HttpResponse("Successfully updated this playlist")
+
 # Returns a JSON object containing slide details.
 @login_required
 def slide_json(request, slide_id):
@@ -290,4 +309,4 @@ def group_json(request, group_id):
     group = Group.objects.get(pk=group_id)
     output = { 'id' : group_id,
                'name' : group.name }
-    return HttpResponse(json.dumps(output))      
+    return HttpResponse(json.dumps(output))

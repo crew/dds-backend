@@ -64,8 +64,8 @@
 }
 
 input#playlist-save {
-  display:block;
-  clear:both;
+    display:inline;
+    float:left;
 }
 
 span.removable-option {

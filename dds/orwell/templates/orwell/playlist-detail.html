@@ -4,14 +4,27 @@
 {% block scripts %}
 <script type="text/javascript" src="{{ MEDIA_URL }}js/playlistdetail.js">
 </script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/playlistindex.js">
+</script>
 <script type="text/javascript">
-  playlistdatauri = '{% url orwell-json-playlist-detail plid %}'
+  playlistdatauri = '{% url orwell-json-playlist-detail plid %}';
+  playlistlisturi = '{% url orwell-json-playlist-list %}';
 </script>
 {% endblock %}
 
 {% block content %}
 
 <div class="left">
+
+  <form id="playlistselector">
+    <label for="playlist-selector-dropdown">Select a playlist to edit</label>
+    <select id="playlist-selector-dropdown">
+      <option value="#">--Playlist--</option>
+    </select>
+  </form>
+
+  <input type="submit" id="playlist-save" value="Save Changes" />
+
 
 <ul id="playlist">
 
@@ -35,8 +48,6 @@
 </div>
 
 </div>
-
-<input type="submit" id="playlist-save" />
 
 </form>
 

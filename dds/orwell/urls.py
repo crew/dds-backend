@@ -17,9 +17,13 @@ urlpatterns = patterns('%s.orwell.views' % settings.MODULE,
     url(r'^web-form/slide-customize/(\d+)/$', 'web_form_slide_customize',
         name='web-form-slide-customize'),
     url(r'^templates/$', 'template_select', name='template-select'),
-    url(r'^playlists/$', 'playlist_index', name="orwell-playlist-index"),
 		url(r'^playlists/(\d+)/$',
   		  'playlist_detail', name='orwell-playlist-detail'),
+)
+
+urlpatterns += patterns('django.views.generic.simple',
+    url(r'^playlists/$', 'direct_to_template',
+        {'template': 'orwell/playlist-index.html'}, name='orwell-playlist-index'),
 )
 
 # The JSON API
@@ -28,5 +32,8 @@ urlpatterns += patterns('%s.orwell.views' % settings.MODULE,
         name='orwell-json-activity-all'),
     url(r'^json/slides/(\d+)/$', 'slide_json', name='orwell-json-slide-detail'),
     url(r'^json/groups/(\d+)/$', 'group_json', name='orwell-json-group-detail'),
-    url(r'^json/playlists/(\d+)/$', 'playlist_json', name='orwell-json-playlist-detail')
+    url(r'^json/playlists/(\d+)/$', 'playlist_json',
+        name='orwell-json-playlist-detail'),
+    url(r'^json/playlists/$', 'playlist_list_json',
+        name="orwell-json-playlist-list"),
 )
