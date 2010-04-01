@@ -33,7 +33,24 @@ function build_playlist(data) {
 		    .attr('checked', datum.weighted));
     }
     $("#playlist").append(plitem);
-  })
+  });
+  setup_droppable();
+}
+
+function setup_droppable() {
+  $(".plig").droppable( { accept: ".plig_toolbox_item",
+	                  hoverClass: "hover",
+	                  activeClass: '.ui-state-highlight',
+	  		  drop: function(id) {
+			    alert("Group " + id + " has been dropped.");
+			  }} );
+
+  $(".plis").droppable( { accept: ".plis_toolbox_item",
+                    hoverClass: "hover",
+	                  activeClass: '.ui-state-highlight',
+	                  drop: function(id) {
+			    alert("Slide " + id.src + " has been dropped");
+			  }});
 }
 
 function load_playlist_from_server() {
@@ -42,19 +59,8 @@ function load_playlist_from_server() {
 
 $(document).ready(function(){
   $("#playlist").sortable();
-  $(".plig_toolbox_item").draggable();
-  $(".plig").droppable( { accept: ".plig_toolbox_item",
-	                  hoverClass: "hover",
-	  		  drop: function(id) {
-			    alert("Group " + id + " has been dropped.");
-			  }} );
-
-  $(".plis_toolbox_item").draggable();
-  $(".plis").droppable( { accept: ".plis_toolbox_item",
-	 		  hoverClass: "hover",
-	                  drop: function(id) {
-			    alert("Slide " + id.src + " has been dropped");
-			  }})
+  $(".plig_toolbox_item").draggable({helper:'clone'});
+  $(".plis_toolbox_item").draggable({helper:'clone'});
 });
 
 
