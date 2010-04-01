@@ -1,7 +1,9 @@
-{% extends "orwell/base-index.html" %}
+{% extends "base.html" %}
+{% block style %}playlistdetail.css{% endblock %}
 {% block title %}Playlists{% endblock %}
 {% block scripts %}
-<script type="text/javascript" src="/media/js/playlistdetail.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/playlistdetail.js">
+</script>
 <script type="text/javascript">
   playlistdatauri = '{% url orwell-json-playlist-detail plid %}'
 </script>
@@ -34,7 +36,7 @@
 
 </div>
 
-<input type="submit" id="submit" />
+<input type="submit" id="playlist-save" />
 
 </form>
 

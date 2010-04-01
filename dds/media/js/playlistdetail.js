@@ -3,7 +3,7 @@ function build_playlist(data) {
   $(data).each(function (dummy, datum) {
     var plitem = $('<li>');
 
-    
+
     if (datum.type === 'PlaylistItemSlide') {
       // PlaylistItemSlide
       plitem.addClass("plis");
@@ -31,9 +31,9 @@ function build_playlist(data) {
 		    .attr('id', cb_id)
 		    .attr('type', 'checkbox')
 		    .attr('checked', datum.weighted));
-    }    
+    }
     $("#playlist").append(plitem);
-  })	
+  })
 }
 
 $(function() {
@@ -50,7 +50,7 @@ $(document).ready(function(){
 	  		  drop: function(id) {
 			    alert("Group " + id + " has been dropped.");
 			  }} );
-  
+
   $(".plis_toolbox_item").draggable();
   $(".plis").droppable( { accept: ".plis_toolbox_item",
 	 		  hoverClass: "hover",
@@ -65,7 +65,7 @@ $(function () {
   /**
    * This scope covers submitting values to the backend
    */
-    
+
   /**
    * submit : -> False
    * handles submitting back the modified playlist
@@ -78,7 +78,7 @@ $(function () {
 	   function(data) { /* TODO: some error checking here! */ return;});
     return false;
   }
-  
+
   /**
    * li_to_json : Number [HTML LI] -> JSON
    * reads an li element representing a PlaylistItem and returns representative 
@@ -97,7 +97,7 @@ $(function () {
 	      groups:li.find('span.removable-option').map(span_to_json).get()};
     }
   }
-  
+
   /**
    * span_to_json : Number [HTML SPAN] -> Float
    * reads a span element representing a group in a PlaylistItemGroup and
@@ -108,6 +108,6 @@ $(function () {
   }
 
   // (provide ...)
-  $('#submit').click(submit);
-  
+  $('#playlist-save').click(submit);
+
 })
