@@ -17,8 +17,8 @@ urlpatterns = patterns('%s.orwell.views' % settings.MODULE,
     url(r'^web-form/slide-customize/(\d+)/$', 'web_form_slide_customize',
         name='web-form-slide-customize'),
     url(r'^templates/$', 'template_select', name='template-select'),
-		url(r'^playlists/(\d+)/$',
-  		  'playlist_detail', name='orwell-playlist-detail'),
+    url(r'^playlists/(\d+)/$', 'playlist_detail',
+        name='orwell-playlist-detail'),
 )
 
 urlpatterns += patterns('django.views.generic.simple',
@@ -37,3 +37,9 @@ urlpatterns += patterns('%s.orwell.views' % settings.MODULE,
     url(r'^json/playlists/$', 'playlist_list_json',
         name="orwell-json-playlist-list"),
 )
+
+# The Wysiwig API
+urlpatterns += patterns('%s.orwell.views' % settings.MODULE,
+  url(r'^json/wysiwig/add/$', 'wysiwig_add', name='wysiwig-add'),
+)
+

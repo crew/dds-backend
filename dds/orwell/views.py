@@ -15,6 +15,8 @@ import StringIO
 import json
 import os
 import shutil
+import sys                      # Needed for imagepooper
+import urllib                   # Needed for imagepooper
 
 from models import Slide, Client, ClientActivity, Location, Group, Template, Message, Playlist, PlaylistItem, PlaylistItemSlide, PlaylistItemGroup, TemplateSlide
 from forms import CreateSlideForm
@@ -310,3 +312,69 @@ def group_json(request, group_id):
     output = { 'id' : group_id,
                'name' : group.name }
     return HttpResponse(json.dumps(output))
+
+# wysiwig_add : HTTPRequest -> HTTPResponse
+# handles adding newly created wysiwig slides to the database
+def wysiwig_add(request) :
+    # imagepooper : FileObject -> FileObject
+    def imagepooper(file_object) :
+       # def get_image_textures(self, jsonblob):
+        def download_image(url, imgfile):
+            urllib.urlretrieve(url, imgfile)
+
+        jsfile = open(os.path.abspath(filename), 'r')
+        jsblob = json.load(jsfile);
+        children = jsblob['children']
+        for child in children:
+            if "url" in child and "filename" in child:
+                url = child['url']
+                imgfilename = child['filename']
+                download_image(url, imgfilename)
+                #picfile = open(os.path.abspath(filename), 'r')
+                #del child['url']
+
+        jsfile.close()
+        jsfile = open(os.path.abspath(filename), 'w')
+        json.dump(jsblob, jsfile)
+        jsfile.close()
+
+
+    if (request.method == 'POST') :
+        slide_data = dict(json.loads(request.raw_post_data));
+
+        fo = StringIO.StringIO()
+        tf = tarfile.open(fileobj=fo, mode='w:gz')
+
+        def addjson(data, filename):
+            sio = StringIO.StringIO()
+            sio.write(json.dumps(data))
+            sio.seek(0)
+            ari = tarfile.TarInfo(name=filename)
+            ari.size = len(sio.buf)
+            ari.mtime = time.time()
+            tf.addfile(ari, sio)
+
+        manifest = {'title':formData.get('name', 'no-name'),
+                    'transition':'fade',
+                    'mode':'layout',
+                    'thumbnail_img': '_thumb.png',
+                    'duration': 10,
+                    'priority': 3,
+                   }
+        addjson(manifest, 'manifest.js')
+        addjson(slide_data.clutter_script, 'layout.js')
+
+        s = TemplateSlide(user=request.user,
+                          group=Group.objects.get(id=formData.get('group')),
+                          title=formData.get('name', 'no-name'),
+                          priority=-1,
+                          duration=-1)
+
+        tf.close()
+        fo.seek(0)
+        cf = ContentFile(fo.read())
+        s.template = Template.objects.get(id=uid)
+        s.populate_from_bundle(cf, tarfile.open(fileobj=cf))
+        templatefile = 'orwell/web-form-slide-customize-success.html'
+        return render_to_response(templatefile, {"yay":"yay"},
+                                  context_instance=RequestContext(request))
