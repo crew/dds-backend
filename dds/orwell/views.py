@@ -1,27 +1,21 @@
 # vim: set shiftwidth=4 tabstop=4 softtabstop=4 :
-from django.core import serializers
 from django.core.files.base import ContentFile
-from django.http import (HttpResponse, HttpResponseRedirect,
-                         HttpResponseBadRequest, HttpResponseNotAllowed)
+from django.http import HttpResponse, HttpResponseNotAllowed
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
-from django.contrib.auth.models import User
 from django.db import transaction
 from django.core.urlresolvers import reverse
 
-import StringIO
-
 import json
-import os
-import shutil
+import StringIO
 import sys                      # Needed for imagepooper
 import urllib                   # Needed for imagepooper
-
-from models import Slide, Client, ClientActivity, Location, Group, Template, Message, Playlist, PlaylistItem, PlaylistItemSlide, PlaylistItemGroup, TemplateSlide
-from forms import CreateSlideForm
 import tarfile
 import time
+
+from models import Slide, Client, ClientActivity, Location, Group, Template, Message, Playlist, PlaylistItemSlide, PlaylistItemGroup, TemplateSlide
+from forms import CreateSlideForm
 
 def index(request):
     data = {'numslides' : len(Slide.objects.all()),
@@ -53,7 +47,7 @@ def slide_index(request):
 
 def slide_add(request):
     if request.method == 'POST':
-        return HTTPResponse()
+        return HttpResponse()
 
 def slide_bundle(request, slide_id):
     slide = get_object_or_404(Slide, pk=slide_id)

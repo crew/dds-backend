@@ -3,10 +3,6 @@ from django.conf import settings
 
 urlpatterns = patterns('%s.orwell.views' % settings.MODULE,
     url(r'^$', 'index', name='orwell-index'),
-    url(r'^cli/manage_slide/$', 'cli_manage_slide',
-        name='orwell-cli-manage-slide'),
-    url(r'^cli/list_slides/$', 'cli_list_slides',
-        name='orwell-cli-list-slides'),
     url(r'^slides/$', 'slide_index', name='orwell-slide-index'),
     url(r'^slides/(\d+)/$', 'slide_bundle', name='orwell-slide-bundle'),
     url(r'^clients/$', 'client_index', name='orwell-client-index'),
@@ -24,6 +20,14 @@ urlpatterns = patterns('%s.orwell.views' % settings.MODULE,
 urlpatterns += patterns('django.views.generic.simple',
     url(r'^playlists/$', 'direct_to_template',
         {'template': 'orwell/playlist-index.html'}, name='orwell-playlist-index'),
+)
+
+# CLI API
+urlpatterns += patterns('%s.orwell.cli_views' % settings.MODULE,
+    url(r'^cli/manage_slide/$', 'cli_manage_slide',
+        name='orwell-cli-manage-slide'),
+    url(r'^cli/list_slides/$', 'cli_list_slides',
+        name='orwell-cli-list-slides'),
 )
 
 # The JSON API
