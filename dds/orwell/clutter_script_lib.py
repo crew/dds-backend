@@ -7,8 +7,8 @@ import StringIO
 
 # put_clutter_images_in : JSONObject TarFile -> Void
 # poops out the images from the clutter_script into the TarFile
-def put_clutter_images_in(clutter_script, tarfile) :
-    for child in clutter_script['children'] :
+def put_clutter_images_in(clutter_script, tarfile):
+    for child in clutter_script['children']:
         if "url" in child and "filename" in child:
             sio = StringIO.StringIO()
             urllib.urlretrieve(child['url'], sio)
