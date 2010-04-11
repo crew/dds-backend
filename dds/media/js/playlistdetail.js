@@ -4,43 +4,66 @@ function create_group_span(id, name) {
                     .text(name);
   span.append($('<span>').addClass('ro-button')
                         .text('x')
-                        .click(function () {$(this).parent().remove()}));
+                        .click(function () {$(this).parent().remove();}));
   return span;
 }
 
+
+// build_playlist : [JSONArray [JSONObject (U PlaylistItemSlide
+//                                            PlaylistItemGroup)]]
+//                  -> Void
+// builds a playlist from the data and updates the page with it
 function build_playlist(data) {
-  $("#playlist").html('');
+  $("#playlist").html(''); // clear the contents
   $(data).each(function (dummy, datum) {
-    var plitem = $('<li>');
-
-
-    if (datum.type === 'PlaylistItemSlide') {
-      // PlaylistItemSlide
-      plitem.addClass("plis");
-      plitem.attr('id', datum.slide.id);
-      plitem.text(datum.slide.title);
-      plitem.append($('<img>').attr('src', datum.slide.thumbnail));
-    } else {
-      // PlaylistItemGroup
-      plitem.addClass("plig");
-      var plitemgroups = $('<span>').addClass('plig-group-container');
-      plitem.append(plitemgroups);
-      $(datum.groups).each(function(dummy, group) {
-        plitemgroups.append(create_group_span(group.id, group.name));
-      })
-      cb_id = datum.id + '-weighted';
-      plitem.append($('<label>')
-  	    .attr('for', cb_id)
-  	    .text('Weighted?'));
-      plitem.append($('<input>')
-  	    .addClass('plig-weighted')
-  	    .attr('id', cb_id)
-  	    .attr('type', 'checkbox')
-  	    .attr('checked', datum.weighted));
-    }
-    $("#playlist").append(plitem);
+    $("#playlist").append(build_playlist_item(datum));
   });
   setup_droppable();
+}
+
+// build_playlist_item : (U [JSONObject PlaylistItemSlide]
+//                          [JSONObject PlaylistItemGroup])
+//                       -> [HTML li]
+// creates an HTML list item representing a PlaylistItem
+function build_playlist_item(pli) {
+  return (pli.type === 'PlaylistItemSlide') ? build_plis(pli) : build_plig(pli);
+}
+
+// build_plis : [JSONObject PlaylistItemSlide] -> [HTML li]
+// creates an HTML list item representing a PlaylistItemSlide
+function build_plis(plis){
+  var plitem = $('<li>');
+
+  plitem.addClass("plis");
+  plitem.attr('id', plis.slide.id);
+  plitem.text(plis.slide.title);
+  plitem.append($('<img>').attr('src', plis.slide.thumbnail));
+
+  return plitem;
+}
+
+// build_plig : [JSONObject PlaylistItemGroup] -> [HTML li]
+// creates an HTML list item representing a PlaylistItemGroup
+function build_plig(plig) {
+  var plitem = $('<li>');
+  var plitemgroups = $('<span>').addClass('plig-group-container');
+
+  plitem.addClass("plig");
+  plitem.append(plitemgroups);
+  $(plig.groups).each(function(dummy, group) {
+                         plitemgroups.append(create_group_span(group.id, group.name));
+                       });
+
+  var cb_id = plig.id + '-weighted';
+  plitem.append($('<label>')
+  	            .attr('for', cb_id)
+  	            .text('Weighted?'));
+  plitem.append($('<input>')
+  	            .addClass('plig-weighted')
+  	            .attr('id', cb_id)
+  	            .attr('type', 'checkbox')
+  	            .attr('checked', plig.weighted));
+  return plitem;
 }
 
 function setup_droppable() {
