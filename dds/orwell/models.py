@@ -154,6 +154,31 @@ class Playlist(models.Model):
                     ids.append(id)
         return ids
 
+    # Returns JSON for playlist editor parsing.
+    def playlist_json(self):
+        playlistitems = self.playlistitem_set.order_by('position')
+        items = []
+        # Return some simple dicts with PlaylistItem data for template consumption.
+        for item in playlistitems:
+            item = item.subitem()
+            if type(item) == PlaylistItemGroup:
+                # PlaylistItemGroup
+                groups = []
+                for x in item.groups.all():
+                    groups.append({'id' : x.id,
+                                   'name' : x.name })
+
+                items.append({'type' : 'PlaylistItemGroup',
+                              'groups' : groups,
+                              'weighted' : item.weighted })
+            else:
+                # PlaylistItemSlide
+                items.append({'type': 'PlaylistItemSlide',
+                              'slide':{'id' : item.slide.id,
+                                       'title' : item.slide.title,
+                                       'thumbnail' : item.slide.thumbnailurl()}})
+        return json.dumps(items)
+
     def slides(self):
         """Return all the Slide objects used in this playlist."""
         return Slide.objects.filter(id__in=self.requiredslideids())

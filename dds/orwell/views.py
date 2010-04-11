@@ -7,6 +7,8 @@ from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.contrib.auth.models import User
+from django.db import transaction
+from django.core.urlresolvers import reverse
 
 import StringIO
 
@@ -207,11 +209,11 @@ def template_select(request):
                               {"templates":Template.objects.all()},
                               context_instance=RequestContext(request))
 
-@login_required
-def playlist_index(request):
-    return render_to_response('orwell/playlist-index.html',
-                              { 'playlists' : Playlist.objects.all() },
-                              context_instance = RequestContext(request))
+def playlist_list_json(request):
+    def formatplaylist(p):
+        return {'uri':reverse('orwell-playlist-detail', args=[p.id]), 'name':p.name}
+    return HttpResponse(json.dumps(map(formatplaylist, Playlist.objects.all())))
+
 
 @login_required
 def playlist_detail(request, playlist_id):
@@ -240,6 +242,7 @@ def playlist_detail(request, playlist_id):
 
 # Returns a JSON object containing playlist details.
 @login_required
+#@transaction.commit_manually
 def playlist_json(request, playlist_id):
     playlist = Playlist.objects.get(pk=playlist_id)
     if (request.method == 'GET'):
@@ -266,23 +269,29 @@ def playlist_json(request, playlist_id):
                                      'thumbnail' : item.slide.thumbnailurl()}})
       return HttpResponse(json.dumps(items))
     else:
-      # Truncate all PlaylistItems for this playlist
-      for item in playlist.playlistitem_set.all():
-        item.delete()
-      
-      data = json.loads(request.raw_post_data)
-      i = 0
-      
-      for x in data:
-          if x['type'] == "plis":
-              playlistitem = PlaylistItemSlide(playlist=playlist, position=i, slide=Slide.objects.get(pk=x['slide']['id']))
-              playlistitem.save()
-          else:
-              playlistitem = PlaylistItemGroup(playlist=playlist, position=i, weighted=x['weighted'])
-              playlistitem.save()
-              for grp in x['groups']:
-                 playlistitem.groups.add(Group.objects.get(pk=grp))
-          i = i + 1
+      try:
+          # Truncate all PlaylistItems for this playlist
+          for item in playlist.playlistitem_set.all():
+            item.delete()
+
+          data = json.loads(request.raw_post_data)
+          i = 0
+
+          for x in data:
+              if x['type'] == "plis":
+                  playlistitem = PlaylistItemSlide(playlist=playlist, position=i, slide=Slide.objects.get(pk=x['slide']['id']))
+                  playlistitem.save()
+              else:
+                  playlistitem = PlaylistItemGroup(playlist=playlist, position=i, weighted=x['weighted'])
+                  playlistitem.save()
+                  for grp in x['groups']:
+                     playlistitem.groups.add(Group.objects.get(pk=grp))
+              i = i + 1
+      except:
+            transaction.rollback()
+      else:
+            transaction.commit()
+
       return HttpResponse("Successfully updated this playlist")
 
 # Returns a JSON object containing slide details.
@@ -300,4 +309,4 @@ def group_json(request, group_id):
     group = Group.objects.get(pk=group_id)
     output = { 'id' : group_id,
                'name' : group.name }
-    return HttpResponse(json.dumps(output))      
+    return HttpResponse(json.dumps(output))

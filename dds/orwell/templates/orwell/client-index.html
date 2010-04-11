@@ -41,7 +41,9 @@
     <input type="hidden" id="clientid-{{ client.id_hash }}"
            class="clientid" value="{{client.client_id}}">
     <div class="keyval">
-      Playlist: <span class="kv-playlist">{{ client.playlist.name }}</span>
+      Playlist: <span class="kv-playlist">
+        <a href="{% url orwell-playlist-detail client.playlist.id %}">
+          {{ client.playlist.name }}</a></span>
     </div>
     <div class="keyval">
       Location: <span class="kv-location">{{ client.location }}</span>

@@ -1,0 +1,95 @@
+@import "index.css";
+
+/* Playlist Control */
+
+.left {
+    float: left;
+    width: 500px;
+}
+
+.right {
+    float: right;
+    width: 470px;
+}
+
+#toolbox {
+    background: white;
+    color: #000;
+    width: 400px;
+    float: right;
+}
+
+.plig_toolbox_item {
+    border: 1px solid #666;
+    height: auto;
+    padding: 3px;
+    display:block;
+    width:200px;
+    margin-bottom: 5px;
+}
+
+.plis_toolbox_item {
+    border: 1px solid #666;
+    height: auto;
+    padding: 3px;
+    display:block;
+    width:200px;
+    margin-bottom: 5px;
+}
+
+
+#playlist {
+
+}
+
+#playlist ul {
+    list-style: none;
+}
+
+#playlist li {
+    list-style: none;
+    clear: both;
+    margin-top: 10px;
+    padding: 10px;
+}
+
+#playlist li.plis {
+    background: #666;
+}
+
+#playlist li.plig {
+    background: #444;
+}
+
+#playlist li.hover {
+    background: #ffcc00;
+}
+
+input#playlist-save {
+    display:inline;
+    float:left;
+}
+
+span.removable-option {
+    border: 1px solid #000;
+    background: #666;
+    padding: .5em;
+    margin: .5em;
+}
+
+span.removable-option span.ro-button {
+    display:inline-block;
+    text-align: center;
+    vertical-align: center;
+    border: 1px solid #AAA;
+    background: #999;
+    margin: .3em;
+    width: 1em;
+    height: 1.2em;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+span.removable-option span.ro-button:hover {
+    background: #777;
+}
