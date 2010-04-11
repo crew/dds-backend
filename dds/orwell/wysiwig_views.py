@@ -1,3 +1,6 @@
+from django.http import HttpResponse, HttpResponseNotAllowed
+from django.contrib.auth.decorators import login_required
+
 import json
 import StringIO
 import tarfile
@@ -8,7 +11,19 @@ import virtual_file_lib
 # handles adding newly created wysiwig slides to the database
 @login_required
 def wysiwig_add(request) :
-    if (request.method == 'POST') :
+    if (request.method != 'POST') :
+        if(request.GET.get('coffee','false')=='true') :
+            return HttpResponse("I'm a little teapot,\n" +
+                                "Short and stout,\n" +
+                                "Here is my handle (one hand on hip),\n" +
+                                "Here is my spout (other arm out straight),\n" +
+                                "When I get all steamed up,\n" +
+                                "Hear me shout,\n" +
+                                "Just tip me over and pour me out! (lean over toward spout)\n",
+                                mimetype='text/plain',
+                                status=418)
+        return HttpResponse('Please send me a POST request.', mimetype='text/plain', status=400)
+    else :
         slide_data = json.loads(request.raw_post_data)
 
         fo = StringIO.StringIO()
@@ -39,4 +54,4 @@ def wysiwig_add(request) :
         tf.close()
         fo.seek(0)
         cf = ContentFile(fo.read())
-        return HttpReponse('Success', mimetype='text/plain', status=200);
+        return HttpReponse('Success', mimetype='text/plain', status=200)
