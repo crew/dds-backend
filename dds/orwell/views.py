@@ -297,11 +297,19 @@ def slide_json(request, slide_id):
                'thumbnail' : slide.thumbnailurl() }
     return HttpResponse(json.dumps(output))
 
-# Returns a JSON object containing group deatils.
+# Returns a JSON object containing group details.
 @login_required
 def group_json(request, group_id):
     group = Group.objects.get(pk=group_id)
     output = { 'id' : group_id,
                'name' : group.name }
     return HttpResponse(json.dumps(output))
+
+# Returns a JSON object containing all clients.
+def client_json(request):
+    clients = Client.objects.all();
+    output = []
+    for x in clients:
+        output.append({ 'name': x.name, 'client_id' : x.client_id });
+    return HttpResponse(json.dumps(output));
 

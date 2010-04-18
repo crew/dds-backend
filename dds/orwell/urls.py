@@ -40,6 +40,8 @@ urlpatterns += patterns('%s.orwell.views' % settings.MODULE,
         name='orwell-json-playlist-detail'),
     url(r'^json/playlists/$', 'playlist_list_json',
         name="orwell-json-playlist-list"),
+    url(r'^json/clients/$', 'client_json',
+        name="orwell-client-json"),
 )
 
 # The Wysiwig API
