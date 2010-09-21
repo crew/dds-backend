@@ -1,3 +1,8 @@
+I am deprecating this in favor of harvest.
+
+-Alex
+
+-------------------------
 To simplify the importing, I made a symlink of the django project to the 
 site-package directory.
 
