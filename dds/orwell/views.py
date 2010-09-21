@@ -12,7 +12,9 @@ import StringIO
 import tarfile
 import time
 
-from models import Slide, Client, ClientActivity, Location, Group, Template, Message, Playlist, PlaylistItemSlide, PlaylistItemGroup, TemplateSlide
+from models import (Slide, Client, ClientActivity, Location, Group, Template,
+                    Message, Playlist, PlaylistItemSlide, PlaylistItemGroup,
+                    TemplateSlide)
 from forms import CreateSlideForm
 
 def index(request):
@@ -28,20 +30,21 @@ def slide_index(request):
                                   { 'slides' : Slide.objects.all(),
                                     'groups' : Group.objects.all()},
                                   context_instance=RequestContext(request))
-    else:
-        if 'remove' in request.POST:
-            try:
-                slide = get_object_or_404(Slide,
-                                          pk=request.POST['remove'])
-                if slide.allowed(request.user):
-                    slide.delete()
-                    return HttpResponse('OK')
-                else:
-                    return HttpResponse(status=403)
-            except Exception, e:
-                return HttpResponse(str(e), status=400)
-        else:
-            return HttpResponse(status=400)
+    # Handle a remove.
+    if 'remove' in request.POST:
+        try:
+            slide = get_object_or_404(Slide,
+                                      pk=request.POST['remove'])
+            if slide.allowed(request.user):
+                slide.delete()
+                return HttpResponse('OK')
+            # Forbidden.
+            return HttpResponse(status=403)
+        except Exception, e:
+            # Bad request.
+            return HttpResponse(str(e), status=400)
+    # Bad request.
+    return HttpResponse(status=400)
 
 def slide_add(request):
     if request.method == 'POST':

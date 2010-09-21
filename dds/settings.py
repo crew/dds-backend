@@ -103,5 +103,6 @@ LOGIN_REDIRECT_URL = '/'
 
 try:
     from local_settings import *
-except ImportError:
-    pass
+except ImportError, e:
+    import sys
+    sys.stderr.write('%s\n' % str(e))
