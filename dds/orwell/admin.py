@@ -3,7 +3,6 @@ from models import Slide, Client, ClientActivity, Location, Playlist, PlaylistIt
 from django.contrib import admin
 
 class SlideAdmin(admin.ModelAdmin):
-    exclude = ['last_update']
     list_display = ('title', 'user', 'group', 'expires_at')
     fieldsets = (
         (None, {
