@@ -1,3 +1,29 @@
-The daemon portion of the backend is moved to harvest.git
+Prereqs
+=======
+- Python 2.4+
+- python-pip
+- python-setuptools
 
--lee
+Setup
+=====
+in the dds directory, run
+
+  sudo pip install -r requirements.txt
+
+That'll download the right versions of software orwell depends on.
+In the dds directory, add a file named 'local_settings.py'. Add
+
+  DATABASE_ENGINE = 'sqlite3'
+  DATABASE_NAME = 'orwell.db'
+
+to it. This specifies the sort of database orwell should use. In
+this case, it'll use sqlite3 with a database file named orwell.db.
+Check the django documentation if you want to use a different
+database.
+
+Running
+=======
+from the dds directory, run
+
+  ./manage.py syncdb
+  ./manage.py runserver

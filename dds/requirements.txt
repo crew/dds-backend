@@ -1,0 +1,5 @@
+# This is a pip requirements file which describes the necessary
+# distributions required to run this project.
+
+Django==1.2.3
+python-ldap>=2.3
