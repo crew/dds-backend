@@ -14,12 +14,15 @@ That'll download the right versions of software orwell depends on.
 In the dds directory, add a file named 'local_settings.py'. Add
 
   DATABASE_ENGINE = 'sqlite3'
-  DATABASE_NAME = 'orwell.db'
+  DATABASE_NAME = '/path/to/dds/orwell.db'
 
 to it. This specifies the sort of database orwell should use. In
 this case, it'll use sqlite3 with a database file named orwell.db.
-Check the django documentation if you want to use a different
-database.
+The full path to the database file must be given in order for
+harvest to function properly when using orwell's settings file
+(see the harvest README for details). DATABASE_NAME isn't
+necessary if you use a database other than sqlite. Check the
+django documentation for details on how to set up other databases.
 
 Running
 =======
