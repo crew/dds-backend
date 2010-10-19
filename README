@@ -15,6 +15,7 @@ In the dds directory, add a file named 'local_settings.py'. Add
 
   DATABASE_ENGINE = 'sqlite3'
   DATABASE_NAME = '/path/to/dds/orwell.db'
+  MEDIA_URL = 'http://localhost:8000/media/'
 
 to it. This specifies the sort of database orwell should use. In
 this case, it'll use sqlite3 with a database file named orwell.db.
