@@ -27,8 +27,7 @@ def index(request):
 def slide_index(request):
     if request.method == 'GET':
         return render_to_response('orwell/slide-index.html',
-                                  { 'slides' : Slide.objects.all(),
-                                    'groups' : Group.objects.all()},
+                                  { 'slides' : Slide.objects.all()},
                                   context_instance=RequestContext(request))
     # Handle a remove.
     if 'remove' in request.POST:
@@ -57,8 +56,7 @@ def slide_bundle(request, slide_id):
 def client_index(request):
     return render_to_response('orwell/client-index.html',
                               { 'clients' : Client.objects.all(),
-                                'locations' : Location.objects.all(),
-                                'groups' : Group.objects.all()},
+                                'locations' : Location.objects.all()},
                               context_instance=RequestContext(request))
 
 def client_activity_all_json(request):
@@ -81,7 +79,6 @@ def cli_manage_slide(request):
             create = f.cleaned_data['mode'] == 'create'
             if create and not id:
                 s = Slide(user=request.user,
-                          group=Group.objects.all()[0],
                           title='cli uploaded %s' % (tf.__hash__()),
                           priority=-1,
                           duration=-1)
@@ -121,8 +118,7 @@ def web_form_slide_customize(request, uid) :
         template = Template.objects.get(id=uid)
         data = json.JSONDecoder().decode(template.json.read())
         return render_to_response('orwell/web-form-slide-customize.html',
-                                  {"template": data,
-                                   "groups": Group.objects.all() },
+                                  {"template": data},
                                   context_instance=RequestContext(request))
     if request.method == 'POST':
         formData = request.POST
@@ -161,7 +157,6 @@ def web_form_slide_customize(request, uid) :
                    }
         addjson(manifest, 'manifest.js')
         s = TemplateSlide(user=request.user,
-                          group=Group.objects.get(id=formData.get('group')),
                           title=formData.get('name', 'no-name'),
                           priority=-1,
                           duration=-1)
@@ -233,7 +228,6 @@ def playlist_detail(request, playlist_id):
                                 { 'playlist' : playlist,
                                 'items' : items,
                                 'slides' : Slide.objects.all(),
-                                'groups' : Group.objects.all(),
                                 'plid' : playlist.id },
                                 context_instance = RequestContext(request))
 
@@ -298,14 +292,6 @@ def slide_json(request, slide_id):
     output = { 'id' : slide_id,
                'title' : slide.title,
                'thumbnail' : slide.thumbnailurl() }
-    return HttpResponse(json.dumps(output))
-
-# Returns a JSON object containing group details.
-@login_required
-def group_json(request, group_id):
-    group = Group.objects.get(pk=group_id)
-    output = { 'id' : group_id,
-               'name' : group.name }
     return HttpResponse(json.dumps(output))
 
 # Returns a JSON object containing all clients.

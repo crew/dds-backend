@@ -1,6 +1,6 @@
 # vim: set shiftwidth=4 tabstop=4 softtabstop=4 expandtab :
 from django.db import models
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User,Group
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
@@ -37,7 +37,6 @@ class Message(models.Model):
 class Slide(models.Model):
     title = models.CharField(max_length=512)
     user = models.ForeignKey(User, related_name='slides')
-    group = models.ForeignKey(Group, related_name='slides')
     priority = models.IntegerField()
     duration = models.IntegerField(default=10)
     expires_at = models.DateTimeField(null=True, default=None, blank=True)
@@ -62,17 +61,18 @@ class Slide(models.Model):
 
     def get_class_tags(self):
         """Get a list of textual tags for this slide."""
-        return 'slide-group-%d' % self.group.id
+        return ''
 
     def allowed(self, user):
-        return self.group in user.groups.all() or user.is_superuser
+        #FIXME! (temporary)
+        return True
 
     @models.permalink
     def get_absolute_url(self):
         return ('orwell-slide-bundle', [str(self.id)])
 
     def __unicode__(self):
-        return '%s %s %s' % (self.title, self.user, self.group)
+        return '%s %s' % (self.title, self.user)
 
     def thumbnailurl(self):
         return self.thumbnail.url
@@ -96,6 +96,7 @@ class Slide(models.Model):
         """Get the playlists associated with this slide."""
         playlists = []
         s = []
+        #FIXME!
         for related in ['playlistitemslide_set', 'playlistitemgroup_set']:
             if hasattr(self, related):
                 s += list(getattr(self, related).all())
@@ -161,22 +162,11 @@ class Playlist(models.Model):
         # Return some simple dicts with PlaylistItem data for template consumption.
         for item in playlistitems:
             item = item.subitem()
-            if type(item) == PlaylistItemGroup:
-                # PlaylistItemGroup
-                groups = []
-                for x in item.groups.all():
-                    groups.append({'id' : x.id,
-                                   'name' : x.name })
-
-                items.append({'type' : 'PlaylistItemGroup',
-                              'groups' : groups,
-                              'weighted' : item.weighted })
-            else:
-                # PlaylistItemSlide
-                items.append({'type': 'PlaylistItemSlide',
-                              'slide':{'id' : item.slide.id,
-                                       'title' : item.slide.title,
-                                       'thumbnail' : item.slide.thumbnailurl()}})
+            # PlaylistItemSlide
+            items.append({'type': 'PlaylistItemSlide',
+                          'slide':{'id' : item.slide.id,
+                                   'title' : item.slide.title,
+                                   'thumbnail' : item.slide.thumbnailurl()}})
         return json.dumps(items)
 
     def slides(self):
@@ -191,7 +181,6 @@ class Client(models.Model):
     name = models.CharField(max_length=100, default='Unnamed')
     client_id = models.EmailField(max_length=128, primary_key=True)
     location = models.ForeignKey(Location, null=True, related_name='clients')
-    groups = models.ManyToManyField(Group, related_name='clients')
     playlist = models.ForeignKey('Playlist', default=Playlist.get_default)
 
     def jid(self):
@@ -234,8 +223,6 @@ class Client(models.Model):
     def get_class_tags(self):
         """Get a list of textual tags for this slide."""
         tags = ['client-location-%s' % self.location.id]
-        for group in self.groups.all():
-            tags.append('client-group-%s' % group.id)
         if self.active():
             tags.append('client-online')
         else:
@@ -347,7 +334,7 @@ class PlaylistItemSlide(PlaylistItem):
     def slideweights(self):
         return [self.slide.priority]
 
-
+#FIXME!
 class PlaylistItemGroup(PlaylistItem):
     groups   = models.ManyToManyField(Group)
     weighted = models.BooleanField()

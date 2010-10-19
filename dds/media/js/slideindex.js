@@ -2,16 +2,12 @@ function getfilters() {
   var classes = new Array();
   classes.push('.slidebox');
   var loc = $('#locationselect').val();
-  var group = $('#groupselect').val();
   var showoffline = $('#showoffline').is(':checked');
-  if (group != '') {
-    classes.push('.slide-group-'+group);
-  }
   classlist = classes.join('');
   return classlist;
 }
 
-function filtergrouplocation() {
+function filterlocation() {
   filterlist = getfilters();
   $('.slidebox').hide();
   $(filterlist).show();
@@ -19,7 +15,7 @@ function filtergrouplocation() {
 
 function resetfilterform() {
   document.getElementById('slidefilterform').reset();
-  filtergrouplocation();
+  filterlocation();
 }
 
 function handledelete(slidebox, source) {
@@ -89,8 +85,7 @@ function setupdialogs() {
 
 $(document).ready(function() {
   setupdialogs();
-  $('#showoffline').change(filtergrouplocation);
-  $('#groupselect').change(filtergrouplocation);
+  $('#showoffline').change(filterlocation);
   $('#resetfilter').click(resetfilterform);
   $('.slide-details-save').live("click", function(){
 	  $.post("", this.id, function(data) {

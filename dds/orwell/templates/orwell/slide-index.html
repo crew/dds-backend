@@ -9,12 +9,6 @@
 {% block content %}
 <h1>Slides</h1>
 <form id="slidefilterform">
-<select id="groupselect">
-  <option value="">--Group--</option>
-  {% for grp in groups %}
-  <option value="{{grp.id}}">{{grp}}</option>
-  {% endfor %}
-</select>
 <input type="reset" id="resetfilter"
        class="fg-button ui-state-default ui-corner-all">
 </form>
@@ -28,7 +22,6 @@
   <div class="infopopup" title="{{slide.title}}"
     id="infobox-slide-{{ slide.id }}">
     <div>Owner: {{slide.user}}</div>
-    <div>Group: {{slide.group}}</div>
   </div>
 </div>
 {% endfor %}

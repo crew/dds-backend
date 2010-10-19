@@ -3,10 +3,10 @@ from models import Slide, Client, ClientActivity, Location, Playlist, PlaylistIt
 from django.contrib import admin
 
 class SlideAdmin(admin.ModelAdmin):
-    list_display = ('title', 'user', 'group', 'expires_at')
+    list_display = ('title', 'user', 'expires_at')
     fieldsets = (
         (None, {
-            'fields': ('title', 'user', 'group')
+            'fields': ('title', 'user')
         }),
         (None, {
             'fields': ('priority', 'expires_at', 'thumbnail',

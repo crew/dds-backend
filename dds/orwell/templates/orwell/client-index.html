@@ -18,12 +18,6 @@
   <option value="{{loc.id}}">{{loc}}</option>
   {% endfor %}
 </select>
-<select id="groupselect">
-  <option value="">--Group--</option>
-  {% for grp in groups %}
-  <option value="{{grp.id}}">{{grp}}</option>
-  {% endfor %}
-</select>
 <label for="showoffline">Display offline clients?</label>
 <input type="checkbox" id="showoffline" checked="true">
 <input type="reset" id="resetfilter"
@@ -47,9 +41,6 @@
     </div>
     <div class="keyval">
       Location: <span class="kv-location">{{ client.location }}</span>
-    </div>
-    <div class="keyval">
-      Groups: <span class="kv-groups">{{ client.groups.all|join:", " }}</span>
     </div>
     <div class="keyval">
       Last Contact: <span class="kv-lastcontact">{{ client.last_contact }}

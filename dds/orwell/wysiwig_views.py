@@ -49,9 +49,7 @@ def wysiwig_add(request) :
         addjson(clutter_script, 'layout.js')
         put_clutter_images_in(clutter_script, tarfile=tf)
 
-        # TODO set a sane default group
-        s = Slide(user=request.user,
-                  group=Group.objects.get(id=slide_data.get('group', 1)))
+        s = Slide(user=request.user)
         s.populate_from_bundle(cf, tarfile.open(fileobj=cf))
 
         tf.close()

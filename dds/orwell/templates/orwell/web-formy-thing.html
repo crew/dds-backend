@@ -30,14 +30,6 @@ div.form-element {
   <input type="text" name="time" id="time" /> <br />
   </div>
 
-  <div class="form-element">
-  <label for="group">Group:</label>
-  <select name="group">
-  {% for group in groups %}
-    <option value="{{group.id}}">{{group}}</option>
-  {% endfor %}
-  </select> <br />
-  </div>
   <input type="submit" value="Create" />
 
 </form>

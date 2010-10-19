@@ -2,13 +2,9 @@ function getfilters() {
   var classes = new Array();
   classes.push('.slidebox');
   var loc = $('#locationselect').val();
-  var group = $('#groupselect').val();
   var showoffline = $('#showoffline').is(':checked');
   if (loc != '') {
     classes.push('.client-location-'+loc);
-  }
-  if (group != '') {
-    classes.push('.client-group-'+group);
   }
   if (!showoffline) {
     classes.push('.client-online');
@@ -17,7 +13,7 @@ function getfilters() {
   return classlist;
 }
 
-function filtergrouplocation() {
+function filterlocation() {
   filterlist = getfilters();
   $('.slidebox').hide();
   $(filterlist).show();
@@ -26,7 +22,7 @@ function filtergrouplocation() {
 function resetfilterform() {
   //Ugh, this should be done with jquery...
   document.getElementById('clientfilterform').reset();
-  filtergrouplocation();
+  filterlocation();
 }
 
 function powercontroldialog(id) {
@@ -76,16 +72,15 @@ function updateclients() {
           div.addClass('client-offline')
         }
       });
-      filtergrouplocation();
+      filterlocation();
       setTimeout(updateclients, 1000);
     });
 }
 
 $(document).ready(function() {
   setupdialogs();
-  $('#showoffline').change(filtergrouplocation);
-  $('#locationselect').change(filtergrouplocation);
-  $('#groupselect').change(filtergrouplocation);
+  $('#showoffline').change(filterlocation);
+  $('#locationselect').change(filterlocation);
   $('#resetfilter').click(resetfilterform);
   setTimeout(updateclients, 1000);
 });

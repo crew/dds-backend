@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 
 import json
 
-from models import Slide, Group
+from models import Slide
 from forms import CreateSlideForm
 import tarfile
 
@@ -22,7 +22,6 @@ def cli_manage_slide(request):
             create = f.cleaned_data['mode'] == 'create'
             if create and not id:
                 s = Slide(user=request.user,
-                          group=Group.objects.all()[0],
                           title='cli uploaded %s' % (tf.__hash__()),
                           priority=-1,
                           duration=-1)

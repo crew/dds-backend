@@ -3,7 +3,7 @@ import os
 from tempfile import mkstemp
 from models import *
 from datetime import datetime
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User
 
 
 class SlideTestCase(unittest.TestCase):
@@ -18,14 +18,9 @@ class SlideTestCase(unittest.TestCase):
         return user
 
     @staticmethod
-    def create_group(name):
-        group, _ = Group.objects.get_or_create(name=name)
-        return group
-
-    @staticmethod
-    def create_slide(title, priority, user, group, duration):
+    def create_slide(title, priority, user, duration):
         slide, _ = Slide.objects.get_or_create(title=title, priority=priority,
-                                               user=user, group=group,
+                                               user=user,
                                                duration=duration)
         return slide
 
@@ -33,13 +28,10 @@ class SlideTestCase(unittest.TestCase):
         self.u1 = self.create_user('alice', 'alice@example.com')
         self.u2 = self.create_user('bob', 'bob@example.com')
         self.u3 = self.create_user('eve', 'eve@example.com')
-        self.g1 = self.create_group('Alpha')
-        self.g2 = self.create_group('Beta')
-        self.g3 = self.create_group('Gamma')
 
-        self.s1 = self.create_slide('a', 1, self.u1, self.g1, 1)
-        self.s2 = self.create_slide('b', 2, self.u2, self.g2, 1)
-        self.s3 = self.create_slide('c', 3, self.u3, self.g3, 1)
+        self.s1 = self.create_slide('a', 1, self.u1, 1)
+        self.s2 = self.create_slide('b', 2, self.u2, 1)
+        self.s3 = self.create_slide('c', 3, self.u3, 1)
 
         self.l1, _ = Location.objects.get_or_create(name='here')
         self.l2, _ = Location.objects.get_or_create(name='there')
@@ -49,10 +41,8 @@ class SlideTestCase(unittest.TestCase):
         self.c2, _ = Client.objects.get_or_create(client_id='xxx@ccs',
                                                   location=self.l2)
 
-        self.c1.groups.add(self.g3, self.g1)
         self.c1.save()
 
-        self.c2.groups.add(self.g1, self.g2, self.g3)
         self.c2.save()
 
     def testSliceslideFindClients(self):
