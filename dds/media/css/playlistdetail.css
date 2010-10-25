@@ -19,16 +19,7 @@
     float: right;
 }
 
-.plig_toolbox_item {
-    border: 1px solid #666;
-    height: auto;
-    padding: 3px;
-    display:block;
-    width:200px;
-    margin-bottom: 5px;
-}
-
-.plis_toolbox_item {
+.pli_toolbox_item {
     border: 1px solid #666;
     height: auto;
     padding: 3px;
@@ -53,12 +44,8 @@
     padding: 10px;
 }
 
-#playlist li.plis {
+#playlist li.pli {
     background: #666;
-}
-
-#playlist li.plig {
-    background: #444;
 }
 
 #playlist li.hover {

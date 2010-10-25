@@ -13,7 +13,7 @@ import tarfile
 import time
 
 from models import (Slide, Client, ClientActivity, Location, Group, Template,
-                    Message, Playlist, PlaylistItemSlide, PlaylistItemGroup,
+                    Message, Playlist, PlaylistItem,
                     TemplateSlide)
 from forms import CreateSlideForm
 
@@ -214,22 +214,14 @@ def playlist_detail(request, playlist_id):
     items = []
     # Return some simple dicts with PlaylistItem data for template consumption.
     for item in playlistitems:
-        subitem = item.subitem()
-        if hasattr(subitem, 'weighted'):
-            # PlaylistItemGroup
-            items.append({ 'id' : item.pk,
-                           'groups' : subitem.groups.all(),
-                           'weighted' : subitem.weighted })
-        else:
-            # PlaylistItemSlide
-            items.append({ 'id' : item.pk,
-                           'slide' : subitem.slide })
-    return render_to_response('orwell/playlist-detail.html',
-                                { 'playlist' : playlist,
-                                'items' : items,
-                                'slides' : Slide.objects.all(),
-                                'plid' : playlist.id },
-                                context_instance = RequestContext(request))
+        items.append({ 'id' : item.pk,
+                       'slide' : item.slide })
+	return render_to_response('orwell/playlist-detail.html',
+                            { 'playlist' : playlist,
+                            'items' : items,
+                            'slides' : Slide.objects.all(),
+                            'plid' : playlist.id },
+                            context_instance = RequestContext(request))
 
 # Returns a JSON object containing playlist details.
 @login_required
@@ -241,23 +233,10 @@ def playlist_json(request, playlist_id):
       items = []
       # Return some simple dicts with PlaylistItem data for template consumption.
       for item in playlistitems:
-          item = item.subitem()
-          if type(item) == PlaylistItemGroup:
-              # PlaylistItemGroup
-              groups = []
-              for x in item.groups.all():
-                  groups.append({'id' : x.id,
-                                 'name' : x.name })
-
-              items.append({'type' : 'PlaylistItemGroup',
-                            'groups' : groups,
-                            'weighted' : item.weighted })
-          else:
-              # PlaylistItemSlide
-              items.append({'type': 'PlaylistItemSlide',
-                            'slide':{'id' : item.slide.id,
-                                     'title' : item.slide.title,
-                                     'thumbnail' : item.slide.thumbnailurl()}})
+          items.append({'type': 'PlaylistItemSlide',
+                        'slide':{'id' : item.slide.id,
+                                 'title' : item.slide.title,
+                                 'thumbnail' : item.slide.thumbnailurl()}})
       return HttpResponse(json.dumps(items))
     else:
       try:
@@ -269,14 +248,8 @@ def playlist_json(request, playlist_id):
           i = 0
 
           for x in data:
-              if x['type'] == "plis":
-                  playlistitem = PlaylistItemSlide(playlist=playlist, position=i, slide=Slide.objects.get(pk=x['slide']['id']))
-                  playlistitem.save()
-              else:
-                  playlistitem = PlaylistItemGroup(playlist=playlist, position=i, weighted=x['weighted'])
-                  playlistitem.save()
-                  for grp in x['groups']:
-                     playlistitem.groups.add(Group.objects.get(pk=grp))
+              playlistitem = PlaylistItem(playlist=playlist, position=i, slide=Slide.objects.get(pk=x['slide']['id']))
+              playlistitem.save()
               i = i + 1
       except:
             transaction.rollback()
