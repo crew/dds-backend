@@ -56,9 +56,11 @@ class Slide(models.Model):
                   'duration'        : self.duration,
                   'modified'        : time.mktime(self.last_update.timetuple()),
                 }
-
+        if self.expires_at: 
+            slide["expires_at"] = time.mktime(self.expires_at.timetuple())
+        
         return slide
-
+        
     def get_class_tags(self):
         """Get a list of textual tags for this slide."""
         return ''
