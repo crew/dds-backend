@@ -96,10 +96,8 @@ class Slide(models.Model):
         """Get the playlists associated with this slide."""
         playlists = []
         s = []
-        #FIXME!
-        for related in ['playlistitemslide_set', 'playlistitemgroup_set']:
-            if hasattr(self, related):
-                s += list(getattr(self, related).all())
+        if hasattr(self, 'playlistitem_set'):
+            s += list(getattr(self, 'playlistitem_set').all())
         for playlistitem in s:
             if playlistitem.playlist not in playlists:
                 playlists.append(playlistitem.playlist)
@@ -295,31 +293,6 @@ class ClientActivity(models.Model):
 class PlaylistItem(models.Model):
     position = models.PositiveIntegerField()
     playlist = models.ForeignKey(Playlist)
-
-    class Meta:
-        unique_together = (('position', 'playlist'))
-
-    def subitem(self):
-        try:
-            return self.playlistitemgroup
-        except PlaylistItemGroup.DoesNotExist:
-            return self.playlistitemslide
-
-    def mode(self):
-        return 'none'
-
-    def slideids(self):
-        return []
-
-    def slideweights(self):
-        return []
-
-    def asdict(self):
-        return {'position':self.position, 'mode':self.mode(),
-                'slides':self.slideids(), 'weights':self.slideweights()}
-
-
-class PlaylistItemSlide(PlaylistItem):
     slide = models.ForeignKey(Slide)
 
     def subitem(self):
@@ -334,38 +307,14 @@ class PlaylistItemSlide(PlaylistItem):
     def slideweights(self):
         return [self.slide.priority]
 
-#FIXME!
-class PlaylistItemGroup(PlaylistItem):
-    groups   = models.ManyToManyField(Group)
-    weighted = models.BooleanField()
+    class Meta:
+        unique_together = (('position', 'playlist'))
 
-    def subitem(self):
-        return self
-
-    def slideinfo(self):
-        ids = []
-        weights = []
-        for group in self.groups.all():
-            ids.extend(group.slides.values_list('id', flat=True))
-            weights.extend(group.slides.values_list('priority', flat=True))
-        return ids, weights
-
-    def slideids(self):
-        return self.slideinfo()[0]
-
-    def slideweights(self):
-        return self.slideinfo()[1]
-
-    def mode(self):
-        if self.weighted:
-            return 'weighted'
-        else:
-            return 'random'
+    def asdict(self):
+        return {'position':self.position, 'mode':self.mode(),
+                'slides':self.slideids(), 'weights':self.slideweights()}
 
 
-register_signals(PlaylistItemSlide,
+register_signals(PlaylistItem,
                  post_save=signalhandlers.pis_m_post_save,
                  pre_delete=signalhandlers.pis_m_pre_delete)
-register_signals(PlaylistItemGroup,
-                 post_save=signalhandlers.pig_m_post_save,
-                 pre_delete=signalhandlers.pig_m_pre_delete)

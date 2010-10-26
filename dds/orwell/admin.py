@@ -1,5 +1,5 @@
 # vim: set shiftwidth=4 tabstop=4 softtabstop=4 :
-from models import Slide, Client, ClientActivity, Location, Playlist, PlaylistItemSlide, PlaylistItemGroup, Template, TemplateSlide
+from models import Slide, Client, ClientActivity, Location, Playlist, PlaylistItem, Template, TemplateSlide
 from django.contrib import admin
 
 class SlideAdmin(admin.ModelAdmin):
@@ -17,20 +17,13 @@ class SlideAdmin(admin.ModelAdmin):
 class ClientAdmin(admin.ModelAdmin):
     list_display = ('name', 'pk', 'playlist', 'location', 'last_contact')
 
-class PlaylistItemSlideInline(admin.TabularInline):
-    model = PlaylistItemSlide
-    extra = 2
-
-class PlaylistItemGroupInline(admin.TabularInline):
-    model = PlaylistItemGroup
+class PlaylistItemInline(admin.TabularInline):
+    model = PlaylistItem
     extra = 2
 
 class PlaylistAdmin(admin.ModelAdmin):
     list_display = ('name',)
-    inlines = [
-        PlaylistItemSlideInline,
-        PlaylistItemGroupInline,
-    ]
+    inlines = [PlaylistItemInline]
 
 admin.site.register(Playlist, PlaylistAdmin)
 admin.site.register(Slide, SlideAdmin)
