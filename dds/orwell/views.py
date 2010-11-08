@@ -21,7 +21,7 @@ import time
 from models import (Slide, Client, ClientActivity, Location, Group, Template,
                     Message, Playlist, PlaylistItem,
                     TemplateSlide)
-from forms import (CreateSlideForm, CreatePDFSlide)
+from forms import CreatePDFSlide
 from pdf.convert import convert_pdf
 
 def index(request):
@@ -280,7 +280,7 @@ def pdf_formview(request):
                       title=f.cleaned_data['title'],
                       duration=f.cleaned_data['duration'],
                       priority=f.cleaned_data['priority'])
-            
+
             s.populate_from_bundle(File(open(bundle_loc)), tarfile.open(bundle_loc))
             return HttpResponse("Yay!")
         else:
