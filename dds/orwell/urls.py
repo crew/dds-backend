@@ -43,9 +43,3 @@ urlpatterns += patterns('%s.orwell.views' % settings.MODULE,
     url(r'^json/clients/$', 'client_json',
         name="orwell-client-json"),
 )
-
-# The Wysiwig API
-urlpatterns += patterns('%s.orwell.wysiwig_views' % settings.MODULE,
-  url(r'^json/wysiwig/add/$', 'wysiwig_add', name='wysiwig-add'),
-)
-
