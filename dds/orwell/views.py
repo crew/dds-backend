@@ -3,11 +3,17 @@ from django.core.files.base import ContentFile
 from django.http import HttpResponse, HttpResponseNotAllowed
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.template import RequestContext
+from django.template import RequestContext, Context
+from django.template import Template as RenderTemplate
 from django.db import transaction
 from django.core.urlresolvers import reverse
+from django.conf import settings
+from django.core.files import File
+from datetime import datetime
+
 
 import json
+import os
 import StringIO
 import tarfile
 import time
@@ -15,7 +21,8 @@ import time
 from models import (Slide, Client, ClientActivity, Location, Group, Template,
                     Message, Playlist, PlaylistItem,
                     TemplateSlide)
-from forms import CreateSlideForm
+from forms import (CreateSlideForm, CreatePDFSlide)
+from pdf.convert import convert_pdf
 
 def index(request):
     data = {'numslides' : len(Slide.objects.all()),
@@ -232,3 +239,53 @@ def client_json(request):
         output.append({ 'name': x.name, 'client_id' : x.client_id });
     return HttpResponse(json.dumps(output));
 
+
+#uploading file to some scratch space
+# so we can pass it into convert_pdf
+def handle_uploaded_file(f):
+    pdfs_dir = os.path.join(settings.MEDIA_ROOT, "pdfs")
+    if not os.path.exists(pdfs_dir):
+        os.system('mkdir -p %s' % pdfs_dir)
+    uID = abs(datetime.now().__hash__())
+    path = os.path.join(pdfs_dir, str(uID))
+    destination = open(path + ".pdf" , 'wb+')
+    for chunk in f.chunks():
+        destination.write(chunk)
+    destination.close()
+    return path
+
+@login_required
+def pdf_formview(request):
+    if request.method == 'POST':
+        f = CreatePDFSlide(request.POST, request.FILES)
+        print(request.FILES)
+        if f.is_valid():
+            def in_cur_dir(path):
+                return os.path.join(os.path.dirname(__file__),path)
+            fpath = handle_uploaded_file(request.FILES['pdf'])
+            convert_pdf(fpath + ".pdf" ,  in_cur_dir("PDFslide/pdf.png"), (1920,1080))
+            convert_pdf(fpath + ".pdf" ,  in_cur_dir("PDFslide/_thumb.png"), (200, 113))
+            t = RenderTemplate(open(in_cur_dir('PDFslide/manifest.js.tmp')).read())
+            manifest = open(in_cur_dir('PDFslide/manifest.js'), 'w+')
+            manifest.write(t.render(Context({'title':f.cleaned_data['title'],
+                                             'duration':f.cleaned_data['duration'],
+                                             'priority':f.cleaned_data['priority']})))
+            manifest.close()
+            bundle_loc = in_cur_dir('bundle.tar.gz')
+            PDFslide_loc = in_cur_dir('PDFslide')
+            os.chdir(PDFslide_loc)
+            os.system('tar -zcf %s *' % bundle_loc)
+
+            s = Slide(user=request.user,
+                      title=f.cleaned_data['title'],
+                      duration=f.cleaned_data['duration'],
+                      priority=f.cleaned_data['priority'])
+            
+            s.populate_from_bundle(File(open(bundle_loc)), tarfile.open(bundle_loc))
+            return HttpResponse("Yay!")
+        else:
+            return HttpResponse("Invalid insertion...")
+    else:
+        f = CreatePDFSlide()
+        return render_to_response('orwell/PDF-slide-form.html', {'form':f},
+                                  context_instance=RequestContext(request))

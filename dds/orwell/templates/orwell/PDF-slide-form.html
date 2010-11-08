@@ -1,0 +1,10 @@
+{% extends "orwell/base-index.html" %}
+{% block title %}Add a New PDF Slide{% endblock %}
+
+{% block content %}
+<form action="{% url orwell-pdf-form %}" method="post" enctype="multipart/form-data">
+  {{ form.as_p }}
+  <input type="submit" value="Create"/>
+</form>
+{% endblock %}
+

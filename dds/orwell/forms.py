@@ -7,3 +7,11 @@ class CreateSlideForm(forms.Form):
                                       ('create', 'create')])
     id = forms.IntegerField(required=False)
     bundle = forms.FileField()
+
+class CreatePDFSlide(forms.Form): 
+    title = forms.CharField()
+    priority = forms.IntegerField()
+    duration = forms.IntegerField()
+    expiration_date = forms.DateTimeField(required=False)
+    pdf = forms.FileField()
+    
