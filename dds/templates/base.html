@@ -7,6 +7,8 @@
     <script type="text/javascript" src="http://www.google.com/jsapi"></script>
     <script type="text/javascript">google.load("jquery", "1.4.0");</script>
     <script type="text/javascript">google.load("jqueryui", "1.7.2");</script>
+    <!-- Ye olde cmccoy -->
+    <script type="text/javascript" src="{{ MEDIA_URL }}js/navigation.js"></script>
 
     <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/{% block style %}base.css{% endblock %}">
 
@@ -16,7 +18,16 @@
 <body>
 <div id="header">
   <a href="{% url orwell-index %}" title="Crew Digital Display"><div id="branding"></div></a>
-  <div id="navigation"
+  <div id="navigation">
+    {% if user.is_authenticated %}
+    <a href="{% url django.contrib.auth.views.logout %}"
+      class="fg-button ui-state-default ui-corner-left ui-corner-right">Logout </a>
+    {% else %}
+    <a href="{% url django.contrib.auth.views.login %}"
+      class="fg-button ui-state-default ui-corner-left ui-corner-right">Login </a>
+    {% endif %}
+  </div>
+  <!--<div id="navigation"
     class="fg-toolbar ui-widget-header ui-corner-all ui-helper-clearfix">
     <div class="fg-buttonset ui-helper-clearfix">
       <a href="{% url orwell-index %}" title="Main"
@@ -37,7 +48,7 @@
         class="fg-button ui-state-default ui-corner-right">Login </a>
       {% endif %}
     </div>
-  </div>
+  </div>-->
 </div>
 <div class="content">
 {% block content %}{% endblock %}
