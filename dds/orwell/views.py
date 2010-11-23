@@ -282,10 +282,8 @@ def pdf_formview(request):
                       priority=f.cleaned_data['priority'])
 
             s.populate_from_bundle(File(open(bundle_loc)), tarfile.open(bundle_loc))
-            return HttpResponse("Yay!")
-        else:
-            return HttpResponse("Invalid insertion...")
+            return redirect('orwell-slide-index')
     else:
         f = CreatePDFSlide()
-        return render_to_response('orwell/PDF-slide-form.html', {'form':f},
-                                  context_instance=RequestContext(request))
+    return render_to_response('orwell/PDF-slide-form.html', {'form':f},
+                              context_instance=RequestContext(request))
