@@ -1,0 +1,13 @@
+{% extends "orwell/base-index.html" %}
+{% block title %}Add a New Slide{% endblock %}
+
+{% block content %}
+<div id="buttons">
+<a class="button" href='{% url orwell-slide-index %}'>&lt; Return To Slide List</a>
+</div>
+<form action="{% url orwell-create-slide %}" method="post" enctype="multipart/form-data">
+  {{ form.as_p }}
+  <input type="submit" value="Create"/>
+</form>
+{% endblock %}
+
