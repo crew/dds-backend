@@ -5,19 +5,15 @@ from django.contrib.auth.decorators import login_required
 import json
 
 from models import Slide
-from forms import CreateSlideForm
+from forms import CLICreateSlideForm
 import tarfile
 
 @login_required
 def cli_manage_slide(request):
     if request.method == 'POST':
-        f = CreateSlideForm(request.POST, request.FILES)
+        f = CLICCreateSlideForm(request.POST, request.FILES)
         if f.is_valid():
-            try:
-                tf = tarfile.open(fileobj=request.FILES['bundle'])
-            except:
-                return HttpResponse('Not a tarfile! exitiing')
-            manifest = json.load(tf.extractfile('manifest.js'))
+            tf = tarfile.open(fileobj=request.FILES['bundle'])
             id = f.cleaned_data['id']
             create = f.cleaned_data['mode'] == 'create'
             if create and not id:

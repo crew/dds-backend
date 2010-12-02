@@ -44,11 +44,15 @@
   </div>
   <div id='content_management' class='viewerdiv'>
     <p>{{numslides}} Slide{{numslides|pluralize}} available to display</p>
-    <div onclick="window.location='{% url web-form-slide-select %}'" class='icon'>
+    <div onclick="window.location='{% url orwell-create-slide %}'" class='icon'>
       <img class='icon-img' src='/media/images/offline.png'>
-      <p class='icon-text'>Create Slides</p>
+      <p class='icon-text'>Create Slide From Bundle</p>
     </div>
-    <div onclick="window.location='{% url web-form-slide-select %}'" class='icon'>
+    <div onclick="window.location='{% url orwell-create-pdf-slide %}'" class='icon'>
+      <img class='icon-img' src='/media/images/offline.png'>
+      <p class='icon-text'>Create Slide From PDF</p>
+    </div>
+    <div onclick="window.location='{% url orwell-slide-index %}'" class='icon'>
       <img class='icon-img' src='/media/images/offline.png'>
       <p class='icon-text'>Edit Slides</p>
     </div>

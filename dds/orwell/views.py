@@ -21,7 +21,7 @@ import time
 from models import (Slide, Client, ClientActivity, Location, Group, Template,
                     Message, Playlist, PlaylistItem,
                     TemplateSlide)
-from forms import CreatePDFSlide
+from forms import CreatePDFSlideForm, CreateSlideForm
 from pdf.convert import convert_pdf
 
 def index(request):
@@ -255,9 +255,9 @@ def handle_uploaded_file(f):
     return path
 
 @login_required
-def pdf_formview(request):
+def pdf_slide_create(request):
     if request.method == 'POST':
-        f = CreatePDFSlide(request.POST, request.FILES)
+        f = CreatePDFSlideForm(request.POST, request.FILES)
         print(request.FILES)
         if f.is_valid():
             def in_cur_dir(path):
@@ -284,6 +284,24 @@ def pdf_formview(request):
             s.populate_from_bundle(File(open(bundle_loc)), tarfile.open(bundle_loc))
             return redirect('orwell-slide-index')
     else:
-        f = CreatePDFSlide()
-    return render_to_response('orwell/PDF-slide-form.html', {'form':f},
+        f = CreatePDFSlideForm()
+    return render_to_response('orwell/create-pdf-slide.html', {'form':f},
+                              context_instance=RequestContext(request))
+
+@login_required
+def slide_create(request):
+    if request.method == 'POST':
+        f = CreateSlideForm(request.POST, request.FILES)
+        print(request.FILES)
+        if f.is_valid():
+            tf = tarfile.open(fileobj=request.FILES['bundle'])
+            s = Slide(user=request.user,
+                      title='Uploaded %s' % (tf.__hash__()),
+                      priority=-1,
+                      duration=-1)
+            s.populate_from_bundle(request.FILES['bundle'], tf)
+            return redirect('orwell-slide-index')
+    else:
+        f = CreateSlideForm()
+    return render_to_response('orwell/create-slide.html', {'form':f},
                               context_instance=RequestContext(request))

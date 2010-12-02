@@ -8,10 +8,10 @@
 
 {% block content %}
 <h1>Slides</h1>
-<form id="slidefilterform">
-<input type="reset" id="resetfilter"
-       class="fg-button ui-state-default ui-corner-all">
-</form>
+<div id="buttons">
+<a class="button" href='{% url orwell-create-slide %}'>Create Slide From Bundle</a>
+<a class="button" href='{% url orwell-create-pdf-slide %}'>Create Slide From PDF</a>
+</div>
 <div id="slidearea">
 {% for slide in slides %}
 <div class="slidebox {{ slide.get_class_tags }} ui-corner-all"
