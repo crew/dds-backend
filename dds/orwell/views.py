@@ -225,9 +225,12 @@ def playlist_json(request, playlist_id):
 # Returns a JSON object containing slide details.
 @login_required
 def slide_json(request, slide_id):
-    slide = Slide.objects.get(pk=slide_id)
+    slide = get_object_or_404(Slide, pk=slide_id)
     output = { 'id' : slide_id,
                'title' : slide.title,
+               'duration' : slide.duration,
+               'expires_at' : slide.expires_at,
+               'priority' : slide.priority,
                'thumbnail' : slide.thumbnailurl() }
     return HttpResponse(json.dumps(output))
 
