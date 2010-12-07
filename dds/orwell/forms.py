@@ -41,4 +41,9 @@ class CreatePDFSlideForm(forms.Form):
     duration = forms.IntegerField()
     expiration_date = forms.DateTimeField(required=False)
     pdf = forms.FileField()
-    
+
+class SlideEditForm(forms.Form):
+    title = forms.CharField(required=False)
+    expires_at = forms.DateTimeField(required=False)
+    priority = forms.IntegerField()
+    duration = forms.IntegerField()
