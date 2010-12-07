@@ -21,7 +21,7 @@ import time
 from models import (Slide, Client, ClientActivity, Location, Group, Template,
                     Message, Playlist, PlaylistItem,
                     TemplateSlide)
-from forms import CreatePDFSlideForm, CreateSlideForm
+from forms import CreatePDFSlideForm, CreateSlideForm, SlideEditForm
 from pdf.convert import convert_pdf
 
 def index(request):
@@ -33,9 +33,10 @@ def index(request):
 @login_required
 def slide_index(request):
     if request.method == 'GET':
+        form = SlideEditForm()
         return render_to_response('orwell/slide-index.html',
-                                  { 'slides' : Slide.objects.all()},
-                                  context_instance=RequestContext(request))
+                { 'slides' : Slide.objects.all(), 'form': form},
+                context_instance=RequestContext(request))
     # Handle a remove.
     if 'remove' in request.POST:
         try:
@@ -308,3 +309,15 @@ def slide_create(request):
         f = CreateSlideForm()
     return render_to_response('orwell/create-slide.html', {'form':f},
                               context_instance=RequestContext(request))
+
+def slide_edit(request):
+    if request.method == 'POST':
+        form = SlideEditForm(request.POST)
+        if form.is_valid():
+            s = Slide.objects.get(id=request.POST['slide_id'])
+            #update the slide with new cleaned data
+            return redirect('orwell-slide-index')
+    else:
+        form = SlideEditForm()
+    return render_to_response('orwell/slide-edit.html',{'form': form})
+
