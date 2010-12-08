@@ -81,11 +81,12 @@ function setupdialogs() {
                         resizable:false,draggable:false,
                         buttons:{"Save":function() {
                                    handlesave(slidebox, this);
-                                   //$('.infopopup').html('');
+                                   $('.infopopup').html('');
+                                   $(this).dialog("close");
                                    },
                                  "Delete":function() {
                                    handledelete(slidebox, this);
-                                   $('.infopopup').html('');
+                                   $(this).dialog("close");
                                    },
                                  "Cancel":function() {
                                    $(this).dialog("close");
