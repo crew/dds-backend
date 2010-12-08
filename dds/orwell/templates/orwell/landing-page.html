@@ -1,37 +1,11 @@
 {% extends "base.html" %}
 {% block title %}Digital Display Manager{% endblock %}
 {% block content %}
-<!--
-<ul class="linkmenu">
-  <li><span class="linkmenuheader">Status</span>
-  <ul class="linksubmenu">
-    <li>{{numclients}} Client{{numclients|pluralize}} connected right now
-    <li><a href="{% url orwell-client-index %}" class="landing-link ui-state-default ui-corner-all">View Connected Clients</a>
-  </ul>
-  <li><span class="linkmenuheader">Content Creation</span>
-  <ul class="linksubmenu">
-    <li>{{numslides}} Slide{{numslides|pluralize}} available to display
-    <li><a href="{% url web-form-slide-select %}"
-      class="landing-link ui-state-default ui-corner-all"> View Templates </a>
-    <li><a href="http://www.google.com/search?q=not+done+yet"
-      class="landing-link ui-state-default ui-corner-all"> WYSIWYG Editor </a>
-  </ul>
-  <li><span class="linkmenuheader">Administration</span>
-  <ul class="linksubmenu">
-    <li><a href="{% url orwell-playlist-index %}"
-      class="landing-link ui-state-default ui-corner-all"> Manage Playlists </a>
-    <li><a href="{% url orwell-slide-index %}"
-      class="landing-link ui-state-default ui-corner-all"> Manage Slides </a>
-    <li><a href="{% url template-select %}"
-      class="landing-link ui-state-default ui-corner-all"> Manage Templates </a>
-  </ul>
-</ul>
--->
 <ul class='linkmenu'>
   <li class='nav_status' onclick="setActive(this,'status');"><a href='#status' class="linkmenuheader">Status</a></li>
-  <li class='nav_content_management' onclick="setActive(this,'content_management');"><a href="#content_management" class="linkmenuheader">Content Management</a></li>
   {% if user.is_staff %}
-  <li class='nav_admin' onclick="setActive(this,'admin');"><a href="#admin" class="linkmenuheader">Admin</a></li>
+  <li class='nav_content_management' onclick="setActive(this,'content_management');"><a href="#content_management" class="linkmenuheader">Content Management</a></li>
+  <li class='nav_admin' onclick="window.location='/admin';"><a href="/admin" class="linkmenuheader">Admin</a></li>
   {% endif %}
 </ul>
 <div id='viewer'>
