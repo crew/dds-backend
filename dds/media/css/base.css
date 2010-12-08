@@ -163,3 +163,13 @@ a.button {
 a.button:hover {
   opacity:1;
 }
+.playlistitem {
+  margin:5px 0;
+  border-top:#333 solid 1px;
+  border-bottom:#333 solid 1px;
+}
+.rempi, #addpi {
+  font-weight:bold;
+  text-decoration:underline;
+  margin-bottom:5px;
+}

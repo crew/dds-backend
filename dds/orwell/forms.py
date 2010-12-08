@@ -1,6 +1,6 @@
 # vim: set shiftwidth=4 tabstop=4 softtabstop=4 :
 from django import forms
-from models import Slide, Client
+from models import Slide, Client, Playlist, PlaylistItem
 
 import tarfile
 from StringIO import StringIO
@@ -47,3 +47,12 @@ class SlideEditForm(forms.Form):
     expires_at = forms.DateTimeField(required=False)
     priority = forms.IntegerField()
     duration = forms.IntegerField()
+
+class PlaylistForm(forms.ModelForm):
+    class Meta:
+        model = Playlist
+
+class PlaylistItemForm(forms.ModelForm):
+    class Meta:
+        model = PlaylistItem
+        exclude = ('playlist',) # we will set this after form submission

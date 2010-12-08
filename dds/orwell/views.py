@@ -20,7 +20,7 @@ import time
 
 from models import (Slide, Client, ClientActivity, Location, Group,
                     Message, Playlist, PlaylistItem)
-from forms import CreatePDFSlideForm, CreateSlideForm, SlideEditForm
+from forms import CreatePDFSlideForm, CreateSlideForm, SlideEditForm, PlaylistForm, PlaylistItemForm
 from pdf.convert import convert_pdf
 
 def index(request):
@@ -105,7 +105,7 @@ def playlist_list_json(request):
 
 
 @login_required
-def playlist_detail(request, playlist_id):
+def playlist_edit(request, playlist_id):
     playlist = Playlist.objects.get(pk=playlist_id)
     playlistitems = playlist.playlistitem_set.order_by('position')
     items = []
@@ -259,3 +259,67 @@ def slide_edit(request):
         form = SlideEditForm()
     return render_to_response('orwell/slide-edit.html',{'form': form})
 
+@login_required
+def playlist_index(request):
+    if request.method == 'GET':
+        return render_to_response('orwell/playlist-index.html',
+                { 'playlists' : Playlist.objects.all()},
+                context_instance=RequestContext(request))
+    # Handle a remove.
+    if 'remove' in request.POST:
+        try:
+            playlist = get_object_or_404(Playlist,
+                                      pk=request.POST['remove'])
+            playlist.delete()
+            return HttpResponse('OK')
+        except Exception, e:
+            # Bad request.
+            print(str(e))
+            return HttpResponse(str(e), status=400)
+    # Bad request.
+    return HttpResponse(status=400)
+
+@login_required
+def playlist_create(request):
+    if request.method == 'POST':
+        f = PlaylistForm(request.POST, instance=Playlist())
+        piforms = [PlaylistItemForm(request.POST, prefix=str(x), instance=PlaylistItem()) for x in range(0,int(request.POST['n-forms']))]
+        if f.is_valid() and all([piform.is_valid() for piform in piforms]):
+            newplaylist = f.save()
+            for piform in piforms:
+                newpi = piform.save(commit=False)
+                newpi.playlist = newplaylist
+                newpi.save()
+            return redirect('orwell-playlist-index')
+    else:
+        f = PlaylistForm(instance=Playlist())
+        piforms = [PlaylistItemForm(prefix=str(x), instance=PlaylistItem(position=(x+1))) for x in range(0,2)] # two PlaylistItems to start
+    return render_to_response('orwell/edit-playlist.html', {'form':f, 'itemforms':piforms, 'nforms':2, 'mode':'Create', 'butval':'Create'},context_instance=RequestContext(request))
+
+@login_required
+def playlist_edit(request, playlist_id):
+    playlist = Playlist.objects.get(id=playlist_id)
+    items = playlist.playlistitem_set.all()
+    if request.method == 'POST':
+        f = PlaylistForm(request.POST, instance=playlist)
+        items.delete()
+        piforms = [PlaylistItemForm(request.POST, prefix=str(x), instance=PlaylistItem()) for x in range(0,int(request.POST['n-forms']))]
+        if f.is_valid() and all([piform.is_valid() for piform in piforms]):
+            f.save()
+            for piform in piforms:
+                newpi = piform.save(commit=False)
+                newpi.playlist = playlist
+                newpi.save()
+            return redirect('orwell-playlist-index')
+    else:
+        f = PlaylistForm(instance=playlist)
+        piforms = [PlaylistItemForm(prefix=str(x), instance=items[x]) for x in range(0,len(items))]
+    return render_to_response('orwell/edit-playlist.html', {'form':f, 'itemforms':piforms, 'nforms':len(items), 'mode':'Edit', 'butval':'Save'},context_instance=RequestContext(request))
+
+@login_required
+def playlistitem_create(request):
+    if request.method=='POST':
+        n = int(request.POST['posnum'])
+        return render_to_response('orwell/create-playlistitem.html', {'itemform':PlaylistItemForm(prefix=str(n), instance=PlaylistItem(position=(n+1)))})
+    else:
+        return HttpResponse(status=400)

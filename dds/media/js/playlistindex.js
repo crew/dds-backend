@@ -1,24 +1,22 @@
-$(function() {
-  /* These functions relate to the playlist selector dropdown. */
-  function build_playlist_dropdown(data) {
-    $(data).each(function (dummy, datum) {
-      var op = $('<option>');
-      op.attr('value', datum.uri);
-      op.html(datum.name);
-      $('#playlist-selector-dropdown').append(op);
-    });
-  }
-
-  function gotoplaylist(selector) {
-    var newuri = $(this).val();
-    if (document.location.href.indexOf(newuri) == -1) {
-      document.location.href = $(this).val();
-    }
-    else {
-      $(this).val('#');
-    }
-  }
-
-  $('#playlist-selector-dropdown').change(gotoplaylist);
-  $.getJSON(playlistlisturi, build_playlist_dropdown);
-});
+function deleteplaylist(removalid) {
+  $.ajax({type:'POST', data:{remove:removalid},
+          success:function(data) {
+              alert('The playlist was deleted!');
+	      //TODO: Remove the playlist from the list in the html
+          },
+          error:function(xhr,textStatus,errorThrown) {
+            if (xhr.status == 404) {
+              alert('The playlist you are trying to delete has vanished!');
+            }
+            else if (xhr.status == 500) {
+              alert('There was an internal server error while deleting!');
+            }
+            else if (xhr.status == 400) {
+              alert('The deletion request was malformed. Is the page stale?');
+            }
+            else if (xhr.status == 403) {
+              alert('Sorry, you do not have the required permissions.');
+            }
+          }
+  });
+}

@@ -1,20 +1,20 @@
 {% extends "orwell/base-index.html" %}
-{% block title %}Playlists{% endblock %}
+{% block title %}Slides{% endblock %}
 {% block scripts %}
-<script type="text/javascript" src="{{ MEDIA_URL }}js/playlistindex.js">
-</script>
-<script type="text/javascript">
-  playlistlisturi = '{% url orwell-json-playlist-list %}';
-</script>
+
+<script type="text/javascript" src="/media/js/playlistindex.js"></script>
+
 {% endblock %}
 
 {% block content %}
 <h1>Playlists</h1>
-</script>
-  <form id="playlistselector">
-    <label for="playlist-selector-dropdown">Select a playlist to edit</label>
-    <select id="playlist-selector-dropdown">
-      <option value="#">--Playlist--</option>
-    </select>
-  </form>
+<div id="buttons">
+<a class="button" href='{% url orwell-create-playlist %}'>Create Playlist</a>
+</div>
+<div id="playlistarea">
+<!-- TODO: make this awesome and not a bunch of lines -->
+{% for playlist in playlists %}
+  {{ playlist.name }} - <a href='{% url orwell-playlist-edit playlist.id %}'>Edit</a>/<a href='javascript:deleteplaylist({{ playlist.id }});return false;'>Delete</a><br />
+{% endfor %}
+</div>
 {% endblock %}

@@ -1,0 +1,48 @@
+{% extends "orwell/base-index.html" %}
+{% block title %}Add a New Playlist{% endblock %}
+{% block scripts %}
+
+<script type="text/javascript">
+$(document).ready(function() {
+   var numforms={{ nforms }};
+   $('#addpi').click(function() {
+      numforms++;
+      $("[name=n-forms]").val(numforms);
+      $.ajax({type:'POST', url:'{% url orwell-create-playlistitem %}',data:{posnum:(numforms-1)},
+             success:function(data) {
+               $("#pform").append(data);
+               bindclick();
+             },
+             error:function(xhr,textStatus,errorThrown) {
+               numforms--;
+               $("[name=n-forms]").val(numforms);
+               alert("there was an error.");
+             }
+     });
+   })
+   $('.rempi').live("click",function() {
+      numforms--;
+      $("[name=n-forms]").val(numforms);
+      $(this).parent().remove();
+   });
+});
+</script>
+
+{% endblock %}
+{% block content %}
+<div id="buttons">
+<a class="button" href='{% url orwell-playlist-index %}'>&lt; Return To Playlist List</a>
+</div>
+<form action="{% url orwell-create-playlist %}"  method="post" enctype="multipart/form-data">
+<div id="pform">
+  {{ form.as_p }}
+{% for itemform in itemforms %}
+{% include "orwell/create-playlistitem.html" %}
+{% endfor %}
+</div>
+<div id="addpi">Add Slide</div>
+  <input type="submit" value='{{ mode }}'/>
+<input type="hidden" value='{{ nforms }}' name="n-forms" />
+</form>
+{% endblock %}
+

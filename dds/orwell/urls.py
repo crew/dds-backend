@@ -11,13 +11,10 @@ urlpatterns = patterns('%s.orwell.views' % settings.MODULE,
     url(r'^clients/$', 'client_index', name='orwell-client-index'),
     url(r'^_priv/_displaycontrol/$', 'displaycontrol',
         name='orwell-displaycontrol'),
-    url(r'^playlists/(\d+)/$', 'playlist_detail',
-        name='orwell-playlist-detail'),
-)
-
-urlpatterns += patterns('django.views.generic.simple',
-    url(r'^playlists/$', 'direct_to_template',
-        {'template': 'orwell/playlist-index.html'}, name='orwell-playlist-index'),
+    url(r'^playlists/$', 'playlist_index', name='orwell-playlist-index'),
+    url(r'^playlists/create/$', 'playlist_create', name='orwell-create-playlist'),
+    url(r'^playlists/create/item$', 'playlistitem_create', name='orwell-create-playlistitem'),
+    url(r'^playlists/(\d+)/$', 'playlist_edit', name='orwell-playlist-edit'),
 )
 
 # CLI API
