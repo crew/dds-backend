@@ -19,7 +19,6 @@ class RecentManager(models.Manager):
         five_minutes_ago = datetime.now() - timedelta(seconds=60 * 5)
         return qs.filter(timestamp__gt=five_minutes_ago)
 
-
 class Message(models.Model):
     message = models.TextField()
     timestamp = models.DateTimeField(auto_now=True)
@@ -56,11 +55,11 @@ class Slide(models.Model):
                   'duration'        : self.duration,
                   'modified'        : time.mktime(self.last_update.timetuple()),
                 }
-        if self.expires_at: 
+        if self.expires_at:
             slide["expires_at"] = time.mktime(self.expires_at.timetuple())
-        
+
         return slide
-        
+
     def get_class_tags(self):
         """Get a list of textual tags for this slide."""
         return ''
@@ -104,12 +103,6 @@ class Slide(models.Model):
             if playlistitem.playlist not in playlists:
                 playlists.append(playlistitem.playlist)
         return playlists
-
-
-
-class TemplateSlide(Slide):
-    template = models.ForeignKey('Template', related_name='slides')
-
 
 # Signals for Slide
 register_signals(Slide, post_save=signalhandlers.slide_m_post_save,
@@ -159,7 +152,7 @@ class Playlist(models.Model):
     def playlist_json(self):
         playlistitems = self.playlistitem_set.order_by('position')
         items = []
-        # Return some simple dicts with PlaylistItem data for template consumption.
+        # Return some simple dicts with PlaylistItem data.
         for item in playlistitems:
             item = item.subitem()
             # PlaylistItemSlide
@@ -250,18 +243,6 @@ class Client(models.Model):
 
 # Signals for Client
 register_signals(Client, post_save=signalhandlers.client_m_post_save)
-
-class Template(models.Model):
-    bundle = models.FileField(max_length=300, upload_to="template/%Y%H%M%S",
-                              null=True)
-    json   = models.FileField(max_length=300,
-                              upload_to="template/%Y%H%M%S-json",
-                              null=True)
-    title  = models.CharField(max_length=512)
-
-    def __unicode__(self):
-        return '%s' % self.title
-
 
 class ClientActivity(models.Model):
     client = models.OneToOneField(Client, primary_key=True,

@@ -18,9 +18,8 @@ import StringIO
 import tarfile
 import time
 
-from models import (Slide, Client, ClientActivity, Location, Group, Template,
-                    Message, Playlist, PlaylistItem,
-                    TemplateSlide)
+from models import (Slide, Client, ClientActivity, Location, Group,
+                    Message, Playlist, PlaylistItem)
 from forms import CreatePDFSlideForm, CreateSlideForm, SlideEditForm
 from pdf.convert import convert_pdf
 
@@ -73,68 +72,6 @@ def client_activity_all_json(request):
         return HttpResponse(json.dumps(all, default=str))
     return HttpResponseNotAllowed(['GET'])
 
-def web_form_slide_select(request) :
-    return render_to_response('orwell/web-form-slide-select.html',
-                              {"templates": Template.objects.all() },
-                              context_instance=RequestContext(request))
-
-def web_form_slide_customize(request, uid) :
-    if request.method == 'GET':
-        template = Template.objects.get(id=uid)
-        data = json.JSONDecoder().decode(template.json.read())
-        return render_to_response('orwell/web-form-slide-customize.html',
-                                  {"template": data},
-                                  context_instance=RequestContext(request))
-    if request.method == 'POST':
-        formData = request.POST
-
-        fo = StringIO.StringIO()
-        bundle = tarfile.open(fileobj=Template.objects.get(id=uid).bundle)
-        tf = tarfile.open(fileobj=fo, mode='w:gz')
-
-        def addjson(data, filename):
-            sio = StringIO.StringIO()
-            sio.write(json.dumps(data))
-            sio.seek(0)
-            ari = tarfile.TarInfo(name=filename)
-            ari.size = len(sio.buf)
-            ari.mtime = time.time()
-            tf.addfile(ari, sio)
-
-        #rebuild the archive since we can't just write to an existing one
-        for item in bundle.getmembers():
-            content = bundle.extractfile(item)
-            tf.addfile(item, content)
-
-        datadict = {}
-        rawformdata = dict(formData)
-        for k in rawformdata:
-            datadict[k] = rawformdata[k][0]
-
-        addjson(datadict, 'data.js')
-
-        manifest = {'title':formData.get('name', 'no-name'),
-                    'transition':'fade',
-                    'mode':'module',
-                    'thumbnail_img': '_thumb.png',
-                    'duration': 10,
-                    'priority': 3,
-                   }
-        addjson(manifest, 'manifest.js')
-        s = TemplateSlide(user=request.user,
-                          title=formData.get('name', 'no-name'),
-                          priority=-1,
-                          duration=-1)
-
-        tf.close()
-        fo.seek(0)
-        cf = ContentFile(fo.read())
-        s.template = Template.objects.get(id=uid)
-        s.populate_from_bundle(cf, tarfile.open(fileobj=cf))
-        templatefile = 'orwell/web-form-slide-customize-success.html'
-        return render_to_response(templatefile, {"yay":"yay"},
-                                  context_instance=RequestContext(request))
-
 def displaycontrol(request):
     if request.method == 'GET':
         return render_to_response('orwell/displaycontrol.html',
@@ -160,11 +97,6 @@ def displaycontrol(request):
             m = Message(message=json.dumps(packet))
             m.save()
         return HttpResponse('OK')
-
-def template_select(request):
-    return render_to_response('orwell/template-select.html',
-                              {"templates":Template.objects.all()},
-                              context_instance=RequestContext(request))
 
 def playlist_list_json(request):
     def formatplaylist(p):
