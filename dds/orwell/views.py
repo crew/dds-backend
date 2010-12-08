@@ -21,6 +21,8 @@ import time
 from models import (Slide, Client, ClientActivity, Location, Group,
                     Message, Playlist, PlaylistItem)
 from forms import CreatePDFSlideForm, CreateSlideForm, SlideEditForm, PlaylistForm, PlaylistItemForm
+from forms import ClientEditForm
+
 from pdf.convert import convert_pdf
 
 def index(request):
@@ -65,6 +67,20 @@ def client_index(request):
                               { 'clients' : Client.objects.all(),
                                 'locations' : Location.objects.all()},
                               context_instance=RequestContext(request))
+
+def client_edit(request):
+    if request.method == 'POST':
+        form = ClientEditForm(request.POST)
+        if form.is_valid():
+            c = Client.objects.get(id=request.POST['client_id'])
+            #c.save();
+            #update the slide with new cleaned data
+            return redirect('orwell-client-index')
+    else:
+        form = ClientEditForm()
+    return render_to_response('orwell/client-edit.html',{'form': form})
+
+
 
 def client_activity_all_json(request):
     if request.method == 'GET':

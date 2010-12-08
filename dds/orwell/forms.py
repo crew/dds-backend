@@ -48,6 +48,10 @@ class SlideEditForm(forms.Form):
     priority = forms.IntegerField()
     duration = forms.IntegerField()
 
+class ClientEditForm(forms.Form):
+    location = forms.CharField()
+    playlist = forms.ChoiceField(choices=Playlist.objects.all())
+
 class PlaylistForm(forms.ModelForm):
     class Meta:
         model = Playlist
