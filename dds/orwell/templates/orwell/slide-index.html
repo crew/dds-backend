@@ -22,8 +22,29 @@
   <div class="infopopup" title="{{slide.title}}"
     id="infobox-slide-{{ slide.id }}">
     <div>Owner: {{slide.user}}</div>
+    <input type='hidden' name='id' id='id_id' value="{{slide.id}}"/>
   </div>
 </div>
 {% endfor %}
 </div>
+<script type='text/javascript'>
+  $('document').ready(function() {
+      $('.slidebox').click(function() {
+        var slideID = $(this).attr('id').substring(6,$(this).attr('id').length);
+        $.get('{% url orwell-slide-edit %}',{slide_id:slideID},
+          function(data) { 
+          $('#infobox-slide-'+slideID).html(data);
+          $.get('/json/slides/'+slideID,
+            function(data) {
+              $('#id_title').val(data['title']);
+              $('#id_expires_at').val(data['expires_at']);
+              $('#id_priority').val(data['priority']);
+              $('#id_duration').val(data['duration']);
+              $('#infobox-slide-'+slideID).children('form').append("<input type='hidden' name='slide_id' value='"+data['id']+"'/>");
+            }, 'json'); 
+          });
+        });
+      });
+
+</script>
 {% endblock %}

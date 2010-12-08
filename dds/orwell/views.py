@@ -247,6 +247,12 @@ def slide_edit(request):
         form = SlideEditForm(request.POST)
         if form.is_valid():
             s = Slide.objects.get(id=request.POST['slide_id'])
+            if request.POST['expires_at'] is not None and len(request.POST['expires_at'].strip()) > 0:
+                s.expires_at = request.POST['expires_at']
+            s.title = request.POST['title']
+            s.priority = request.POST['priority']
+            s.duration = request.POST['duration']
+            s.save();
             #update the slide with new cleaned data
             return redirect('orwell-slide-index')
     else:

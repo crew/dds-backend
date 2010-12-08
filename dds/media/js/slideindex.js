@@ -18,6 +18,9 @@ function resetfilterform() {
   filterlocation();
 }
 
+function handlesave(slidebox, source) {
+  dosave(slidebox, source);
+}
 function handledelete(slidebox, source) {
   $(source).dialog("close");
   confirmbox = $('<div>');
@@ -35,6 +38,11 @@ function handledelete(slidebox, source) {
                                   }}});
 }
 
+function dosave(slidebox,source) {
+  source = $(source);
+  $.post('/slides/edit/',source.children('form').serialize());
+  return true;
+}
 function dodelete(slidebox, source) {
   source = $(source);
   removalid = slidebox.attr('id');
@@ -71,13 +79,19 @@ function setupdialogs() {
       removalid = slidebox.attr('id');
       ch.dialog({modal:true,autoOpen:false,
                         resizable:false,draggable:false,
-                        buttons:{"Save":function() {alert('Not implemented');},
+                        buttons:{"Save":function() {
+                                   handlesave(slidebox, this);
+                                   //$('.infopopup').html('');
+                                   },
                                  "Delete":function() {
                                    handledelete(slidebox, this);
+                                   $('.infopopup').html('');
                                    },
                                  "Cancel":function() {
                                    $(this).dialog("close");
-                                  }}});
+                                   $('.infopopup').html('');
+                                  }},
+                        close: function(event,ui) { $('.infopopup').html(''); }});
       $(this).click(function() {
         ch.dialog('open');});
       });

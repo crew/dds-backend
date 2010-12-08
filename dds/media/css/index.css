@@ -90,6 +90,10 @@
     display:none;
 }
 
+.infopopup form input {
+  width:100px;
+}
+
 /* Playlist Control */
 
 .left {
