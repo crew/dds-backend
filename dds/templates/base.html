@@ -27,28 +27,6 @@
       class="fg-button ui-state-default ui-corner-left ui-corner-right">Login </a>
     {% endif %}
   </div>
-  <!--<div id="navigation"
-    class="fg-toolbar ui-widget-header ui-corner-all ui-helper-clearfix">
-    <div class="fg-buttonset ui-helper-clearfix">
-      <a href="{% url orwell-index %}" title="Main"
-        class="fg-button ui-state-default ui-corner-left">Main </a>
-      <a href="{% url orwell-slide-index %}" title="Slides"
-        class="fg-button ui-state-default">Slides </a>
-      <a href="{% url orwell-client-index %}" title="Clients"
-        class="fg-button ui-state-default">Clients  </a>
-      {% if user.is_staff %}
-      <a href="{% url admin:index %}" title="Admin"
-        class="fg-button ui-state-default">Admin </a>
-      {% endif %}
-      {% if user.is_authenticated %}
-      <a href="{% url django.contrib.auth.views.logout %}"
-        class="fg-button ui-state-default ui-corner-right">Logout </a>
-      {% else %}
-      <a href="{% url django.contrib.auth.views.login %}"
-        class="fg-button ui-state-default ui-corner-right">Login </a>
-      {% endif %}
-    </div>
-  </div>-->
 </div>
 <div class="content">
 {% block content %}{% endblock %}
