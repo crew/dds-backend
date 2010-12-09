@@ -15,7 +15,8 @@ urlpatterns = patterns('',
      {'document_root' : settings.MEDIA_ROOT}),
 
     (r'^accounts/login/$', 'django.contrib.auth.views.login'),
-    (r'^accounts/logout/$', 'django.contrib.auth.views.logout'),
+    (r'^accounts/logout/$', 'django.contrib.auth.views.logout',
+     {"next_page": "/"}),
 
     (r'', include('%s.orwell.urls' % settings.MODULE)),
 )
