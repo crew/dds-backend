@@ -1,8 +1,9 @@
-function deleteplaylist(removalid) {
+function deleteplaylist(src, removalid) {
+  if(!confirm("Are you sure you want to delete this playlist?  Click OK to delete the playlist or Cancel to not delete the playlist."))
+      return;
   $.ajax({type:'POST', data:{remove:removalid},
           success:function(data) {
-              alert('The playlist was deleted!');
-	      //TODO: Remove the playlist from the list in the html
+	      $(src).parent().fadeOut();
           },
           error:function(xhr,textStatus,errorThrown) {
             if (xhr.status == 404) {

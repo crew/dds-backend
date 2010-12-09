@@ -12,9 +12,11 @@
 <a class="button" href='{% url orwell-create-playlist %}'>Create Playlist</a>
 </div>
 <div id="playlistarea">
-<!-- TODO: make this awesome and not a bunch of lines -->
+<!-- TODO: make this awesome and not a simple list -->
+<ul>
 {% for playlist in playlists %}
-  {{ playlist.name }} - <a href='{% url orwell-playlist-edit playlist.id %}'>Edit</a>/<a href='javascript:deleteplaylist({{ playlist.id }});return false;'>Delete</a><br />
+<li>{{ playlist.name }} - <a class="playlist-list-link" href='{% url orwell-playlist-edit playlist.id %}'>Edit</a> / <a class="playlist-list-link" href='#' onclick='deleteplaylist($(this),{{ playlist.id }});'>Delete</a></li>
 {% endfor %}
+</ul>
 </div>
 {% endblock %}
