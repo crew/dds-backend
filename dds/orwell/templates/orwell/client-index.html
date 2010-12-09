@@ -26,29 +26,40 @@
 <p>{{numclients}} Client{{numclients|pluralize}} connected right now</p>
 <div id="clientarea">
 {% for client in clients %}
-<div class="slidebox {{client.get_class_tags}} ui-corner-all"
-  id="client-{{ client.id_hash }}">
-  <img src="{{client.thumbnailurl}}" alt="{{client.slidecaption}}"
-  title="{{client.slidecaption}}" height="125" width="200" class="slidepreview">
-  {{ client.displayname }}
-  <div class="infopopup" title="{{client.client_id}}"
-    id="infobox-{{ client.id_hash }}">
+  <div class="slidebox {{client.get_class_tags}} ui-corner-all"
+    id="client-{{ client.id_hash }}">
+    <img src="{{client.thumbnailurl}}" alt="{{client.slidecaption}}" 
+    title="{{client.slidecaption}}" height="125" width="200" class="slidepreview">
+    <span>{{ client.displayname }}</span>
     <input type="hidden" id="clientid-{{ client.id_hash }}"
-           class="clientid" value="{{client.client_id}}">
-    <div class="keyval">
-      Playlist: <span class="kv-playlist">
-        <a href="{% url orwell-playlist-edit client.playlist.id %}">
-          {{ client.playlist.name }}</a></span>
-    </div>
-    <div class="keyval">
-      Location: <span class="kv-location">{{ client.location }}</span>
-    </div>
-    <div class="keyval">
-      Last Contact: <span class="kv-lastcontact">{{ client.last_contact }}
-      </span>
+           class="clientid" value="{{client.client_id}}"/>
+
+    <div title='{{client.client_id}}' class='infopopup' id='infobox-{{ client.id_hash }}'>
+      <div class="keyval">
+        Playlist: <span class="kv-playlist">
+          <a href="{% url orwell-playlist-edit client.playlist.id %}">
+            {{ client.playlist.name }}</a></span>
+      </div>
+      <div class="keyval">
+        Location: <span class="kv-location">{{ client.location }}</span>
+      </div>
+      <div class='editform'></div>
     </div>
   </div>
-</div>
 {% endfor %}
 </div>
+<script type='text/javascript'>
+  $('document').ready(function() {
+      $('.slidebox').click(function() {
+        var divID = $(this).attr('id');
+        var clientHash = divID.substring(7,divID.length);
+        var clientID = $('#clientid-'+clientHash).val()
+        $.get('{% url orwell-client-edit %}',{client_id:clientID},
+          function(data) {
+          $('#infobox-'+clientHash+' > .editform').html(data);
+          $('#infobox-'+clientHash+' > .editform').children('form').append('<input type="hidden" name="client_id" value="'+clientID+'"/>');
+          });
+        });
+      });
+    </script>      
 {% endblock %}

@@ -68,12 +68,20 @@ def client_index(request):
                               context_instance=RequestContext(request))
 
 def client_edit(request):
+    print request
     if request.method == 'POST':
         form = ClientEditForm(request.POST)
+        print form
         if form.is_valid():
-            c = Client.objects.get(id=request.POST['client_id'])
-            #c.save();
-            #update the slide with new cleaned data
+            c = Client.objects.get(client_id=request.POST['client_id'])
+            print request.POST['client_id']
+            locationID = request.POST['location']
+            if locationID is not None or (len(locationID.strip()) >= 1):
+                c.location = Location.objects.get(id=locationID)
+            playlistID = request.POST['playlist']
+            if playlistID is not None or (len(playlistID.strip()) >= 1):
+                c.playlist = Playlist.objects.get(id=playlistID)
+            c.save();
             return redirect('orwell-client-index')
     else:
         form = ClientEditForm()
