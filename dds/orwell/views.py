@@ -68,10 +68,8 @@ def client_index(request):
                               context_instance=RequestContext(request))
 
 def client_edit(request):
-    print request
     if request.method == 'POST':
         form = ClientEditForm(request.POST)
-        print form
         if form.is_valid():
             c = Client.objects.get(client_id=request.POST['client_id'])
             print request.POST['client_id']
@@ -84,7 +82,8 @@ def client_edit(request):
             c.save();
             return redirect('orwell-client-index')
     else:
-        form = ClientEditForm()
+        c = Client.objects.get(client_id=request.GET['client_id'])
+        form = ClientEditForm(instance=c)
     return render_to_response('orwell/client-edit.html',{'form': form})
 
 
