@@ -2,7 +2,7 @@ from django.conf.urls.defaults import *
 from django.conf import settings
 
 urlpatterns = patterns('%s.orwell.views' % settings.MODULE,
-    url(r'^$', 'index', name='orwell-index'),
+    url(r'^$', 'landing', name='orwell-landing'),
     url(r'^slides/$', 'slide_index', name='orwell-slide-index'),
     url(r'^slides/create/$', 'slide_create', name='orwell-create-slide'),
     url(r'^slides/create-pdf/$', 'pdf_slide_create', name='orwell-create-pdf-slide'),

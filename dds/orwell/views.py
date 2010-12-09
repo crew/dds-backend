@@ -25,10 +25,8 @@ from forms import ClientEditForm
 
 from pdf.convert import convert_pdf
 
-def index(request):
-    data = {'numslides' : len(Slide.objects.all()),
-            'numclients': len(Client.objects.filter(activity__active=True))}
-    return render_to_response('orwell/landing-page.html', data,
+def landing(request):
+    return render_to_response('orwell/landing-page.html', {},
                               context_instance=RequestContext(request))
 
 @login_required
@@ -65,6 +63,7 @@ def slide_bundle(request, slide_id):
 def client_index(request):
     return render_to_response('orwell/client-index.html',
                               { 'clients' : Client.objects.all(),
+                                'numclients': len(Client.objects.filter(activity__active=True)),
                                 'locations' : Location.objects.all()},
                               context_instance=RequestContext(request))
 

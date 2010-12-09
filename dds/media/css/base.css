@@ -47,6 +47,13 @@ input {
     float: right;
 }
 
+#navigation a {
+    font-family: Sketch;
+    font-size: 1.3em;
+    padding-right: 1em;
+    font-weight; bold;
+}
+
 a, :visited {
     text-decoration: inherit;
 }

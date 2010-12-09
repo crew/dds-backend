@@ -23,6 +23,7 @@
 <input type="reset" id="resetfilter"
        class="fg-button ui-state-default ui-corner-all">
 </form>
+<p>{{numclients}} Client{{numclients|pluralize}} connected right now</p>
 <div id="clientarea">
 {% for client in clients %}
 <div class="slidebox {{client.get_class_tags}} ui-corner-all"

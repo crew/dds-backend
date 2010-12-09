@@ -1,47 +1,28 @@
 {% extends "base.html" %}
 {% block title %}Digital Display Manager{% endblock %}
 {% block content %}
-<ul class='linkmenu'>
-  <li class='nav_status' onclick="setActive(this,'status');"><a href='#status' class="linkmenuheader">Status</a></li>
-  {% if user.is_staff %}
-  <li class='nav_content_management' onclick="setActive(this,'content_management');"><a href="#content_management" class="linkmenuheader">Content Management</a></li>
-  <li class='nav_admin' onclick="window.location='/admin';"><a href="/admin" class="linkmenuheader">Admin</a></li>
-  {% endif %}
-</ul>
-<div id='viewer'>
-  <div id='status' class='viewerdiv'>
-    <p>{{numclients}} Client{{numclients|pluralize}} connected right now</p>
-    <div onclick="window.location='{% url orwell-client-index %}'" class='icon'>
-      <img class='icon-img' src='/media/images/offline.png'>
-      <p class='icon-text'>View/Edit Clients</p>
-    </div>
-  </div>
-  <div id='content_management' class='viewerdiv'>
-    <p>{{numslides}} Slide{{numslides|pluralize}} available to display</p>
-    <div onclick="window.location='{% url orwell-create-slide %}'" class='icon'>
-      <img class='icon-img' src='/media/images/offline.png'>
-      <p class='icon-text'>Create Slide From Bundle</p>
-    </div>
-    <div onclick="window.location='{% url orwell-create-pdf-slide %}'" class='icon'>
-      <img class='icon-img' src='/media/images/offline.png'>
-      <p class='icon-text'>Create Slide From PDF</p>
-    </div>
-    <div onclick="window.location='{% url orwell-slide-index %}'" class='icon'>
-      <img class='icon-img' src='/media/images/offline.png'>
-      <p class='icon-text'>Edit Slides</p>
-    </div>
-    <div onclick="window.location='{% url orwell-create-playlist  %}'" class='icon'>
-      <img class='icon-img' src='/media/images/offline.png'>
-      <p class='icon-text'>Create Playlist</p>
-    </div>
-    <div onclick="window.location='{% url orwell-playlist-index  %}'" class='icon'>
-      <img class='icon-img' src='/media/images/offline.png'>
-      <p class='icon-text'>Edit Playlists</p>
-    </div>
-  </div>
-  {% if user.is_staff %}
-  <div id='admin' class='viewerdiv'>
-  </div>
-  {% endif %}
+<div onclick="window.location='{% url orwell-client-index %}'" class='icon'>
+  <img class='icon-img' src='/media/images/offline.png'>
+  <p class='icon-text'>View/Edit Clients</p>
+</div>
+<div onclick="window.location='{% url orwell-create-slide %}'" class='icon'>
+  <img class='icon-img' src='/media/images/offline.png'>
+  <p class='icon-text'>Create Slide From Bundle</p>
+</div>
+<div onclick="window.location='{% url orwell-create-pdf-slide %}'" class='icon'>
+  <img class='icon-img' src='/media/images/offline.png'>
+  <p class='icon-text'>Create Slide From PDF</p>
+</div>
+<div onclick="window.location='{% url orwell-slide-index %}'" class='icon'>
+  <img class='icon-img' src='/media/images/offline.png'>
+  <p class='icon-text'>Edit Slides</p>
+</div>
+<div onclick="window.location='{% url orwell-create-playlist  %}'" class='icon'>
+  <img class='icon-img' src='/media/images/offline.png'>
+  <p class='icon-text'>Create Playlist</p>
+</div>
+<div onclick="window.location='{% url orwell-playlist-index  %}'" class='icon'>
+  <img class='icon-img' src='/media/images/offline.png'>
+  <p class='icon-text'>Edit Playlists</p>
 </div>
 {% endblock %}
