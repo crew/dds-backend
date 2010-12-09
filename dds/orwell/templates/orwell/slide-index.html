@@ -32,7 +32,7 @@
       $('.slidebox').click(function() {
         var slideID = $(this).attr('id').substring(6,$(this).attr('id').length);
         $.get('{% url orwell-slide-edit %}',{slide_id:slideID},
-          function(data) { 
+          function(data) {
           $('#infobox-slide-'+slideID).html(data);
           $.get('/json/slides/'+slideID,
             function(data) {
@@ -41,7 +41,7 @@
               $('#id_priority').val(data['priority']);
               $('#id_duration').val(data['duration']);
               $('#infobox-slide-'+slideID).children('form').append("<input type='hidden' name='slide_id' value='"+data['id']+"'/>");
-            }, 'json'); 
+            }, 'json');
           });
         });
       });
