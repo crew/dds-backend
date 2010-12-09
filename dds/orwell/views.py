@@ -233,13 +233,18 @@ def pdf_slide_create(request):
             PDFslide_loc = in_cur_dir('PDFslide')
             os.chdir(PDFslide_loc)
             os.system('tar -zcf %s *' % bundle_loc)
-
+            
             s = Slide(user=request.user,
                       title=f.cleaned_data['title'],
                       duration=f.cleaned_data['duration'],
                       priority=f.cleaned_data['priority'])
-
+            
             s.populate_from_bundle(File(open(bundle_loc)), tarfile.open(bundle_loc))
+            # remove these so as not to cause problems for the next pdf slide
+            os.remove(in_cur_dir("PDFslide/pdf.png"))
+            os.remove(in_cur_dir("PDFslide/_thumb.png"))
+            os.remove(in_cur_dir("PDFslide/manifest.js"))
+            # TODO: should we remove the original pdf?  the bundle?
             return redirect('orwell-slide-index')
     else:
         f = CreatePDFSlideForm()
