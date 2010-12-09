@@ -56,6 +56,7 @@ input {
 
 a, :visited {
     text-decoration: inherit;
+    color: white;
 }
 
 li.active {
