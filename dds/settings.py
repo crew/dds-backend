@@ -88,16 +88,11 @@ INSTALLED_APPS = (
 )
 
 AUTHENTICATION_BACKENDS = (
-    '%s.ccis.backends.CCISLDAPBackend' % MODULE,
     'django.contrib.auth.backends.ModelBackend',
 )
 
 ############# Jabber ############
 J_CLIENT_RESOURCE = 'dds-client'
-
-############# LDAP ##############
-LDAPBACKEND_HOST = 'ldap://cluster.ldap.ccs.neu.edu/'
-LDAPBACKEND_DN   = 'uid=%s,ou=people,dc=ccs,dc=neu,dc=edu'
 
 LOGIN_REDIRECT_URL = '/'
 
