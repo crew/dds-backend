@@ -115,3 +115,15 @@ a.button:hover {
     text-decoration:underline;
     margin-bottom:5px;
 }
+
+#playlistarea {
+    font-size:1.4em;
+}
+
+a.playlist-list-link {
+    font-weight:bold;
+}
+
+a.playlist-list-link:hover {
+    text-decoration:underline;
+}

@@ -18,13 +18,12 @@ def get_dimensions(filename):
     if m:
         return map(int, m.groups())
 
-def convert_pdf(input, output, dimension, image_type='png'):
+def convert_pdf(input, output, dimension):
     """
-    Converts the input (a PDF file) into an image.
+    Converts the (first page of) input (a PDF file) into an image.
     :param input: The input filename.
     :param output: The output filename.
     :param dimension: The desired dimension. A tuple of (width, height)
-    :param image_type: One of png or jpg. Selects the output format.
     """
     width, height, _, _ = get_dimensions(input)
     logging.info('Scaling to %s', dimension)
@@ -40,8 +39,9 @@ def convert_pdf(input, output, dimension, image_type='png'):
     else:
         abc_w = t_width
         abc_h = None
-
-    temp_fd, temp = tempfile.mkstemp(suffix='.%s' % image_type)
+    # imagemagick can handle pdf directly, with no multipage problems
+    # (whereas forcing this to be png causes format problems)
+    temp_fd, temp = tempfile.mkstemp(suffix='.pdf') 
     try:
         resize(input, temp, width=abc_w, height=abc_h)
         extent(temp, output, '%dx%d' % dimension)
@@ -55,7 +55,7 @@ def convert_pdf(input, output, dimension, image_type='png'):
 
 def convert_pdf_to_dir(input, output_dir, dimension, image_type='png'):
     """
-    Converts the input (a PDF file) into an image.
+    Converts the (first page of) input (a PDF file) into an image.
     :param input: The input filename.
     :param output_dir: The output directory.
     :param image_type: One of png or jpg. Selects the output format.
@@ -64,7 +64,7 @@ def convert_pdf_to_dir(input, output_dir, dimension, image_type='png'):
     basename = input.rsplit('.', 1)[0]
     # Construct the output filename.
     output = os.path.join(output_dir, '%s.%s' % (basename, image_type))
-    convert_pdf(input, output, dimension, image_type=image_type)
+    convert_pdf(input, output, dimension)
 
 
 def resize(input, output, width=None, height=None):
@@ -78,7 +78,8 @@ def resize(input, output, width=None, height=None):
         # Nothing to be done.
         return
     logging.info('resizing %s -> %s to %s', input, output, dimension)
-    p = subprocess.Popen(['convert', '-resize', dimension, input, output])
+    # converting "temp.pdf[0]" ensures that we only grab the first page.
+    p = subprocess.Popen(['convert', '-resize', dimension, "%s[0]" % input, output])
     exit_code = p.wait()
     logging.debug('resize exit code = %d', exit_code)
     if exit_code == 0:

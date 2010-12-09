@@ -25,6 +25,14 @@ function resetfilterform() {
   filterlocation();
 }
 
+function dosave(slidebox,source) {
+  source = $(source);
+  //var clientID = slidebox.children('.clientid').val();
+  form = source.children('.editform');
+  form = form.children();
+  $.post('/clients/edit/',form.serialize());
+  return true;
+}
 function powercontroldialog(id) {
   t = $('<div>').attr('class', 'powercontroldialogcontent');
   t.load(clientpowerurl, function(){
@@ -40,19 +48,28 @@ function powercontroldialog(id) {
 
 function setupdialogs() {
   $('.slidebox').each(function() {
-      buttons = {"Ok": function() { $(this).dialog("close"); },
-                 "Cancel": function() { $(this).dialog("close"); }};
-      if (is_staff == "True") {
-        buttons.Power = function() {
-                          $(this).dialog("close");
-                          powercontroldialog($('#'+id+' > .clientid').val());};
-      }
-      var id = $(this).children('.infopopup').attr('id');
-      $('#'+id).dialog({modal:true,autoOpen:false,
+      var slidebox = $(this);
+      var ch = slidebox.children('.infopopup')
+      var hashid = slidebox.attr('id');
+      var realid = $('#'+hashid).children('div').attr('title');
+      ch.dialog({modal:true,autoOpen:false,
                         resizable:false,draggable:false,
-                        buttons:buttons});
+                        buttons:{"Ok": function() {
+                                    dosave(slidebox,this);
+                                    $(this).dialog("close")
+                                    location.reload();
+                                  },
+                                  "Cancel":function() {
+                                    $(this).dialog("close");
+                                  },
+                                  "Power":function() {
+                                    powercontroldialog(realid);
+                                    //$(this).dialog("close");
+                                  },
+                                },
+                        close: function(event,ui) { /*location.reload();*/ }});
       $(this).click(function() {
-        $('#'+id).dialog('open');});
+        ch.dialog('open');});
       });
 }
 

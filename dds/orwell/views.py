@@ -71,12 +71,19 @@ def client_edit(request):
     if request.method == 'POST':
         form = ClientEditForm(request.POST)
         if form.is_valid():
-            c = Client.objects.get(id=request.POST['client_id'])
-            #c.save();
-            #update the slide with new cleaned data
+            c = Client.objects.get(client_id=request.POST['client_id'])
+            print request.POST['client_id']
+            locationID = request.POST['location']
+            if locationID is not None or (len(locationID.strip()) >= 1):
+                c.location = Location.objects.get(id=locationID)
+            playlistID = request.POST['playlist']
+            if playlistID is not None or (len(playlistID.strip()) >= 1):
+                c.playlist = Playlist.objects.get(id=playlistID)
+            c.save();
             return redirect('orwell-client-index')
     else:
-        form = ClientEditForm()
+        c = Client.objects.get(client_id=request.GET['client_id'])
+        form = ClientEditForm(instance=c)
     return render_to_response('orwell/client-edit.html',{'form': form})
 
 
@@ -226,13 +233,18 @@ def pdf_slide_create(request):
             PDFslide_loc = in_cur_dir('PDFslide')
             os.chdir(PDFslide_loc)
             os.system('tar -zcf %s *' % bundle_loc)
-
+            
             s = Slide(user=request.user,
                       title=f.cleaned_data['title'],
                       duration=f.cleaned_data['duration'],
                       priority=f.cleaned_data['priority'])
-
+            
             s.populate_from_bundle(File(open(bundle_loc)), tarfile.open(bundle_loc))
+            # remove these so as not to cause problems for the next pdf slide
+            os.remove(in_cur_dir("PDFslide/pdf.png"))
+            os.remove(in_cur_dir("PDFslide/_thumb.png"))
+            os.remove(in_cur_dir("PDFslide/manifest.js"))
+            # TODO: should we remove the original pdf?  the bundle?
             return redirect('orwell-slide-index')
     else:
         f = CreatePDFSlideForm()
