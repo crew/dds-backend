@@ -53,7 +53,7 @@
       $('.slidebox').click(function() {
         var divID = $(this).attr('id');
         var clientHash = divID.substring(7,divID.length);
-        var clientID = $('#clientid-'+clientHash).val()
+        var clientID = $('#clientid-'+clientHash).val();
         $.get('{% url orwell-client-edit %}',{client_id:clientID},
           function(data) {
           $('#infobox-'+clientHash+' > .editform').html(data);
@@ -61,5 +61,5 @@
           });
         });
       });
-    </script>      
+    </script>
 {% endblock %}
