@@ -244,7 +244,8 @@ def pdf_slide_create(request):
             os.remove(in_cur_dir("PDFslide/pdf.png"))
             os.remove(in_cur_dir("PDFslide/_thumb.png"))
             os.remove(in_cur_dir("PDFslide/manifest.js"))
-            # TODO: should we remove the original pdf?  the bundle?
+            os.remove(bundle_loc)
+            os.remove(fpath + ".pdf")
             return redirect('orwell-slide-index')
     else:
         f = CreatePDFSlideForm()
