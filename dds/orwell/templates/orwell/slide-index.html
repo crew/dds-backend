@@ -34,7 +34,7 @@
         $.get('{% url orwell-slide-edit %}',{slide_id:slideID},
           function(data) {
           $('#infobox-slide-'+slideID).html(data);
-          $.get('/json/slides/'+slideID,
+          $.get('{%url orwell-json-slide-detail %}', {'slide_id': slideID},
             function(data) {
               $('#id_title').val(data['title']);
               $('#id_expires_at').val(data['expires_at']);
