@@ -88,6 +88,7 @@ INSTALLED_APPS = (
 )
 
 AUTHENTICATION_BACKENDS = (
+    '%s.ccis.auth.CCISAuthBackend' % MODULE,
     'django.contrib.auth.backends.ModelBackend',
 )
 
