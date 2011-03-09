@@ -1,0 +1,8 @@
+You're going to need sphinx to build this documentation, in addition
+to GNU MAKE.
+
+To build the DDS documentation as a web site, simply type:
+
+$ make html
+
+Typing 'make' will provide you with a list of targets to work with.
