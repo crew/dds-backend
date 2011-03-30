@@ -72,7 +72,6 @@ def client_edit(request):
         form = ClientEditForm(request.POST)
         if form.is_valid():
             c = Client.objects.get(client_id=request.POST['client_id'])
-            print request.POST['client_id']
             locationID = request.POST['location']
             if locationID is not None or (len(locationID.strip()) >= 1):
                 c.location = Location.objects.get(id=locationID)
@@ -220,7 +219,6 @@ def handle_uploaded_file(f):
 def pdf_slide_create(request):
     if request.method == 'POST':
         f = CreatePDFSlideForm(request.POST, request.FILES)
-        print(request.FILES)
         if f.is_valid():
             def in_cur_dir(path):
                 return os.path.join(os.path.dirname(__file__),path)
@@ -237,12 +235,12 @@ def pdf_slide_create(request):
             PDFslide_loc = in_cur_dir('PDFslide')
             os.chdir(PDFslide_loc)
             os.system('tar -zcf %s *' % bundle_loc)
-            
+
             s = Slide(user=request.user,
                       title=f.cleaned_data['title'],
                       duration=f.cleaned_data['duration'],
                       priority=f.cleaned_data['priority'])
-            
+
             s.populate_from_bundle(File(open(bundle_loc)), tarfile.open(bundle_loc))
             # remove these so as not to cause problems for the next pdf slide
             os.remove(in_cur_dir("PDFslide/pdf.png"))
@@ -260,7 +258,6 @@ def pdf_slide_create(request):
 def slide_create(request):
     if request.method == 'POST':
         f = CreateSlideForm(request.POST, request.FILES)
-        print(request.FILES)
         if f.is_valid():
             tf = tarfile.open(fileobj=request.FILES['bundle'])
             s = Slide(user=request.user,
@@ -306,7 +303,6 @@ def playlist_index(request):
             return HttpResponse('OK')
         except Exception, e:
             # Bad request.
-            print(str(e))
             return HttpResponse(str(e), status=400)
     # Bad request.
     return HttpResponse(status=400)
