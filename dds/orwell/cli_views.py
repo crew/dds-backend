@@ -43,13 +43,6 @@ def cli_list_slides(request):
     the slides in permanent storage.
     """
     if request.method == 'GET':
-        slidelist = []
-        for slide in Slide.objects.all():
-            s = {}
-            s['id'] = slide.id
-            s['title'] = slide.title
-            s['owner'] = str(slide.user)
-            slidelist.append(s)
-        return HttpResponse(json.dumps(slidelist))
-
+        return HttpResponse(json.dumps([{"id": s.id, "title": s.title,
+                                         "owner": str(s.owner)} for s in Slide.objects.all()]))
     return HttpResponseNotAllowed(['GET'])
