@@ -148,8 +148,8 @@ class Slide(models.Model):
         return playlists
 
 # Signals for Slide
-register_signals(Slide, post_save=signalhandlers.slide_m_post_save,
-                        pre_delete=signalhandlers.slide_m_pre_delete)
+register_signals(Slide, post_save=signalhandlers.slide_change_notification,
+                        pre_delete=signalhandlers.slide_change_notification)
 
 
 class Location(models.Model):
@@ -233,7 +233,7 @@ class Playlist(models.Model):
         return Slide.objects.filter(id__in=self.requiredslideids())
 
 # Signals for Playlist
-register_signals(Playlist, post_save=signalhandlers.playlist_m_post_save)
+register_signals(Playlist, post_save=signalhandlers.playlist_notification)
 
 class Client(models.Model):
     """Represents a DDS Jabber client."""
@@ -350,7 +350,7 @@ class Client(models.Model):
         return '%s@%s' % (self.pk, self.location)
 
 # Signals for Client
-register_signals(Client, post_save=signalhandlers.client_m_post_save)
+register_signals(Client, post_save=signalhandlers.playlist_relation_notification)
 
 class ClientActivity(models.Model):
     """
@@ -443,5 +443,5 @@ class PlaylistItem(models.Model):
 
 
 register_signals(PlaylistItem,
-                 post_save=signalhandlers.pis_m_post_save,
-                 pre_delete=signalhandlers.pis_m_pre_delete)
+                 post_save=signalhandlers.playlist_relation_notification,
+                 pre_delete=signalhandlers.playlist_relation_notification)
