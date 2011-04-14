@@ -3,6 +3,8 @@ Prereqs
 - Python 2.4+
 - python-pip
 - python-setuptools
+- python-ldap
+- python-imaging
 
 Setup
 =====
