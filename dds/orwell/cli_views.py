@@ -24,9 +24,7 @@ def cli_manage_slide(request):
             create = f.cleaned_data['mode'] == 'create'
             if create and not id:
                 s = Slide(user=request.user,
-                          title='cli uploaded %s' % (tf.__hash__()),
-                          priority=-1,
-                          duration=-1)
+                          title='cli uploaded %s' % (tf.__hash__()))
             elif not create and id:
                 s = Slide.objects.filter(id=id)[0]
                 if not s.allowed(request.user):

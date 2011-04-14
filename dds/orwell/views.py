@@ -303,9 +303,7 @@ def slide_create(request):
         if f.is_valid():
             tf = tarfile.open(fileobj=request.FILES['bundle'])
             s = Slide(user=request.user,
-                      title='Uploaded %s' % (tf.__hash__()),
-                      priority=-1,
-                      duration=-1)
+                      title='Uploaded %s' % (tf.__hash__()))
             s.populate_from_bundle(request.FILES['bundle'], tf)
             return redirect('orwell-slide-index')
     else:

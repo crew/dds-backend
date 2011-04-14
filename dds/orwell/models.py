@@ -70,7 +70,7 @@ class Slide(models.Model):
     """
     title = models.CharField(max_length=512)
     user = models.ForeignKey(User, related_name='slides')
-    priority = models.IntegerField()
+    priority = models.IntegerField(default=1)
     duration = models.IntegerField(default=10)
     expires_at = models.DateTimeField(null=True, default=None, blank=True)
     last_update = models.DateTimeField(auto_now=True)
