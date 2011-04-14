@@ -52,10 +52,6 @@ def slide_index(request):
     # Bad request.
     return HttpResponse(status=400)
 
-def slide_add(request):
-    if request.method == 'POST':
-        return HttpResponse()
-
 def slide_bundle(request, slide_id):
     slide = get_object_or_404(Slide, pk=slide_id)
     return redirect(slide.bundle.url)
