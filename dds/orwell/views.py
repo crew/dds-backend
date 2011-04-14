@@ -223,12 +223,8 @@ def client_json(request):
     object. The information is a simple dictionary of a client's name and
     client_id.
     """
-    # FIXME this could be a simple list comprehension.
-    clients = Client.objects.all();
-    output = []
-    for x in clients:
-        output.append({ 'name': x.name, 'client_id' : x.client_id });
-    return HttpResponse(json.dumps(output));
+    return HttpResponse(json.dumps([{"name": c.name,
+                                     "client_id": c.client_id} for c in Client.objects.all()]));
 
 def handle_uploaded_file(f):
     """
