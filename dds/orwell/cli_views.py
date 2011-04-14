@@ -26,7 +26,7 @@ def cli_manage_slide(request):
                 s = Slide(user=request.user,
                           title='cli uploaded %s' % (tf.__hash__()))
             elif not create and id:
-                s = Slide.objects.filter(id=id)[0]
+                s = Slide.objects.get(id=id)
                 if not s.allowed(request.user):
                     return HttpResponse('Not allowed to modify slide')
             else:
