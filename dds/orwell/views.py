@@ -157,25 +157,6 @@ def playlist_list_json(request):
         return {'uri':reverse('orwell-playlist-detail', args=[p.id]), 'name':p.name}
     return HttpResponse(json.dumps(map(formatplaylist, Playlist.objects.all())))
 
-
-# FIXME I'm not even going to document this.. this is completely broken, and I
-# don't think it's even used, since playlist_edit is redefined bellow?
-@login_required
-def playlist_edit(request, playlist_id):
-    playlist = Playlist.objects.get(pk=playlist_id)
-    playlistitems = playlist.playlistitem_set.order_by('position')
-    items = []
-    # Return some simple dicts with PlaylistItem data for template consumption.
-    for item in playlistitems:
-        items.append({ 'id' : item.pk,
-                       'slide' : item.slide })
-	return render_to_response('orwell/playlist-detail.html',
-                            { 'playlist' : playlist,
-                            'items' : items,
-                            'slides' : Slide.objects.all(),
-                            'plid' : playlist.id },
-                            context_instance = RequestContext(request))
-
 # FIXME Not sure why there're manual transaction commits and rollbacks if
 # transaction.commit_manually is commented out here..
 @login_required
