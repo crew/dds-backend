@@ -1,4 +1,6 @@
-# vim: set shiftwidth=4 tabstop=4 softtabstop=4 :
+"""
+Django views used by the slidetool.py utility.
+"""
 from django.http import HttpResponse, HttpResponseNotAllowed
 from django.contrib.auth.decorators import login_required
 
@@ -10,6 +12,10 @@ import tarfile
 
 @login_required
 def cli_manage_slide(request):
+    """
+    Accepts POSTS from authenticated clients, and allows those clients to either
+    create or modify existing slides.
+    """
     if request.method == 'POST':
         f = CLICCreateSlideForm(request.POST, request.FILES)
         if f.is_valid():
@@ -34,6 +40,10 @@ def cli_manage_slide(request):
 
 @login_required
 def cli_list_slides(request):
+    """
+    Accepts GETs from authenticated clients. Reponds with a json listing of all
+    the slides in permanent storage.
+    """
     if request.method == 'GET':
         slidelist = []
         for slide in Slide.objects.all():

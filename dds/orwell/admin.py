@@ -1,4 +1,6 @@
-# vim: set shiftwidth=4 tabstop=4 softtabstop=4 :
+"""
+Configuration for the Django admin interface for Orwell's models.
+"""
 from models import Slide, Client, ClientActivity, Location, Playlist, PlaylistItem
 from django.contrib import admin
 
