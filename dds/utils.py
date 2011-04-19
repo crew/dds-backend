@@ -18,8 +18,10 @@ import posixpath
 
 def module(file_path):
     """Returns the module name.
+
     >>> module('/a/b/c/xx.py')
     'c'
+
     """
     dir = os.path.dirname(file_path)
     dir_abs = os.path.abspath(dir)
@@ -29,11 +31,13 @@ def module(file_path):
 
 def root(file_path):
     """Returns a 'lambda' that produces paths based on the given file_path.
+
     >>> x = root('/a/b/c/xx.py')
     >>> x('t')
     '/a/b/c/t'
     >>> x('t', 's')
     '/a/b/c/t/s'
+
     """
     dir = os.path.dirname(file_path)
     normpath = os.path.normpath
@@ -43,6 +47,7 @@ def root(file_path):
 
 def urljoin(base, *urls):
     """Modified from http://teethgrinder.co.uk/blog/Normalize-URL-path-python/
+
     >>> f = urljoin
     >>> f('http://site.com/', '/path/../path/.././path/./')
     'http://site.com/path'
