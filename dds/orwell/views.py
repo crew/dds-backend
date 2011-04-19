@@ -233,7 +233,7 @@ def handle_uploaded_file(f):
     """
     pdfs_dir = os.path.join(settings.MEDIA_ROOT, "pdfs")
     if not os.path.exists(pdfs_dir):
-        os.system('mkdir -p %s' % pdfs_dir)
+        os.makedirs(pdfs_dir):
     uID = abs(datetime.now().__hash__())
     path = os.path.join(pdfs_dir, str(uID))
     destination = open(path + ".pdf" , 'wb+')
