@@ -235,8 +235,8 @@ def handle_uploaded_file(f):
     if not os.path.exists(pdfs_dir):
         os.makedirs(pdfs_dir):
     uID = abs(datetime.now().__hash__())
-    path = os.path.join(pdfs_dir, str(uID))
-    destination = open(path + ".pdf" , 'wb+')
+    path = "%s.pdf" % os.path.join(pdfs_dir, str(uID))
+    destination = open(path, 'wb+')
     for chunk in f.chunks():
         destination.write(chunk)
     destination.close()
@@ -255,8 +255,8 @@ def pdf_slide_create(request):
             def in_cur_dir(path):
                 return os.path.join(os.path.dirname(__file__),path)
             fpath = handle_uploaded_file(request.FILES['pdf'])
-            convert_pdf(fpath + ".pdf" ,  in_cur_dir("PDFslide/pdf.png"), (1920,1080))
-            convert_pdf(fpath + ".pdf" ,  in_cur_dir("PDFslide/_thumb.png"), (200, 113))
+            convert_pdf(fpath,  in_cur_dir("PDFslide/pdf.png"), (1920,1080))
+            convert_pdf(fpath,  in_cur_dir("PDFslide/_thumb.png"), (200, 113))
             t = RenderTemplate(open(in_cur_dir('PDFslide/manifest.js.tmp')).read())
             manifest = open(in_cur_dir('PDFslide/manifest.js'), 'w+')
             manifest.write(t.render(Context({'title':f.cleaned_data['title'],
@@ -279,7 +279,7 @@ def pdf_slide_create(request):
             os.remove(in_cur_dir("PDFslide/_thumb.png"))
             os.remove(in_cur_dir("PDFslide/manifest.js"))
             os.remove(bundle_loc)
-            os.remove(fpath + ".pdf")
+            os.remove(fpath)
             return redirect('orwell-slide-index')
     else:
         f = CreatePDFSlideForm()
