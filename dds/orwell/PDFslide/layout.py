@@ -1,8 +1,5 @@
 import clutter
-import baseslide
-import config
-import logging
-import json
+from crew.dds import baseslide
 
 class PDFSlide(baseslide.BaseSlide):
     def __init__(self):
@@ -16,5 +13,3 @@ class PDFSlide(baseslide.BaseSlide):
 
 app = PDFSlide()
 slide = app.group
-
-    
