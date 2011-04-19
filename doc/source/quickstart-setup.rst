@@ -34,6 +34,8 @@ harvest to function properly when using orwell's settings file
 (see the harvest README for details). DATABASE_NAME isn't
 necessary if you use a database other than sqlite. Check the
 django documentation for details on how to set up other databases.
+You will want to use a database other than sqlite3 in a production
+environment, but for testing or development it will work fine.
 
 When you do a full DDS deployment in a production environment, you
 will obviously want to use a full relational database, such as
