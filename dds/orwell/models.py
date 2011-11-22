@@ -14,6 +14,7 @@ import os
 import json
 from datetime import datetime, timedelta
 import time
+from audit_log.models.managers import AuditLog
 
 class RecentManager(models.Manager):
     """
@@ -78,6 +79,8 @@ class Slide(models.Model):
                                   null=True)
     bundle = models.FileField(max_length=300, upload_to="slides/%Y%H%M%S",
                               null=True)
+
+    audit_log = AuditLog()
 
     def parse(self):
         """
@@ -158,6 +161,8 @@ class Location(models.Model):
     """
     name = models.CharField(max_length=500)
 
+    audit_log = AuditLog()
+
     def __unicode__(self):
         return '%s' % self.name
 
@@ -169,6 +174,8 @@ class Playlist(models.Model):
     """
     name = models.CharField(max_length=200, null=True, blank=True,
                             unique=True)
+
+    audit_log = AuditLog()
 
     def __unicode__(self):
         return '%s' % self.name
@@ -241,6 +248,8 @@ class Client(models.Model):
     client_id = models.EmailField(max_length=128, primary_key=True)
     location = models.ForeignKey(Location, null=True, related_name='clients')
     playlist = models.ForeignKey('Playlist', default=Playlist.get_default)
+
+    audit_log = AuditLog()
 
     def jid(self):
         """The jabber id of the client."""
@@ -403,6 +412,8 @@ class PlaylistItem(models.Model):
     position = models.PositiveIntegerField()
     playlist = models.ForeignKey(Playlist)
     slide = models.ForeignKey(Slide)
+
+    audit_log = AuditLog()
 
     def subitem(self):
         """

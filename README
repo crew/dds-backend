@@ -28,6 +28,10 @@ harvest to function properly when using orwell's settings file
 necessary if you use a database other than sqlite. Check the
 django documentation for details on how to set up other databases.
 
+If you don't plan on using the CCIS LDAP authentication,
+comment out the line in settings.py:
+  '%s.ccis.auth.CCISAuthBackend' % MODULE,
+
 Running
 =======
 from the dds directory, run
