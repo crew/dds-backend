@@ -2,3 +2,4 @@
 # distributions required to run this project.
 
 Django==1.2.4
+PIL==1.1.7
