@@ -1,0 +1,25 @@
+{% extends "orwell/base-index.html" %}
+{% block title %}Add a New User{% endblock %}
+
+{% block scripts %}
+<style type="text/css">
+  div.content { width: 800px; margin: auto; }
+  p.auth-copy { font-size: 17px; padding: 2em; }
+  form.add-user-form { text-align: center; font-size: 17px; }
+  form.add-user-form input { font-size: 17px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<p class="auth-copy">
+  DDS uses CCIS's LDAP for authentication. To allow for some semblance of access control, it only
+  allows users who belong to a white list to authenticate. Staff members can add to this white list
+  by submitting a CCIS username here.
+</p>
+
+<form class="add-user-form" method="POST" action=".">
+  <label>Username</label>
+  <input type="text" name="username"></input>
+  <input type="submit" value="Add User"/>
+</form>
+{% endblock %}

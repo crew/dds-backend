@@ -5,6 +5,7 @@ from django.core.files.base import ContentFile
 from django.http import HttpResponse, HttpResponseNotAllowed
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.template import RequestContext, Context
 from django.template import Template as RenderTemplate
 from django.db import transaction
@@ -32,6 +33,22 @@ def landing(request):
     """
     return render_to_response('orwell/landing-page.html', {},
                               context_instance=RequestContext(request))
+
+@login_required
+def add_user(request):
+    if not request.user.is_staff:
+        return HttpResponse(status=402) # Yes, you must pay if you're not staff.
+    if request.method == 'GET':
+        return render_to_response('orwell/add-user.html', context_instance=RequestContext(request))
+    elif request.method == 'POST':
+        username = request.POST.get('username', None)
+        if username is None:
+            return HttpResponse("Missing the username parameter.", status=400)
+        if User.objects.filter(username=username).count() > 0:
+            return HttpResonse("The user %s already exists." % username, status=409)
+        User.objects.create_user(username, "%s@ccs.neu.edu" % username)
+        return redirect('orwell-add-user') # Cludge until this is done with ajax, and not by a
+                                           # direct submit.
 
 @login_required
 def slide_index(request):
