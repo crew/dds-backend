@@ -1,6 +1,7 @@
 Prereqs
 =======
 - Python 2.4+
+- ImageMagick
 - python-pip
 - python-setuptools
 - python-ldap
