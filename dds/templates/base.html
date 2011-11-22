@@ -15,8 +15,11 @@
 <div id="header">
   <a href="{% url orwell-landing %}" title="Crew Digital Display"><div id="branding"></div></a>
   <div id="navigation">
-    {% if user.is_authenticated %}
+    {% if user.is_staff %}
     <a href="/admin/">Admin</a>
+    <a href="{% url orwell-add-user %}">Add User</a>
+    {% endif %}
+    {% if user.is_authenticated %}
     <a href="{% url django.contrib.auth.views.logout %}">Logout</a>
     {% else %}
     <a href="{% url django.contrib.auth.views.login %}">Login</a>
