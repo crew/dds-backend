@@ -4,8 +4,6 @@ Prereqs
 - ImageMagick
 - python-pip
 - python-setuptools
-- python-ldap
-- python-imaging
 
 Setup
 =====
